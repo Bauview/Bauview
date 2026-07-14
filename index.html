@@ -9717,8 +9717,13 @@ async function openUserEditor(existing){
     await afterLogin(sessionUser);
     return;
   }
-  renderSyncPill('local');
-  await startApp();
+  // Kein Zugriff ohne Anmeldung: statt unkontrolliert lokal weiterzulaufen, klare Fehlermeldung zeigen.
+  // (Ein bereits zuvor auf diesem Gerät angemeldeter Benutzer bleibt dank gespeicherter Sitzung
+  // weiterhin offline arbeitsfähig – dieser Zweig greift nur, wenn die Cloud-Anbindung selbst
+  // grundsätzlich nicht initialisieren konnte, z.B. eine beschädigte Auslieferung.)
+  document.body.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:100vh;padding:24px;text-align:center;font-family:sans-serif">
+    <div><h2>BauView konnte nicht gestartet werden</h2><p style="color:#888;max-width:420px">Die Verbindung zur Anmeldung konnte nicht aufgebaut werden. Bitte Internetverbindung prüfen und die Seite neu laden.</p></div>
+  </div>`;
 })();
 
 // Nach erfolgreicher Anmeldung: Sync, Live-Sync starten, App starten
@@ -9774,46 +9779,28 @@ function _resizeHandler(){ if(state.module==='plans'&&state.planId)renderPage();
 
 /* ---------- Anmeldebildschirm ---------- */
 function showLoginScreen(mode){
-  mode=mode||'login';
   const ov=document.createElement('div');
   ov.id='loginOverlay';
   ov.innerHTML=`
     <div class="login-card">
       <img class="login-logo" ${typeof BRAND!=='undefined'?`src="${BRAND.bauviewLogo}"`:''} alt="BauView">
-      <h2 id="loginTitle">BauView</h2>
-      <p class="login-sub" id="loginSub"></p>
-      <div id="signupFields" style="display:none">
-        <div class="login-field"><label>Name</label><input id="suName" placeholder="Vor- und Nachname"></div>
-        <div style="font-size:12px;color:var(--muted);margin:-4px 0 10px;text-align:left">Deine Rolle und Berechtigungen werden vom Administrator zugewiesen.</div>
-      </div>
+      <h2 id="loginTitle">BauView – Anmeldung</h2>
+      <p class="login-sub">Melde dich an, damit deine Projekte auf allen Geräten synchron sind.</p>
       <div class="login-field"><label>E-Mail</label><input id="loginEmail" type="email" autocomplete="username" placeholder="name@helbling-architektur.ch"></div>
       <div class="login-field"><label>Passwort</label><input id="loginPass" type="password" autocomplete="current-password" placeholder="••••••••"></div>
       <div id="loginError" class="login-error"></div>
       <div id="loginInfo" class="login-info"></div>
-      <button class="btn btn-primary" id="primaryBtn" style="width:100%;margin-top:6px"></button>
-      <button class="btn btn-ghost" id="switchBtn" style="width:100%;margin-top:8px"></button>
+      <button class="btn btn-primary" id="primaryBtn" style="width:100%;margin-top:6px">Anmelden</button>
       <button class="btn btn-ghost" id="forgotBtn" style="width:100%;margin-top:6px;font-size:12px;color:var(--muted)">Passwort vergessen?</button>
-      <button class="btn btn-ghost" id="localBtn" style="width:100%;margin-top:10px;font-size:12px;color:var(--muted)">Ohne Anmeldung nur lokal arbeiten</button>
+      <div style="font-size:12px;color:var(--muted);margin-top:16px;padding-top:14px;border-top:1px solid var(--line)">
+        Noch kein Zugang? Bitte bei <a href="mailto:yavuz@helbling-architektur.ch?subject=BauView%20Zugang">yavuz@helbling-architektur.ch</a> anfragen.
+      </div>
     </div>`;
   document.body.appendChild(ov);
   const $=id=>document.getElementById(id);
   const showErr=msg=>{const e=$('loginError');e.textContent=msg;e.style.display=msg?'block':'none';};
   const showInfo=msg=>{const e=$('loginInfo');e.textContent=msg;e.style.display=msg?'block':'none';};
-  const setBusy=b=>{$('primaryBtn').disabled=b;$('primaryBtn').textContent=b?'Bitte warten…':(state._authMode==='signup'?'Konto erstellen':'Anmelden');};
-
-  state._authMode=mode;
-  function applyMode(){
-    const signup=state._authMode==='signup';
-    $('signupFields').style.display=signup?'block':'none';
-    $('loginTitle').textContent=signup?'Konto erstellen':'BauView – Anmeldung';
-    $('loginSub').textContent=signup?'Erstelle dein Konto. Damit wird gleich dein BauView-Benutzer angelegt.':'Melde dich an, damit deine Projekte auf allen Geräten synchron sind.';
-    $('primaryBtn').textContent=signup?'Konto erstellen':'Anmelden';
-    $('switchBtn').textContent=signup?'Ich habe schon ein Konto – anmelden':'Neues Konto erstellen';
-    showErr('');showInfo('');
-  }
-  applyMode();
-
-  $('switchBtn').onclick=()=>{ state._authMode=state._authMode==='signup'?'login':'signup'; applyMode(); };
+  const setBusy=b=>{$('primaryBtn').disabled=b;$('primaryBtn').textContent=b?'Bitte warten…':'Anmelden';};
 
   $('primaryBtn').onclick=async()=>{
     const email=$('loginEmail').value.trim();
@@ -9821,35 +9808,10 @@ function showLoginScreen(mode){
     if(!email||!pass){showErr('Bitte E-Mail und Passwort eingeben.');return;}
     showErr('');showInfo('');setBusy(true);
     try{
-      if(state._authMode==='signup'){
-        const name=$('suName').value.trim(); const role='Noch nicht zugewiesen';
-        if(!name){showErr('Bitte Namen eingeben.');setBusy(false);return;}
-        if(pass.length<6){showErr('Das Passwort muss mindestens 6 Zeichen haben.');setBusy(false);return;}
-        const {user,needsConfirm}=await cloudSignUp(email,pass);
-        const authId=(user&&user.id)||uid();
-        const newUser={id:authId,projectId:undefined,name,role,email:email.toLowerCase(),authId,createdAt:nowISO()};
-        await put('users',newUser);
-        localStorage.setItem('bauview_currentUserId',authId);
-        if(typeof cloudRegisterAccount==='function') await cloudRegisterAccount(authId,email,name,role);
-        if(needsConfirm){
-          setBusy(false);
-          $('signupFields').style.display='none';
-          showInfo('✓ Konto erstellt! Wir haben dir eine Bestätigungs-E-Mail an '+email+' geschickt. Bitte klicke den Link darin – danach kannst du dich anmelden.');
-          state._authMode='login';
-          $('primaryBtn').textContent='Anmelden';
-          $('switchBtn').textContent='Neues Konto erstellen';
-          $('loginTitle').textContent='E-Mail bestätigen';
-          $('loginSub').textContent='Nach dem Klick auf den Link in der E-Mail hier anmelden.';
-          return;
-        }
-        // keine Bestätigung nötig → direkt rein
-        const su=await cloudCurrentUser(); ov.remove(); await afterLogin(su);
-      }else{
-        await cloudSignIn(email,pass);
-        const su=await cloudCurrentUser();
-        ov.remove();
-        await afterLogin(su);
-      }
+      await cloudSignIn(email,pass);
+      const su=await cloudCurrentUser();
+      ov.remove();
+      await afterLogin(su);
     }catch(e){ setBusy(false); showErr(_loginErrText(e)); }
   };
   $('forgotBtn').onclick=async()=>{
@@ -9857,10 +9819,6 @@ function showLoginScreen(mode){
     if(!email){showErr('Bitte zuerst deine E-Mail eingeben.');return;}
     try{ await cloudResetPassword(email); showInfo('Wir haben dir eine E-Mail zum Zurücksetzen des Passworts geschickt.'); showErr(''); }
     catch(e){ showErr(_loginErrText(e)); }
-  };
-  $('localBtn').onclick=async()=>{
-    if(!confirm('Ohne Anmeldung werden deine Daten NICHT synchronisiert und bleiben nur auf diesem Gerät. Fortfahren?'))return;
-    ov.remove();renderSyncPill('local');await startApp();
   };
   setTimeout(()=>$('loginEmail')?.focus(),100);
 }
