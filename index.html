@@ -654,6 +654,22 @@ main.stage{flex:1;display:flex;overflow:hidden;position:relative}
 .login-field input:focus{outline:none;border-color:var(--brand-red)}
 .login-error{color:#b3261e;font-size:12.5px;margin:4px 0;display:none;text-align:left}
 .login-info{color:#1d6b3f;background:#e9f6ee;border:1px solid #bfe3cd;border-radius:8px;padding:9px 11px;font-size:12.5px;margin:6px 0;display:none;text-align:left;line-height:1.5}
+
+/* Startbildschirm: Kachelansicht aller Projekte */
+#startScreen{position:fixed;inset:0;z-index:9998;background:linear-gradient(135deg,#2a2522,#1a1a1a);display:grid;place-items:start center;padding:60px 20px;overflow-y:auto}
+.start-card{width:100%;max-width:960px;text-align:center}
+.start-logo{height:48px;margin-bottom:16px}
+.start-card h2{color:#fff;font-size:22px;font-weight:700;margin-bottom:24px}
+.start-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.start-tile{background:#fff;border:none;border-radius:14px;padding:20px 16px;text-align:left;display:flex;flex-direction:column;gap:4px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.25);transition:.15s;min-height:110px}
+.start-tile:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,.35)}
+.start-tile-num{font-family:monospace;font-size:12px;color:var(--brand-red);font-weight:700}
+.start-tile-name{font-size:15px;font-weight:700;color:var(--ink);line-height:1.3}
+.start-tile-sub{font-size:12px;color:var(--muted);line-height:1.4}
+.start-tile-new{align-items:center;justify-content:center;background:rgba(255,255,255,.08);border:2px dashed rgba(255,255,255,.35);box-shadow:none}
+.start-tile-new:hover{background:rgba(255,255,255,.15);transform:none}
+.start-tile-new .start-tile-plus{font-size:28px;color:#fff}
+.start-tile-new .start-tile-name{color:#fff}
 .stat-card{background:var(--paper-2);border:1px solid var(--line);border-radius:12px;padding:18px;box-shadow:var(--shadow)}
 .stat-card .num{font-size:32px;font-weight:800;font-variant-numeric:tabular-nums}
 .stat-card .lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-top:4px}
@@ -898,6 +914,16 @@ main.stage{flex:1;display:flex;overflow:hidden;position:relative}
   .mod-body{overflow-x:auto}
   .card-del,.row-del{opacity:1}                          /* immer sichtbar auf Touch */
   .login-card{padding:26px 20px;border-radius:14px}
+
+  /* --- Pläne & Mängel: Zeichnen-Werkzeug auf dem Handy ausblenden (auf so kleinem Bildschirm
+     nicht sinnvoll bedienbar). Plan ansehen, zoomen/verschieben und Mängel setzen bleiben erhalten. --- */
+  #drawBtn, #drawToolbar{display:none!important}
+
+  /* --- Ausmass: auf dem Handy nur Ansicht, kein Zeichnen/Bearbeiten von Flächen. Zoom bleibt
+     erhalten, damit man das bereits erfasste Ausmass wenigstens gut anschauen kann. --- */
+  #to-name, #ttToolbar label, #tt-scale-custom, #tt-polygon, #tt-rect, #tt-line, #tt-edit,
+  #tt-undo, #tt-finish, #ttToolbar .tt-hint{display:none!important}
+  #ttToolbar{gap:8px}
 }
 @media (max-width:380px){
   .stat-grid{grid-template-columns:1fr}
@@ -3349,7 +3375,7 @@ function cloudIsAdmin(email){
   return a && email && email.trim().toLowerCase()===a;
 }
 // Tabellen, die in die Cloud synchronisiert werden (entspricht STORES ohne 'app')
-const CLOUD_TABLES = ['projects','plans','defects','contacts','protocols','acceptances','checklists','workorders','journal','notes','users','files','honorars','baubeschriebe','takeoffs','bkpOverrides'];
+const CLOUD_TABLES = ['projects','plans','defects','contacts','protocols','acceptances','checklists','workorders','journal','notes','users','files','honorars','baubeschriebe','takeoffs','bkpOverrides','contactsDirectory'];
 
 let _sb = null;            // Supabase-Client
 let _cloudReady = false;
@@ -3499,11 +3525,11 @@ async function cloudDelete(table,id){
   }catch(e){ console.warn('[Cloud] delete fehlgeschlagen:',e.message); _cloudErr('Löschen fehlgeschlagen ('+table+'): '+e.message); cloudEnqueue({op:'delete',table,id}); }
 }
 async function cloudPullAll(table){
-  if(!cloudEnabled()) return [];
+  if(!cloudEnabled()) return null;
   try{
     const {data,error}=await _sb.from(table).select('*');
     if(error) throw error; return (data||[]).map(_fromRow);
-  }catch(e){ console.warn('[Cloud] pull fehlgeschlagen:',e.message); return []; }
+  }catch(e){ console.warn('[Cloud] pull fehlgeschlagen:',e.message); return null; }
 }
 
 /* ---------- Offline-Warteschlange ---------- */
@@ -3595,8 +3621,12 @@ async function cloudUploadPublicJSON(pathId, obj){
 }
 
 /* ---------- Voll-Synchronisierung beim Start ---------- */
+// Merkt sich, welche (Tabelle:ID) beim letzten Hochladen fehlgeschlagen sind – cloudSyncDown darf
+// so einen Datensatz NIE als "anderswo gelöscht" werten und lokal entfernen (Datenverlust-Schutz).
+let _lastUploadFailures=new Set();
 // Lädt ALLE lokalen Datensätze in die Cloud hoch (für Geräte, die schon lokale Daten haben).
 async function cloudSyncUp(){
+  _lastUploadFailures=new Set();
   if(!cloudEnabled()||typeof all!=='function') return;
   const myId = (typeof CURRENT_AUTH!=='undefined' && CURRENT_AUTH) ? CURRENT_AUTH.id : null;
   for(const table of CLOUD_TABLES){
@@ -3611,17 +3641,29 @@ async function cloudSyncUp(){
         if(!row.members.includes(myId)) row.members.push(myId);
         try{ await putLocal('projects',row); }catch(e){}
       }
-      try{ await cloudUpsert(table,row); }catch(e){}
+      try{ await cloudUpsert(table,row); }catch(e){ _lastUploadFailures.add(table+':'+row.id); }
     }
   }
 }
 // Holt alle Cloud-Daten und spiegelt sie lokal in IndexedDB.
 // Vorhandene lokale Datensätze mit eingebetteten Bildern werden NICHT durch
 // die schlanke Cloud-Version (nur URLs) ersetzt – lokal bleibt schnell/offline.
+//
+// WICHTIG (Fehlerbehebung Sync-Lücke): bisher wurden nur neue/geänderte Cloud-Datensätze lokal
+// gespiegelt, aber ein Datensatz, der auf einem ANDEREN Gerät gelöscht wurde, verschwand hier nie
+// lokal – er blieb als "Geister-Eintrag" bestehen. Jetzt wird nach dem Herunterladen zusätzlich
+// geprüft: Datensätze, die lokal vorhanden sind, aber nicht (mehr) in der vollständigen Cloud-Liste
+// auftauchen, werden als "anderswo gelöscht" erkannt und ebenfalls lokal entfernt – ausser:
+//  - der Datensatz ist noch nicht einmal eine Sekunde alt lokal bekannt (frisch erstellt, Race Guard)
+//  - der Upload dieses Datensatzes ist im unmittelbar vorangegangenen cloudSyncUp() fehlgeschlagen
+//  - der Abruf von der Cloud selbst fehlgeschlagen ist (kein Internet etc. – dann lieber nichts
+//    anfassen, als aus einem Fehler fälschlich "alles wurde gelöscht" zu schliessen)
 async function cloudSyncDown(){
   if(!cloudEnabled()) return;
   for(const table of CLOUD_TABLES){
     const rows=await cloudPullAll(table);
+    if(rows===null) continue; // Abruf fehlgeschlagen – nichts anfassen, nicht als "leer" werten
+    const cloudIds=new Set(rows.map(r=>r.id));
     for(const row of rows){
       try{
         if(typeof _isTombstoned==='function' && _isTombstoned(table,row.id)){
@@ -3637,6 +3679,16 @@ async function cloudSyncDown(){
         await putLocal(table,row);
       }catch(e){}
     }
+    // Verwaiste lokale Datensätze entfernen (siehe Erklärung oben)
+    try{
+      const localRows=await all(table);
+      for(const local of localRows){
+        if(cloudIds.has(local.id)) continue;
+        if(typeof _isTombstoned==='function' && _isTombstoned(table,local.id)) continue; // schon als eigenes Löschen erfasst
+        if(_lastUploadFailures.has(table+':'+local.id)) continue; // Upload fehlgeschlagen – nicht anfassen
+        await delLocal(table,local.id);
+      }
+    }catch(e){}
   }
 }
 function _hasEmbedded(o){
@@ -3801,11 +3853,11 @@ let db, state={
 let _sharpTimer=null;
 
 /* ---------- IndexedDB ---------- */
-const STORES=['projects','plans','defects','contacts','protocols','acceptances','checklists','workorders','journal','notes','users','files','app','honorars','baubeschriebe','takeoffs','bkpOverrides'];
+const STORES=['projects','plans','defects','contacts','protocols','acceptances','checklists','workorders','journal','notes','users','files','app','honorars','baubeschriebe','takeoffs','bkpOverrides','contactsDirectory'];
 // Welche Stores werden in die Cloud gespiegelt (alle ausser 'app' = nur lokale Einstellungen)
-const SYNC_STORES=['projects','plans','defects','contacts','protocols','acceptances','checklists','workorders','journal','notes','users','files','honorars','baubeschriebe','takeoffs','bkpOverrides'];
+const SYNC_STORES=['projects','plans','defects','contacts','protocols','acceptances','checklists','workorders','journal','notes','users','files','honorars','baubeschriebe','takeoffs','bkpOverrides','contactsDirectory'];
 function openDB(){return new Promise((res,rej)=>{
-  const r=indexedDB.open('bauview2',7);
+  const r=indexedDB.open('bauview2',8);
   let settled=false;
   const timeout=setTimeout(()=>{
     if(settled)return;
@@ -4022,6 +4074,7 @@ const MODULES=[
   {id:'journal',   label:'Baujournal', ic:'📕', render:renderJournal},
   {id:'notes',     label:'Aktennotizen', ic:'📝', render:renderNotes},
   {id:'contacts',  label:'Unternehmerliste', ic:'👥', render:renderContacts},
+  {id:'contactsdb',label:'Firmen-Datenbank', ic:'🗄', render:renderContactsDirectory},
   {id:'bkpkatalog',label:'BKP-Übersicht', ic:'📚', render:renderBkpKatalog},
   {id:'honorar',   label:'Honorarofferte SIA 102', ic:'🧮', render:renderHonorar},
   {id:'baubeschrieb', label:'Baubeschrieb', ic:'📖', render:renderBaubeschrieb},
@@ -4035,7 +4088,7 @@ const RAIL_GROUPS=[
   {title:'', ids:['dashboard']},
   {title:'Erfassung', ids:['plans','defects','pendenzen','notes','journal']},
   {title:'Dokumente', ids:['acceptance','checklists','workorders','protocols','honorar','baubeschrieb','takeoff']},
-  {title:'Projekt', ids:['contacts','bkpkatalog','gallery','stats']}
+  {title:'Projekt', ids:['contacts','contactsdb','bkpkatalog','gallery','stats']}
 ];
 async function renderRail(){
   const rail=document.getElementById('rail');
@@ -4057,8 +4110,8 @@ async function renderRail(){
   await renderMobileNav();
 }
 // Untere Tableiste fürs Handy – kurze Labels, wichtigste Module zuerst
-const MOBILE_ORDER=['dashboard','plans','defects','pendenzen','notes','journal','protocols','acceptance','checklists','workorders','contacts','bkpkatalog','honorar','baubeschrieb','takeoff','gallery','stats'];
-const MOBILE_SHORT={dashboard:'Start',plans:'Pläne',defects:'Mängel',pendenzen:'Pendenz',notes:'Notiz',journal:'Journal',protocols:'Protok.',acceptance:'Abnahme',checklists:'Prüfen',workorders:'Regie',contacts:'Unternehmer',bkpkatalog:'BKP',honorar:'Honorar',baubeschrieb:'Baubeschrieb',takeoff:'Ausmass',gallery:'Bilder',stats:'Statistik'};
+const MOBILE_ORDER=['dashboard','plans','defects','pendenzen','notes','journal','protocols','acceptance','checklists','workorders','contacts','contactsdb','bkpkatalog','honorar','baubeschrieb','takeoff','gallery','stats'];
+const MOBILE_SHORT={dashboard:'Start',plans:'Pläne',defects:'Mängel',pendenzen:'Pendenz',notes:'Notiz',journal:'Journal',protocols:'Protok.',acceptance:'Abnahme',checklists:'Prüfen',workorders:'Regie',contacts:'Unternehmer',contactsdb:'Firmen-DB',bkpkatalog:'BKP',honorar:'Honorar',baubeschrieb:'Baubeschrieb',takeoff:'Ausmass',gallery:'Bilder',stats:'Statistik'};
 async function renderMobileNav(){
   const wrap=document.getElementById('mnavScroll');
   if(!wrap)return;
@@ -4212,12 +4265,15 @@ document.getElementById('newProjBtn').onclick=()=>openProjectEditor();
 async function openProjectEditor(existing){
   const isNew=!existing;
   const defaultTpl=`Sehr geehrte Damen und Herren der {Unternehmer}\n\nim Rahmen des Projekts „{Projekt}" wurden Ihnen {Anzahl} Pendenz(en) zugewiesen. Wir bitten Sie um fristgerechte Behebung bis spätestens {Frist} und um eine kurze Rückmeldung.\n\nDie Detailliste entnehmen Sie bitte dem beigefügten PDF.\n\nBesten Dank und freundliche Grüsse\n{Benutzer}`;
-  const p=existing||{id:uid(),name:'',client:'',address:'',logo:'',mailTemplate:defaultTpl};
+  const p=existing||{id:uid(),number:'',name:'',client:'',address:'',logo:'',mailTemplate:defaultTpl};
   if(p.mailTemplate==null)p.mailTemplate=defaultTpl;
   modal(`<div class="modal-head"><h3>${isNew?'Neues Projekt eröffnen':'Projekt bearbeiten'}</h3>
       <p>${isNew?'Lege ein neues Bauprojekt an. Pläne, Mängel und Kontakte werden separat pro Projekt geführt.':''}</p></div>
     <div class="modal-body">
-      <div class="field"><label>Projektname *</label><input id="pr-name" value="${esc(p.name)}" placeholder="z.B. Neubau Mehrfamilienhaus Bergstrasse"></div>
+      <div class="field-row">
+        <div class="field" style="max-width:140px"><label>Projektnummer</label><input id="pr-number" value="${esc(p.number||'')}" placeholder="z.B. 691.01"></div>
+        <div class="field" style="flex:2"><label>Projektname *</label><input id="pr-name" value="${esc(p.name)}" placeholder="z.B. Neubau Mehrfamilienhaus Bergstrasse"></div>
+      </div>
       <div class="field"><label>Bauherr / Auftraggeber</label><input id="pr-client" value="${esc(p.client)}" placeholder="z.B. Bergstrasse Immobilien AG"></div>
       <div class="field"><label>Adresse / Standort</label><input id="pr-address" value="${esc(p.address)}" placeholder="z.B. Bergstrasse 10, 9000 St. Gallen"></div>
       <div class="field"><label>E-Mail-Vorlage für Pendenzen (Autotext)</label>
@@ -4282,7 +4338,7 @@ async function openProjectEditor(existing){
   document.getElementById('prSave').onclick=async()=>{
     const name=document.getElementById('pr-name').value.trim();
     if(!name){toast('Bitte einen Projektnamen eingeben');document.getElementById('pr-name').focus();return;}
-    p.name=name;p.client=document.getElementById('pr-client').value.trim();p.address=document.getElementById('pr-address').value.trim();
+    p.name=name;p.number=document.getElementById('pr-number').value.trim();p.client=document.getElementById('pr-client').value.trim();p.address=document.getElementById('pr-address').value.trim();
     p.mailTemplate=document.getElementById('pr-mailtpl').value;
     // Eigentümer + Mitglieder setzen (für serverseitige Projekt-Trennung)
     if(CURRENT_AUTH && CURRENT_AUTH.id){
@@ -4293,6 +4349,7 @@ async function openProjectEditor(existing){
     await put('projects',p);
     state.projectId=p.id;state.planId=null;state.defectId=null;state.selection.clear();state.module='dashboard';
     closeModal();
+    document.getElementById('startScreen')?.remove();
     await renderProjectSelect();await renderRail();await navigate('dashboard');
     toast(isNew?'Projekt eröffnet':'Projekt gespeichert',true);
   };
@@ -4543,7 +4600,7 @@ function setupMiddleDragPan(scrollEl){
     scrollEl.scrollTop=startTop-(e.clientY-startY);
   });
   window.addEventListener('mouseup',e=>{
-    if(e.button===1&&panning){panning=false;scrollEl.style.cursor='';}
+    if(panning){panning=false;scrollEl.style.cursor='';} // jedes Loslassen beendet das Verschieben, unabhängig vom exakt gemeldeten Tastenwert
   });
   // verhindert, dass der Browser bei der mittleren Maustaste sein Auto-Scroll-Symbol öffnet
   scrollEl.addEventListener('auxclick',e=>{if(e.button===1)e.preventDefault();});
@@ -5141,6 +5198,7 @@ function setupMeasureTool(){
   document.getElementById('measureDone').onclick=toggleMeasureMode;
   const mc=document.getElementById('measureCanvas');
   mc.addEventListener('pointerdown',ev=>{
+    if(ev.button===1)return; // mittlere Maustaste ist fürs Verschieben reserviert
     if(!state.measureMode)return; ev.preventDefault();
     _measureP1=planCoords(ev);_measureP2=_measureP1;_measureDragging=true;
     try{mc.setPointerCapture(ev.pointerId);}catch(e){}
@@ -5256,6 +5314,7 @@ function planCoords(ev){
   return {x:Math.min(1,Math.max(0,x)), y:Math.min(1,Math.max(0,y))};
 }
 function drawPointerDown(ev){
+  if(ev.button===1)return; // mittlere Maustaste ist fürs Verschieben reserviert, nicht fürs Zeichnen
   if(!state.drawMode||!_drawCache)return; ev.preventDefault();
   const p=planCoords(ev);
   if(_drawTool==='select'){
@@ -6005,16 +6064,17 @@ function pdfHeaderLogo(doc){
     doc.addImage(BRAND.headerLogo,'JPEG',210-14-w,9,w,h);
   }catch(e){}
 }
-function pdfFooterAllPages(doc){
+function pdfFooterAllPages(doc,pageH,mr){
+  pageH=pageH||297; mr=mr||196; // Default: A4 Hochformat – bestehende Aufrufe bleiben unverändert
   if(typeof BRAND==='undefined'||!BRAND.footer)return;
   try{
     const props=doc.getImageProperties(BRAND.footer);
-    const w=182, h=w*props.height/props.width; // volle Breite minus Ränder
+    const w=mr-14, h=w*props.height/props.width; // volle Breite minus Ränder
     const n=doc.getNumberOfPages();
     for(let i=1;i<=n;i++){
       doc.setPage(i);
-      const y=297-8-h; // 8mm Abstand zum unteren Rand (A4=297mm)
-      doc.setDrawColor(168,57,42);doc.setLineWidth(0.3);doc.line(14,y-2,196,y-2);
+      const y=pageH-8-h; // 8mm Abstand zum unteren Rand
+      doc.setDrawColor(168,57,42);doc.setLineWidth(0.3);doc.line(14,y-2,mr,y-2);
       doc.addImage(BRAND.footer,'JPEG',14,y,w,h);
     }
   }catch(e){}
@@ -7274,15 +7334,20 @@ async function renderContacts(){
     const bs=bkpSort(a)-bkpSort(b); if(bs)return bs;
     return (a.company||'').localeCompare(b.company||'');
   });
-  const personRow=(name,role,phone,email)=>name?`<div class="ct-p">
+  const personRow=(name,role,phones,email)=>{
+    if(!name)return'';
+    const list=(Array.isArray(phones)&&phones.length)?phones:(phones?[{type:'',number:phones}]:[]); // Rückwärtskompatibilität mit altem Einzel-Telefonfeld
+    const phoneLinks=list.filter(p=>p.number).map(p=>`<a href="tel:${esc(p.number)}" onclick="event.stopPropagation()">📞 ${p.type&&list.length>1?esc(p.type)+': ':''}${esc(p.number)}</a>`).join('');
+    return`<div class="ct-p">
     <div class="ct-p-name">${esc(name)}${role?` <span class="ct-p-role">· ${esc(role)}</span>`:''}</div>
-    ${phone?`<a href="tel:${esc(phone)}" onclick="event.stopPropagation()">📞 ${esc(phone)}</a>`:''}
+    ${phoneLinks}
     ${email?`<a href="mailto:${esc(email)}" onclick="event.stopPropagation()">✉ ${esc(email)}</a>`:''}
-  </div>`:'';
+  </div>`;
+  };
   stage.innerHTML=`
     <div class="module">
       <div class="mod-head"><div><h1>Unternehmerliste</h1><div class="sub">Bauleitung/Architektur zuoberst · sortiert nach BKP · anrufen / mailen</div></div>
-        <div class="spacer"></div><button class="btn btn-ghost btn-sm" id="contPdfBtn">⬇ PDF</button>${spButton('contPdfBtnSp')}<button class="btn btn-primary btn-sm" id="newContBtn">＋ Kontakt</button></div>
+        <div class="spacer"></div><button class="btn btn-ghost btn-sm" id="contImportBtn">⬆ Importieren</button><button class="btn btn-ghost btn-sm" id="contPdfBtn">⬇ PDF</button>${spButton('contPdfBtnSp')}<button class="btn btn-primary btn-sm" id="newContBtn">＋ Kontakt</button></div>
       <div class="mod-body">
         ${contacts.length?`<div class="unt-list">${contacts.map(c=>`
           <div class="unt-card" data-id="${c.id}">
@@ -7290,8 +7355,8 @@ async function renderContacts(){
             <div class="unt-main">
               <div class="unt-title">${esc(c.company)}${c.list==='Bauleitung/Architektur'?' <span class="pill">Bauleitung/Architektur</span>':''}</div>
               ${(c.street||c.city)?`<div style="font-size:12px;color:var(--muted);margin:-2px 0 4px">📍 ${esc([c.street,[c.zip,c.city].filter(Boolean).join(' ')].filter(Boolean).join(', '))}</div>`:''}
-              <div class="ct-persons-row">${personRow(c.contact,c.role1,c.phone,c.email)}${personRow(c.contact2,c.role2,c.phone2,c.email2)}</div>
-              ${(c.contact3||c.contact4)?`<div class="ct-persons-row">${personRow(c.contact3,c.role3,c.phone3,c.email3)}${personRow(c.contact4,c.role4,c.phone4,c.email4)}</div>`:''}
+              <div class="ct-persons-row">${personRow(c.contact,c.role1,c.phones||c.phone,c.email)}${personRow(c.contact2,c.role2,c.phones2||c.phone2,c.email2)}</div>
+              ${(c.contact3||c.contact4)?`<div class="ct-persons-row">${personRow(c.contact3,c.role3,c.phones3||c.phone3,c.email3)}${personRow(c.contact4,c.role4,c.phones4||c.phone4,c.email4)}</div>`:''}
             </div>
             <button class="row-del" data-del="${c.id}" title="Kontakt löschen">×</button>
           </div>`).join('')}</div>`
@@ -7299,17 +7364,79 @@ async function renderContacts(){
       </div>
     </div>`;
   document.getElementById('newContBtn').onclick=()=>openContactEditor();
-  document.getElementById('contPdfBtn').onclick=()=>exportContactsPDF(contacts);
-  const contPdfBtnSp=document.getElementById('contPdfBtnSp');if(contPdfBtnSp)contPdfBtnSp.onclick=()=>exportContactsPDF(contacts,true);
+  document.getElementById('contImportBtn').onclick=()=>openContactImportWizard();
+  document.getElementById('contPdfBtn').onclick=()=>_askContactsPdfOrientation(contacts,false);
+  const contPdfBtnSp=document.getElementById('contPdfBtnSp');if(contPdfBtnSp)contPdfBtnSp.onclick=()=>_askContactsPdfOrientation(contacts,true);
   document.querySelectorAll('.unt-card').forEach(card=>card.onclick=async e=>{if(e.target.closest('.row-del')||e.target.closest('a'))return;openContactEditor(await get('contacts',card.dataset.id));});
   document.querySelectorAll('.row-del[data-del]').forEach(b=>b.onclick=async e=>{e.stopPropagation();const c=await get('contacts',b.dataset.del);await confirmDelete('contacts',b.dataset.del,c?c.company:'Kontakt',renderContacts);});
+}
+// --- Wiederverwendbare Mehrfach-Telefonnummern-Bausteine (Unternehmerliste UND Firmen-Datenbank) ---
+const PHONE_TYPES=['Mobil','Festnetz','Fax','Privat','Andere'];
+function _getPhonesFor(record,phonesKey,legacyKey){
+  if(Array.isArray(record[phonesKey])&&record[phonesKey].length) return record[phonesKey];
+  const legacy=record[legacyKey]; // Rückwärtskompatibilität: altes Einzel-Telefonfeld in die neue Liste überführen
+  return legacy?[{type:'Mobil',number:legacy}]:[{type:'Mobil',number:''}];
+}
+function _phoneRowHTML(prefix,n,slot,p){
+  return `<div class="ct-phone-row" data-phonerow-prefix="${prefix}" data-phonerow-n="${n}" data-phonerow-slot="${slot}" style="display:flex;gap:6px;align-items:center;margin-bottom:5px">
+    <select id="${prefix}-phonetype-${n}-${slot}" style="max-width:100px;flex-shrink:0">${PHONE_TYPES.map(t=>`<option ${t===(p.type||'Mobil')?'selected':''}>${t}</option>`).join('')}</select>
+    <input id="${prefix}-phone-${n}-${slot}" value="${esc(p.number||'')}" placeholder="Telefonnummer" style="flex:1">
+    ${slot>1?`<button type="button" class="btn-icon" data-rmphone-prefix="${prefix}" data-rmphone-n="${n}" title="Nummer entfernen">×</button>`:''}
+  </div>`;
+}
+function _phoneBlockHTML(prefix,n,phones){
+  phones=(phones||[]).slice(0,4); // max. 4 Nummern pro Person
+  while(phones.length<1) phones.push({type:'Mobil',number:''});
+  return `<div class="field" data-phoneblock="${prefix}-${n}"><label>Telefon</label>
+    <div id="${prefix}-phones-${n}">${phones.map((p,i)=>_phoneRowHTML(prefix,n,i+1,p)).join('')}</div>
+    ${phones.length<4?`<button type="button" class="btn btn-ghost btn-sm" data-addphone-prefix="${prefix}" data-addphone-n="${n}" style="padding:4px 10px;font-size:12px">＋ Weitere Nummer</button>`:''}
+  </div>`;
+}
+// Verdrahtet "+ Weitere Nummer" / "× entfernen" per Ereignis-Delegation (Zeilen entstehen dynamisch).
+// containerSelector: z.B. '.modal-body' – muss einmal pro frisch geöffnetem Fenster aufgerufen werden.
+function _wirePhoneButtons(containerSelector){
+  const container=document.querySelector(containerSelector);
+  if(!container||container._phoneWired)return; container._phoneWired=true;
+  container.addEventListener('click',e=>{
+    const addBtn=e.target.closest('[data-addphone-prefix]');
+    if(addBtn){
+      const prefix=addBtn.dataset.addphonePrefix, n=addBtn.dataset.addphoneN;
+      const box=document.getElementById(`${prefix}-phones-${n}`);
+      const slot=box.querySelectorAll('.ct-phone-row').length+1;
+      if(slot>4)return;
+      const div=document.createElement('div');
+      div.innerHTML=_phoneRowHTML(prefix,n,slot,{type:'Mobil',number:''});
+      box.appendChild(div.firstElementChild);
+      if(slot>=4)addBtn.style.display='none';
+      return;
+    }
+    const rmBtn=e.target.closest('[data-rmphone-prefix]');
+    if(rmBtn){
+      const prefix=rmBtn.dataset.rmphonePrefix, n=rmBtn.dataset.rmphoneN;
+      rmBtn.closest('.ct-phone-row').remove();
+      const addBtn2=document.querySelector(`[data-addphone-prefix="${prefix}"][data-addphone-n="${n}"]`);
+      if(addBtn2)addBtn2.style.display='';
+      return;
+    }
+  });
+}
+// Sammelt alle erfassten Telefonnummern einer Person/Firma aus den dynamischen Zeilen
+function _collectPhonesFor(prefix,n){
+  const box=document.getElementById(`${prefix}-phones-${n}`);
+  if(!box)return[];
+  return[...box.querySelectorAll('.ct-phone-row')].map(row=>{
+    const slot=row.dataset.phonerowSlot;
+    return{type:document.getElementById(`${prefix}-phonetype-${n}-${slot}`).value,number:document.getElementById(`${prefix}-phone-${n}-${slot}`).value.trim()};
+  }).filter(p=>p.number);
 }
 async function openContactEditor(c){
   const isNew=!c;
   await loadBkpOverrides(state.projectId);
   c=c||{id:uid(),projectId:state.projectId,list:'Unternehmer',company:'',contact:'',role1:'',phone:'',email:'',contact2:'',role2:'',phone2:'',email2:'',contact3:'',role3:'',phone3:'',email3:'',contact4:'',role4:'',phone4:'',email4:'',bkp:'',trade:'',street:'',zip:'',city:'',lat:null,lon:null};
   const LISTS=['Bauleitung/Architektur','Unternehmer','Planer','Bauherr','Behörde','Sonstige'];
+  const phoneBlock=n=>_phoneBlockHTML('ct',n,_getPhonesFor(c,n===1?'phones':'phones'+n,n===1?'phone':'phone'+n));
   const personBlock=(n,visible)=>`
+
     <div class="ct-person" data-person="${n}" style="${visible?'':'display:none'}">
       <div style="border-top:1px solid var(--line);margin:10px 0 4px;padding-top:10px;display:flex;align-items:center;justify-content:space-between">
         <div style="font-weight:700;font-size:13px">Ansprechperson ${n}</div>
@@ -7317,14 +7444,17 @@ async function openContactEditor(c){
       </div>
       <div class="field-row"><div class="field"><label>Name</label><input id="ct-contact${n>1?n:''}" value="${esc(n===1?c.contact:(c['contact'+n]||''))}"></div>
         <div class="field"><label>Funktion</label><input id="ct-role${n>1?n:'1'}" value="${esc(n===1?(c.role1||''):(c['role'+n]||''))}" placeholder="z.B. Bauführer"></div></div>
-      <div class="field-row"><div class="field"><label>Telefon</label><input id="ct-phone${n>1?n:''}" value="${esc(n===1?c.phone:(c['phone'+n]||''))}"></div>
+      <div class="field-row">${phoneBlock(n)}
         <div class="field"><label>E-Mail</label><input id="ct-email${n>1?n:''}" value="${esc(n===1?c.email:(c['email'+n]||''))}"></div></div>
     </div>`;
   const has3=!!(c.contact3), has4=!!(c.contact4);
   modal(`<div class="modal-head"><h3>${isNew?'Neuer Kontakt':esc(c.company)}</h3></div>
     <div class="modal-body">
       <div class="field-row"><div class="field"><label>Liste</label><select id="ct-list">${LISTS.map(l=>`<option ${c.list===l?'selected':''}>${l}</option>`).join('')}</select></div>
-        <div class="field"><label>Firma</label><input id="ct-company" value="${esc(c.company)}"></div></div>
+        <div class="field"><label>Firma</label><input id="ct-company" list="ct-company-suggest" value="${esc(c.company)}" placeholder="Tippen für Vorschläge aus der Firmen-Datenbank…" autocomplete="off"><datalist id="ct-company-suggest"></datalist></div></div>
+      <label style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;margin:-6px 0 10px">
+        <input type="checkbox" id="ct-syncdir" checked> Firma auch in der zentralen Firmen-Datenbank speichern/aktualisieren
+      </label>
       <div class="field"><label>BKP / Gewerk</label>
         <select id="ct-bkp" style="width:100%"><option value="">— BKP wählen —</option>${getEffectiveBKPFlat(state.projectId,['P','S']).map(b=>`<option ${(c.bkp===b||c.trade===b)?'selected':''}>${b}</option>`).join('')}</select>
         <div style="font-size:11.5px;color:var(--muted);margin-top:4px">Nicht in der Liste? Freitext im Feld darunter.</div>
@@ -7351,6 +7481,45 @@ async function openContactEditor(c){
     </div>
     <div class="modal-foot">${isNew?'':'<button class="btn btn-danger" id="ctDel">Löschen</button>'}<button class="btn btn-ghost" onclick="closeModal()">Abbrechen</button><button class="btn btn-primary" id="ctSave">Speichern</button></div>`,{wide:true});
   _ctSetupAddressMap(c);
+  // Firmen-Datenbank: Vorschläge während der Eingabe, automatisches Ausfüllen bei Auswahl eines Treffers
+  let _dirLastPicked=null;
+  const companyEl=document.getElementById('ct-company');
+  const fillFromDirectory=(entry)=>{
+    _dirLastPicked=entry;
+    document.getElementById('ct-street').value=entry.street||'';
+    document.getElementById('ct-zip').value=entry.zip||'';
+    document.getElementById('ct-city').value=entry.city||'';
+    document.getElementById('ct-street').dispatchEvent(new Event('input')); // löst Kartenausschnitt-Suche aus
+    if(entry.bkp||entry.trade){
+      const bkpSel=document.getElementById('ct-bkp');
+      if([...bkpSel.options].some(o=>o.value===entry.bkp)) bkpSel.value=entry.bkp;
+      document.getElementById('ct-trade').value=(!entry.bkp&&entry.trade)?entry.trade:'';
+    }
+    if(!document.getElementById('ct-contact').value) document.getElementById('ct-contact').value=entry.contact||'';
+    if(!document.getElementById('ct-role1').value) document.getElementById('ct-role1').value=entry.role1||'';
+    const firstPhoneEl=document.getElementById('ct-phone-1-1');
+    if(firstPhoneEl && !firstPhoneEl.value){
+      const phones=_getPhonesFor(entry,'phones','phone').filter(p=>p.number);
+      if(phones.length){
+        // ganzen Telefon-Block mit allen aus der Datenbank bekannten Nummern neu aufbauen
+        const box=document.getElementById('ct-phones-1');
+        box.innerHTML=phones.slice(0,4).map((p,i)=>_phoneRowHTML('ct',1,i+1,p)).join('');
+        const addBtn=document.querySelector('[data-addphone-prefix="ct"][data-addphone-n="1"]');
+        if(addBtn)addBtn.style.display=phones.length>=4?'none':'';
+      }
+    }
+    if(!document.getElementById('ct-email').value) document.getElementById('ct-email').value=entry.email||'';
+    toast('Firmendaten aus der Datenbank übernommen',true);
+  };
+  companyEl.addEventListener('input',_debounce(async()=>{
+    const q=companyEl.value.trim();
+    const matches=await findDirectoryMatches(q);
+    const dl=document.getElementById('ct-company-suggest');
+    if(!dl)return; // Fenster wurde inzwischen geschlossen (verzögerter Aufruf nach Modal-Schluss) – nichts mehr zu tun
+    dl.innerHTML=matches.map(m=>`<option value="${esc(m.company)}">`).join('');
+    const exact=matches.find(m=>_dirNormName(m.company)===_dirNormName(q));
+    if(exact && (!_dirLastPicked || _dirLastPicked.id!==exact.id)) fillFromDirectory(exact);
+  },300));
   const pick=document.getElementById('addPersonPick');
   if(pick)pick.onchange=()=>{
     const n=pick.value;if(!n)return;
@@ -7365,6 +7534,9 @@ async function openContactEditor(c){
     blk.style.display='none';
     if(pick){const opt=document.createElement('option');opt.value=n;opt.textContent=n+'. Ansprechperson';pick.appendChild(opt);document.getElementById('addPersonRow').style.display='';}
   });
+  // Telefonnummern hinzufügen/entfernen/sammeln über die gemeinsamen Bausteine
+  _wirePhoneButtons('.modal-body');
+  const collectPhones=n=>_collectPhonesFor('ct',n);
   document.getElementById('ctSave').onclick=async()=>{
     c.list=document.getElementById('ct-list').value;
     c.company=document.getElementById('ct-company').value.trim();
@@ -7376,18 +7548,22 @@ async function openContactEditor(c){
     c.city=document.getElementById('ct-city').value.trim();
     c.contact=document.getElementById('ct-contact').value.trim();
     c.role1=document.getElementById('ct-role1').value.trim();
-    c.phone=document.getElementById('ct-phone').value.trim();
+    c.phones=collectPhones(1);
+    c.phone=c.phones[0]?.number||''; // erste Nummer weiterhin auch im einfachen Feld (Rückwärtskompatibilität für Anruf-Links, Karten, PDF)
     c.email=document.getElementById('ct-email').value.trim();
     for(const n of [2,3,4]){
       const blk=document.querySelector(`.ct-person[data-person="${n}"]`);
       const active=blk&&blk.style.display!=='none';
       c['contact'+n]=active?document.getElementById('ct-contact'+n).value.trim():'';
       c['role'+n]=active?document.getElementById('ct-role'+n).value.trim():'';
-      c['phone'+n]=active?document.getElementById('ct-phone'+n).value.trim():'';
+      c['phones'+n]=active?collectPhones(n):[];
+      c['phone'+n]=active?(c['phones'+n][0]?.number||''):'';
       c['email'+n]=active?document.getElementById('ct-email'+n).value.trim():'';
     }
     // lat/lon (c.lat/c.lon) werden bereits laufend durch die automatische Adresssuche gesetzt
-    await put('contacts',c);closeModal();toast('Kontakt gespeichert',true);renderContacts();
+    await put('contacts',c);
+    if(document.getElementById('ct-syncdir').checked) await upsertDirectoryFromContact(c);
+    closeModal();toast('Kontakt gespeichert',true);renderContacts();
   };
   if(!isNew)document.getElementById('ctDel').onclick=async()=>{const ok=await confirmDelete('contacts',c.id,c.company||'Kontakt',renderContacts);if(ok)closeModal();};
 }
@@ -7436,50 +7612,76 @@ function _ctSetupAddressMap(c){
   },900);
   [streetEl,zipEl,cityEl].forEach(el=>el.addEventListener('input',geocode));
 }
-async function exportContactsPDF(contacts,sp){
-  const {jsPDF}=window.jspdf;const doc=new jsPDF();const proj=await get('projects',state.projectId);
-  // Sortierung wie in der App: Bauleitung/Architektur zuoberst, dann nach BKP-Code
-  const bkpSort=c=>{ const b=c.bkp||c.trade||''; const m=b.match(/^(\d+)/); return m?parseInt(m[1]):9999; };
-  contacts=[...contacts].sort((a,b)=>{
-    const aTop=a.list==='Bauleitung/Architektur'?0:1, bTop=b.list==='Bauleitung/Architektur'?0:1;
-    if(aTop!==bTop)return aTop-bTop;
-    const bs=bkpSort(a)-bkpSort(b); if(bs)return bs;
-    return (a.company||'').localeCompare(b.company||'');
-  });
-  let y=pdfDocHead(doc,'Unternehmerliste',[{l:proj.name,proj:true}]);
-  const BKP_W=38, PERSON_W=70;
-  contacts.forEach(c=>{
-    const persons=[[c.contact,c.role1,c.phone,c.email],[c.contact2,c.role2,c.phone2,c.email2],[c.contact3,c.role3,c.phone3,c.email3],[c.contact4,c.role4,c.phone4,c.email4]].filter(p=>p[0]);
-    const rows=Math.max(1,Math.ceil(persons.length/2));
-    const blockH=8+rows*10+3;
-    y=pdfEnsureSpace(doc,y,blockH,()=>20);
-    // BKP-Spalte
-    doc.setFontSize(7.5);doc.setTextColor(107,98,88);
-    const bkpLines=doc.splitTextToSize(c.bkp||c.trade||'—',BKP_W-2);
-    doc.text(bkpLines,PDF.ML,y+4);
-    // Titel = Firma
-    doc.setTextColor(26,26,26);doc.setFontSize(10.5);doc.setFont(undefined,'bold');
-    doc.text(c.company||'—',PDF.ML+BKP_W,y+4);doc.setFont(undefined,'normal');
-    let py=y+9;
-    for(let i=0;i<persons.length;i+=2){
-      const p1=persons[i], p2=persons[i+1];
-      const drawP=(p,x)=>{ if(!p)return;
-        doc.setFontSize(8.5);doc.setTextColor(40);doc.setFont(undefined,'bold');
-        doc.text(p[0]+(p[1]?'  ·  '+p[1]:''),x,py);doc.setFont(undefined,'normal');
-        doc.setFontSize(7.8);doc.setTextColor(100);
-        let ly=py+4;
-        if(p[2]){doc.text('Tel: '+p[2],x,ly);ly+=3.6;}
-        if(p[3]){doc.text(p[3],x,ly);}
-      };
-      drawP(p1,PDF.ML+BKP_W);drawP(p2,PDF.ML+BKP_W+PERSON_W);
-      py+=10;
-    }
-    doc.setDrawColor(232,227,219);doc.setLineWidth(0.2);doc.line(PDF.ML,y+blockH-1,PDF.MR,y+blockH-1);
-    y+=blockH;
-  });
-  pdfFooterAllPages(doc);
-  if(sp){ await saveToSharePoint(doc.output('blob'),'Unternehmerliste.pdf','unternehmerliste'); }
-  else{ doc.save('Unternehmerliste.pdf');toast('Unternehmerliste exportiert',true); }
+function _askContactsPdfOrientation(contacts,sp){
+  modal(`<div class="modal-head"><h3>Unternehmerliste als PDF</h3></div>
+    <div class="modal-body">
+      <p style="color:var(--muted);font-size:13.5px;margin-top:0">In welchem Format soll die Liste ausgegeben werden?</p>
+      <div style="display:flex;gap:12px">
+        <button class="btn btn-primary" id="pdfOrientPortrait" style="flex:1;flex-direction:column;height:auto;padding:16px;gap:6px">📄<br>Hochformat</button>
+        <button class="btn btn-primary" id="pdfOrientLandscape" style="flex:1;flex-direction:column;height:auto;padding:16px;gap:6px">📃<br>Querformat</button>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal()">Abbrechen</button></div>`);
+  document.getElementById('pdfOrientPortrait').onclick=()=>{closeModal();exportContactsPDF(contacts,sp,'portrait');};
+  document.getElementById('pdfOrientLandscape').onclick=()=>{closeModal();exportContactsPDF(contacts,sp,'landscape');};
+}
+async function exportContactsPDF(contacts,sp,orientation){
+  const landscape=orientation==='landscape';
+  const {jsPDF}=window.jspdf;const doc=new jsPDF(landscape?{orientation:'landscape'}:{});const proj=await get('projects',state.projectId);
+  // Für Querformat vorübergehend die gemeinsamen Layout-Masse auf die breitere Seite anpassen
+  // (A4 Querformat = 297×210mm statt 210×297mm), danach wieder zurücksetzen – betrifft nur diese Funktion.
+  const origMR=PDF.MR, origFootLimit=PDF.FOOT_LIMIT;
+  if(landscape){ PDF.MR=283; PDF.FOOT_LIMIT=181; }
+  try{
+    // Sortierung wie in der App: Bauleitung/Architektur zuoberst, dann nach BKP-Code
+    const bkpSort=c=>{ const b=c.bkp||c.trade||''; const m=b.match(/^(\d+)/); return m?parseInt(m[1]):9999; };
+    contacts=[...contacts].sort((a,b)=>{
+      const aTop=a.list==='Bauleitung/Architektur'?0:1, bTop=b.list==='Bauleitung/Architektur'?0:1;
+      if(aTop!==bTop)return aTop-bTop;
+      const bs=bkpSort(a)-bkpSort(b); if(bs)return bs;
+      return (a.company||'').localeCompare(b.company||'');
+    });
+    let y=pdfDocHead(doc,'Unternehmerliste',[{l:proj.name,proj:true}]);
+    const BKP_W=38, PERSON_W=landscape?100:70;
+    const phoneText=phones=>{
+      const list=(Array.isArray(phones)&&phones.length)?phones:(phones?[{type:'',number:phones}]:[]);
+      return list.filter(p=>p.number).map(p=>(p.type&&list.length>1?p.type+': ':'')+p.number).join('  /  ');
+    };
+    contacts.forEach(c=>{
+      const persons=[[c.contact,c.role1,phoneText(c.phones||c.phone),c.email],[c.contact2,c.role2,phoneText(c.phones2||c.phone2),c.email2],[c.contact3,c.role3,phoneText(c.phones3||c.phone3),c.email3],[c.contact4,c.role4,phoneText(c.phones4||c.phone4),c.email4]].filter(p=>p[0]);
+      const perRow=landscape?3:2;
+      const rows=Math.max(1,Math.ceil(persons.length/perRow));
+      const blockH=8+rows*10+3;
+      y=pdfEnsureSpace(doc,y,blockH,()=>20);
+      // BKP-Spalte
+      doc.setFontSize(7.5);doc.setTextColor(107,98,88);
+      const bkpLines=doc.splitTextToSize(c.bkp||c.trade||'—',BKP_W-2);
+      doc.text(bkpLines,PDF.ML,y+4);
+      // Titel = Firma
+      doc.setTextColor(26,26,26);doc.setFontSize(10.5);doc.setFont(undefined,'bold');
+      doc.text(c.company||'—',PDF.ML+BKP_W,y+4);doc.setFont(undefined,'normal');
+      let py=y+9;
+      for(let i=0;i<persons.length;i+=perRow){
+        const drawP=(p,x)=>{ if(!p)return;
+          doc.setFontSize(8.5);doc.setTextColor(40);doc.setFont(undefined,'bold');
+          doc.text(p[0]+(p[1]?'  ·  '+p[1]:''),x,py);doc.setFont(undefined,'normal');
+          doc.setFontSize(7.8);doc.setTextColor(100);
+          let ly=py+4;
+          if(p[2]){doc.text('Tel: '+p[2],x,ly);ly+=3.6;}
+          if(p[3]){doc.text(p[3],x,ly);}
+        };
+        for(let k=0;k<perRow;k++) drawP(persons[i+k],PDF.ML+BKP_W+PERSON_W*k);
+        py+=10;
+      }
+      doc.setDrawColor(232,227,219);doc.setLineWidth(0.2);doc.line(PDF.ML,y+blockH-1,PDF.MR,y+blockH-1);
+      y+=blockH;
+    });
+    pdfFooterAllPages(doc,landscape?210:297,PDF.MR);
+    if(sp){ await saveToSharePoint(doc.output('blob'),'Unternehmerliste.pdf','unternehmerliste'); }
+    else{ doc.save('Unternehmerliste.pdf');toast('Unternehmerliste exportiert',true); }
+  }finally{
+    PDF.MR=origMR; PDF.FOOT_LIMIT=origFootLimit; // gemeinsame Layout-Masse für alle anderen Exporte wiederherstellen
+  }
 }
 
 /* ============================================================
@@ -8565,10 +8767,14 @@ function _ttSnap(p){
 }
 let _ttDragVertex=null; // {ii,pi} – während des Ziehens eines Eckpunkts im Bearbeiten-Modus
 let _ttDragShape=null; // {ii, startX, startY, origPts} – während des Verschiebens einer ganzen Fläche
+// Handy-Erkennung (Telefon-Breite, nicht Tablet) – muss zur CSS-Regel @media(max-width:720px) passen.
+// Auf dem Handy soll Ausmass nur zum Ansehen dienen, nicht zum Zeichnen/Bearbeiten von Flächen.
+function isPhoneMobile(){ return window.innerWidth<=720; }
 function _ttWireCanvas(){
   const dc=document.getElementById('ttDraw');
   let rectStart=null;
   dc.onmousemove=ev=>{
+    if(isPhoneMobile())return;
     const p=_ttCanvasPt(ev);
     _toState.hoverPt=_ttSnap(p);
     if(rectStart){_toState.drawingPts=[rectStart,_ttSnap(p)];}
@@ -8585,6 +8791,8 @@ function _ttWireCanvas(){
     _ttRenderOverlay();
   };
   dc.onmousedown=ev=>{
+    if(ev.button===1)return; // mittlere Maustaste ist fürs Verschieben reserviert, nicht fürs Zeichnen
+    if(isPhoneMobile())return; // Handy: nur Ansicht, kein Zeichnen/Verschieben von Flächen
     if(_toState.mode==='rect'){ rectStart=_ttSnap(_ttCanvasPt(ev));_toState.drawingPts=[rectStart]; return; }
     if(_toState.mode==='edit'){
       const p=_ttCanvasPt(ev);
@@ -8604,6 +8812,7 @@ function _ttWireCanvas(){
     }
   };
   dc.onmouseup=ev=>{
+    if(isPhoneMobile())return;
     if(_toState.mode==='rect'&&rectStart){
       const p2=_ttSnap(_ttCanvasPt(ev));
       const a=rectStart,b=p2;
@@ -8617,11 +8826,13 @@ function _ttWireCanvas(){
     if(_ttDragShape){ _ttDragShape=null; _ttDrawList(); }
   };
   dc.onclick=ev=>{
+    if(isPhoneMobile())return;
     if(_toState.mode==='polygon'||_toState.mode==='line'){
       _toState.drawingPts.push(_ttSnap(_ttCanvasPt(ev)));_ttRenderOverlay();
     }
   };
   dc.ondblclick=ev=>{
+    if(isPhoneMobile())return;
     if(_toState.mode==='polygon'){_ttFinishPolygon();return;}
     if(_toState.mode==='line'){_ttFinishLine();return;}
     if(_toState.mode==='edit'){
@@ -9277,6 +9488,404 @@ function _bkpAddPrompt(){
 }
 
 /* ============================================================
+   MODUL: FIRMEN-DATENBANK — projektübergreifende Unternehmer-Datenbank.
+   Store 'contactsDirectory' ist NICHT projektgebunden (kein projectId-Filter). Beim Erfassen eines
+   Unternehmers in der Unternehmerliste eines Projekts schlägt die App passende Einträge aus dieser
+   Datenbank vor (Autovervollständigung nach Firmenname) und übernimmt beim Speichern automatisch
+   Adresse/Kontaktdaten dorthin – so muss eine Firma, die in mehreren Projekten vorkommt, nur einmal
+   sauber erfasst werden.
+   ============================================================ */
+function _dirNormName(s){ return (s||'').trim().toLowerCase().replace(/\s+/g,' '); }
+async function findDirectoryMatches(query){
+  const q=_dirNormName(query);
+  if(!q)return [];
+  const all_=await all('contactsDirectory');
+  return all_.filter(d=>_dirNormName(d.company).includes(q)).sort((a,b)=>a.company.localeCompare(b.company));
+}
+// Wird beim Speichern eines Projekt-Kontakts aufgerufen (falls Checkbox aktiv): legt einen neuen
+// Datenbank-Eintrag an oder aktualisiert den bestehenden (Abgleich über den normalisierten Firmennamen).
+async function upsertDirectoryFromContact(c){
+  if(!c.company||!c.company.trim())return;
+  const norm=_dirNormName(c.company);
+  const existing=(await all('contactsDirectory')).find(d=>_dirNormName(d.company)===norm);
+  const rec={
+    id:existing?existing.id:uid(), company:c.company, street:c.street||'', zip:c.zip||'', city:c.city||'',
+    lat:c.lat??null, lon:c.lon??null, bkp:c.bkp||'', trade:c.trade||'',
+    contact:c.contact||'',role1:c.role1||'',phone:c.phone||'',phones:c.phones||[],email:c.email||'',
+    contact2:c.contact2||'',role2:c.role2||'',phone2:c.phone2||'',phones2:c.phones2||[],email2:c.email2||'',
+    contact3:c.contact3||'',role3:c.role3||'',phone3:c.phone3||'',phones3:c.phones3||[],email3:c.email3||'',
+    contact4:c.contact4||'',role4:c.role4||'',phone4:c.phone4||'',phones4:c.phones4||[],email4:c.email4||'',
+    updatedAt:nowISO()
+  };
+  await put('contactsDirectory',rec);
+}
+async function renderContactsDirectory(){
+  const stage=document.getElementById('stage');
+  const entries=(await all('contactsDirectory')).sort((a,b)=>a.company.localeCompare(b.company));
+  stage.innerHTML=`
+    <div class="module">
+      <div class="mod-head"><div><h1>Firmen-Datenbank</h1><div class="sub">Projektübergreifende Unternehmer – wird bei der Erfassung in der Unternehmerliste automatisch vorgeschlagen</div></div>
+        <div class="spacer"></div>
+        <button class="btn btn-primary" id="dirAddBtn">＋ Firma erfassen</button>
+      </div>
+      <div class="mod-body">
+        <input id="dirSearch" placeholder="🔍 Suche nach Firmenname…" style="width:100%;max-width:420px;margin-bottom:14px">
+        <div id="dirList"></div>
+      </div>
+    </div>`;
+  const renderList=(filter)=>{
+    const q=_dirNormName(filter);
+    const box=document.getElementById('dirList');
+    const shown=q?entries.filter(e=>_dirNormName(e.company).includes(q)):entries;
+    if(!shown.length){ box.innerHTML='<p style="color:var(--muted);font-size:13px">Keine Einträge gefunden.</p>'; return; }
+    box.innerHTML=shown.map(e=>`
+      <div class="card" style="display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:8px">
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:14px">${esc(e.company)}</div>
+          <div style="font-size:12px;color:var(--muted)">${esc([e.street,[e.zip,e.city].filter(Boolean).join(' ')].filter(Boolean).join(', ')||'Keine Adresse erfasst')}</div>
+          ${e.contact?`<div style="font-size:12px;color:var(--muted)">${esc(e.contact)}${_getPhonesFor(e,'phones','phone').filter(p=>p.number).map(p=>' · '+esc(p.number)).join('')}${e.email?' · '+esc(e.email):''}</div>`:''}
+        </div>
+        <button class="btn btn-ghost btn-sm" data-edit-dir="${e.id}">Bearbeiten</button>
+        <button class="btn-icon" data-del-dir="${e.id}" title="Löschen">🗑</button>
+      </div>`).join('');
+    box.querySelectorAll('[data-edit-dir]').forEach(b=>b.onclick=()=>openDirectoryEditor(entries.find(e=>e.id===b.dataset.editDir)));
+    box.querySelectorAll('[data-del-dir]').forEach(b=>b.onclick=async()=>{
+      await confirmDelete('contactsDirectory',b.dataset.delDir,'diesen Firmeneintrag',renderContactsDirectory);
+    });
+  };
+  renderList('');
+  document.getElementById('dirSearch').addEventListener('input',_debounce(e=>renderList(e.target.value),150));
+  document.getElementById('dirAddBtn').onclick=()=>openDirectoryEditor(null);
+}
+async function openDirectoryEditor(d){
+  const isNew=!d;
+  d=d||{id:uid(),company:'',street:'',zip:'',city:'',lat:null,lon:null,bkp:'',trade:'',contact:'',role1:'',phone:'',phones:[],email:''};
+  modal(`<div class="modal-head"><h3>${isNew?'Neue Firma erfassen':esc(d.company)}</h3></div>
+    <div class="modal-body">
+      <div class="field"><label>Firma</label><input id="dir-company" value="${esc(d.company)}"></div>
+      <div class="field"><label>BKP / Gewerk</label>
+        <select id="dir-bkp" style="width:100%"><option value="">— BKP wählen —</option>${BKP.map(b=>`<option ${(d.bkp===b||d.trade===b)?'selected':''}>${b}</option>`).join('')}</select>
+        <input id="dir-trade" value="${esc(d.trade&&!BKP.includes(d.trade)?d.trade:'')}" placeholder="Eigene Bezeichnung (optional)" style="margin-top:6px">
+      </div>
+      <div class="field-group-title">Adresse</div>
+      <div class="field-row">
+        <div class="field" style="flex:2"><label>Strasse / Nr.</label><input id="dir-street" value="${esc(d.street||'')}"></div>
+        <div class="field" style="max-width:100px"><label>PLZ</label><input id="dir-zip" value="${esc(d.zip||'')}"></div>
+        <div class="field"><label>Ort</label><input id="dir-city" value="${esc(d.city||'')}"></div>
+      </div>
+      <div id="dirMapBox" style="margin-top:8px"></div>
+      <div class="field-group-title" style="margin-top:14px">Hauptansprechperson</div>
+      <div class="field-row"><div class="field"><label>Name</label><input id="dir-contact" value="${esc(d.contact||'')}"></div>
+        <div class="field"><label>Funktion</label><input id="dir-role1" value="${esc(d.role1||'')}"></div></div>
+      <div class="field-row">${_phoneBlockHTML('dir',1,_getPhonesFor(d,'phones','phone'))}
+        <div class="field"><label>E-Mail</label><input id="dir-email" value="${esc(d.email||'')}"></div></div>
+    </div>
+    <div class="modal-foot">${isNew?'':'<button class="btn btn-danger" id="dirDel">Löschen</button>'}<button class="btn btn-ghost" onclick="closeModal()">Abbrechen</button><button class="btn btn-primary" id="dirSave">Speichern</button></div>`,{wide:true});
+  _wirePhoneButtons('.modal-body');
+  document.getElementById('dirSave').onclick=async()=>{
+    d.company=document.getElementById('dir-company').value.trim();
+    if(!d.company){toast('Bitte Firmennamen eingeben',false,true);return;}
+    d.bkp=document.getElementById('dir-bkp').value;
+    const freeTrade=document.getElementById('dir-trade').value.trim();
+    d.trade=freeTrade||d.bkp;
+    d.street=document.getElementById('dir-street').value.trim();
+    d.zip=document.getElementById('dir-zip').value.trim();
+    d.city=document.getElementById('dir-city').value.trim();
+    d.contact=document.getElementById('dir-contact').value.trim();
+    d.role1=document.getElementById('dir-role1').value.trim();
+    d.phones=_collectPhonesFor('dir',1);
+    d.phone=d.phones[0]?.number||'';
+    d.email=document.getElementById('dir-email').value.trim();
+    d.updatedAt=nowISO();
+    await put('contactsDirectory',d);
+    closeModal();toast('Gespeichert',true);renderContactsDirectory();
+  };
+  if(!isNew)document.getElementById('dirDel').onclick=async()=>{const ok=await confirmDelete('contactsDirectory',d.id,d.company||'Firma',renderContactsDirectory);if(ok)closeModal();};
+}
+
+/* ============================================================
+   UNTERNEHMERLISTE IMPORTIEREN (Excel/CSV/Word/PDF)
+   ------------------------------------------------------------
+   Schritt 1: Datei wählen, automatisch nach Typ auslesen.
+   Schritt 2a (Excel/CSV/Word-Tabelle, mehrspaltig): Spalten den Feldern zuordnen.
+   Schritt 2b (Word-Fliesstext/PDF, einspaltig): Zeilen zu Kontakten gruppieren,
+     Telefon/E-Mail/PLZ+Ort werden per Muster-Erkennung automatisch vorgeschlagen.
+   Schritt 3: Vorschau, editierbar, erst auf Bestätigung wird wirklich importiert.
+   ============================================================ */
+const IMPORT_FIELDS=[
+  {key:'company',label:'Firma'},{key:'contact',label:'Ansprechperson'},{key:'phone',label:'Telefon'},
+  {key:'email',label:'E-Mail'},{key:'street',label:'Strasse'},{key:'zip',label:'PLZ'},{key:'city',label:'Ort'},
+  {key:'bkp',label:'BKP/Gewerk'},{key:'ignore',label:'— ignorieren —'}
+];
+function openContactImportWizard(){
+  modal(`<div class="modal-head"><h3>Unternehmerliste importieren</h3></div>
+    <div class="modal-body">
+      <p style="color:var(--muted);font-size:13.5px;margin-top:0">Excel-, CSV-, Word- oder PDF-Datei wählen. Im nächsten Schritt kannst du die erkannten Daten prüfen und anpassen — importiert wird erst nach deiner Bestätigung.</p>
+      <input type="file" id="importFileInput" accept=".xlsx,.xls,.csv,.docx,.pdf">
+      <div id="importStatus" style="margin-top:10px;font-size:13px;color:var(--muted)"></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal()">Abbrechen</button></div>`);
+  document.getElementById('importFileInput').onchange=async e=>{
+    const file=e.target.files[0]; if(!file)return;
+    const statusEl=document.getElementById('importStatus');
+    statusEl.textContent='Datei wird gelesen…';
+    try{
+      const ext=file.name.split('.').pop().toLowerCase();
+      let rows=[];
+      if(ext==='xlsx'||ext==='xls'||ext==='csv') rows=await _importParseSpreadsheet(file);
+      else if(ext==='docx') rows=await _importParseDocx(file);
+      else if(ext==='pdf') rows=await _importParsePdf(file);
+      else if(ext==='doc'){ statusEl.textContent=''; toast('Das alte .doc-Format wird nicht unterstützt. Bitte in Word als .docx speichern ("Speichern unter") oder die PDF-Version verwenden.',false,true); return; }
+      else{ statusEl.textContent=''; toast('Dateiformat nicht unterstützt. Bitte .xlsx, .csv, .docx oder .pdf verwenden.',false,true); return; }
+      if(!rows.length){ statusEl.textContent=''; toast('Keine Daten in der Datei gefunden',false,true); return; }
+      const multiCol=rows.some(r=>r.length>1);
+      if(multiCol) _openImportColumnMapping(rows);
+      else _openImportLineGrouping(rows);
+    }catch(err){
+      console.error('[Import]',err);
+      statusEl.textContent='';
+      toast('Datei konnte nicht gelesen werden: '+(err.message||'unbekanntes Format'),false,true);
+    }
+  };
+}
+async function _importParseSpreadsheet(file){
+  const buf=await file.arrayBuffer();
+  const wb=XLSX.read(buf,{type:'array'});
+  const ws=wb.Sheets[wb.SheetNames[0]];
+  const data=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+  return data.map(r=>r.map(c=>String(c ?? '').trim())).filter(r=>r.some(c=>c));
+}
+async function _importParseDocx(file){
+  const buf=await file.arrayBuffer();
+  const zip=await JSZip.loadAsync(buf);
+  const entry=zip.file('word/document.xml');
+  if(!entry) throw new Error('Ungültige Word-Datei');
+  const xml=await entry.async('text');
+  const doc=new DOMParser().parseFromString(xml,'application/xml');
+  const tables=[...doc.getElementsByTagName('w:tbl')];
+  const rows=[];
+  tables.forEach(tbl=>{
+    [...tbl.getElementsByTagName('w:tr')].forEach(tr=>{
+      const row=[...tr.getElementsByTagName('w:tc')].map(tc=>[...tc.getElementsByTagName('w:t')].map(t=>t.textContent).join(''));
+      if(row.some(c=>c.trim())) rows.push(row);
+    });
+  });
+  if(rows.length) return rows;
+  // keine Tabelle gefunden -> Absätze als einspaltige Zeilen
+  return [...doc.getElementsByTagName('w:p')]
+    .map(p=>[[...p.getElementsByTagName('w:t')].map(t=>t.textContent).join('')])
+    .filter(r=>r[0].trim());
+}
+async function _importParsePdf(file){
+  const buf=await file.arrayBuffer();
+  const pdf=await pdfjsLib.getDocument({data:buf}).promise;
+  const rows=[];
+  for(let i=1;i<=pdf.numPages;i++){
+    const page=await pdf.getPage(i);
+    const content=await page.getTextContent();
+    const byY={};
+    content.items.forEach(it=>{ const y=Math.round(it.transform[5]); (byY[y]=byY[y]||[]).push(it); });
+    Object.keys(byY).map(Number).sort((a,b)=>b-a).forEach(y=>{
+      const line=byY[y].sort((a,b)=>a.transform[4]-b.transform[4]).map(it=>it.str).join(' ').replace(/\s+/g,' ').trim();
+      if(line) rows.push([line]);
+    });
+  }
+  return rows;
+}
+// --- Schritt 2a: Spalten-Zuordnung (mehrspaltige Quellen: Excel/CSV/Word-Tabelle) ---
+function _importGuessField(header){
+  const h=(header||'').toLowerCase();
+  if(/firma|firmen|unternehmen|company/.test(h))return'company';
+  if(/tel|phone|mobil|fax/.test(h))return'phone';
+  if(/mail/.test(h))return'email';
+  if(/strasse|straße|adresse|street/.test(h))return'street';
+  if(/plz|postleitzahl|zip/.test(h))return'zip';
+  if(/ort|stadt|city/.test(h))return'city';
+  if(/bkp|gewerk|kategorie/.test(h))return'bkp';
+  if(/name|kontakt|person|ansprech/.test(h))return'contact';
+  return'ignore';
+}
+function _openImportColumnMapping(rows){
+  const hasHeader=true; // Default: erste Zeile als Überschrift behandeln (per Checkbox abwählbar)
+  const colCount=Math.max(...rows.map(r=>r.length));
+  modal(`<div class="modal-head"><h3>Spalten zuordnen</h3></div>
+    <div class="modal-body">
+      <label style="font-size:13px;display:flex;align-items:center;gap:6px;margin-bottom:10px">
+        <input type="checkbox" id="impHeaderChk" checked> Erste Zeile ist Überschrift (wird nicht importiert)
+      </label>
+      <div style="overflow-x:auto"><table class="tbl" style="min-width:600px">
+        <thead><tr>${Array.from({length:colCount}).map((_,i)=>`<th><select class="imp-colmap" data-col="${i}" style="font-size:12px">${IMPORT_FIELDS.map(f=>`<option value="${f.key}" ${f.key===_importGuessField(rows[0][i])?'selected':''}>${f.label}</option>`).join('')}</select></th>`).join('')}</tr></thead>
+        <tbody>${rows.slice(0,6).map(r=>`<tr>${Array.from({length:colCount}).map((_,i)=>`<td style="font-size:12px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r[i]||'')}</td>`).join('')}</tr>`).join('')}</tbody>
+      </table></div>
+      <p style="color:var(--muted);font-size:12px;margin-top:8px">${rows.length} Zeile(n) gefunden (erste 6 zur Vorschau gezeigt).</p>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal()">Abbrechen</button><button class="btn btn-primary" id="impMapNext">Weiter</button></div>`,{wide:true});
+  document.getElementById('impMapNext').onclick=()=>{
+    const mapping={};
+    document.querySelectorAll('.imp-colmap').forEach(sel=>{ mapping[+sel.dataset.col]=sel.value; });
+    const headerSkip=document.getElementById('impHeaderChk').checked?1:0;
+    const contacts=rows.slice(headerSkip).map(r=>{
+      const c={company:'',contact:'',phone:'',email:'',street:'',zip:'',city:'',bkp:''};
+      Object.entries(mapping).forEach(([col,field])=>{ if(field!=='ignore') c[field]=(r[+col]||'').trim(); });
+      return c;
+    }).filter(c=>c.company||c.contact);
+    _openImportPreview(contacts);
+  };
+}
+// --- Schritt 2b: Zeilen zu Kontakten gruppieren (einspaltige Quellen: PDF/Word-Fliesstext) ---
+const _IMPORT_EMAIL_RE=/[\w.+-]+@[\w-]+\.[\w.-]+/;
+const _IMPORT_PHONE_RE=/(?:\+41|0)[\s\d()/-]{8,}\d/;
+const _IMPORT_PLZCITY_RE=/\b(\d{4})\s+([A-ZÄÖÜ][\wäöüÄÖÜ.\s-]{2,})/;
+function _importGuessFromBlock(lines){
+  const c={company:'',contact:'',phone:'',email:'',street:'',zip:'',city:'',bkp:''};
+  const rest=[];
+  lines.forEach(line=>{
+    const email=line.match(_IMPORT_EMAIL_RE);
+    const plz=line.match(_IMPORT_PLZCITY_RE);
+    const phone=line.match(_IMPORT_PHONE_RE);
+    if(email&&!c.email){ c.email=email[0]; return; }
+    if(plz&&!c.zip){ c.zip=plz[1]; c.city=plz[2].trim(); return; }
+    if(phone&&!c.phone){ c.phone=phone[0].trim(); return; }
+    rest.push(line.trim());
+  });
+  if(rest.length){ c.company=rest[0]; if(rest[1])c.contact=rest[1]; if(rest[2]&&!c.street)c.street=rest[2]; }
+  return c;
+}
+// Zeilen, die reine Fortsetzungen sind (PLZ/Ort, E-Mail, blosse Telefonnummer) – nie ein Positions-Anfang
+function _importIsContinuationLine(line){
+  const l=line.trim();
+  if(/^\d{4}\s/.test(l))return true; // PLZ + Ort
+  if(l.includes('@'))return true; // E-Mail-Zeile
+  if(/^[\d\s/()-]+$/.test(l))return true; // nur Telefonnummer(n)
+  return false;
+}
+// Erkennt, ob eine Zeile eine NEUE Position beginnt: BKP-Nummer am Anfang ODER eine erkennbare
+// Firmen-Rechtsform (AG/GmbH) irgendwo in der Zeile – so werden auch Einträge ohne BKP-Nummer
+// (z.B. "Bauherr", "Strasseninspektor") als eigene Position erkannt, statt als Fortsetzung.
+function _importIsNewBkpRecord(line){
+  if(_importIsContinuationLine(line))return false;
+  if(/^\d{1,3}\s?\.?\s?\d{0,2}\s+\S/.test(line.trim()))return true; // beginnt mit BKP-Nummer, z.B. "003 .3" oder "211"
+  if(/\bA\s?G\b|\bGmbH\b|\bSarl\b/i.test(line))return true; // enthält Firmen-Rechtsform
+  return false;
+}
+// Zerlegt die zusammenhängenden Zeilen EINER Position in die einzelnen Felder.
+// Auf typische PDF-Extraktions-Eigenheiten abgestimmt (Leerzeichen in "A G", "003 .3", "info @firma.ch" etc.)
+function _importParseBkpRecord(lines){
+  const c={bkp:'',company:'',contact:'',phone:'',phones:[],email:'',street:'',zip:'',city:''};
+  const firstLine=lines[0];
+  const bkpMatch=firstLine.match(/^(\d{1,3})\s?\.?\s?(\d{0,2})\s+/);
+  let rest=firstLine;
+  if(bkpMatch){ c.bkp=bkpMatch[2]?`${bkpMatch[1]}.${bkpMatch[2]}`:bkpMatch[1]; rest=firstLine.slice(bkpMatch[0].length); }
+  const emailLine=lines.find(l=>l.includes('@'));
+  if(emailLine){ const m=emailLine.replace(/\s*@\s*/,'@').match(_IMPORT_EMAIL_RE); if(m)c.email=m[0]; }
+  const zipLine=lines.find(l=>/^\d{4}\s/.test(l.trim()));
+  if(zipLine){ const m=zipLine.trim().match(/^(\d{4})\s+(.+)/); if(m){ c.zip=m[1]; c.city=m[2].trim(); } }
+  const phoneRe=/0\d{2}\s?\d{3}\s?\d{2}\s?\d{2}/g;
+  const allPhones=[]; lines.forEach(l=>{ const ms=l.match(phoneRe); if(ms)allPhones.push(...ms.map(p=>p.replace(/\s+/g,' ').trim())); });
+  c.phones=allPhones.map((p,i)=>({type:i===0?'Festnetz':'Mobil',number:p}));
+  c.phone=allPhones[0]||'';
+  rest=rest.replace(phoneRe,'').trim();
+  const streetMatch=rest.match(/([A-ZÄÖÜ][\wäöüÄÖÜ.]*(?:strasse|straße|str\.|weg|platz|gasse|allee))\s+(\d+[a-z+]?)/i);
+  if(streetMatch){ c.street=`${streetMatch[1]} ${streetMatch[2]}`; rest=rest.replace(streetMatch[0],'').trim(); }
+  const suffixMatch=rest.match(/^(.*?\b(?:AG|A\s?G|GmbH|Sarl))\b\.?(.*)$/i);
+  if(suffixMatch){ c.company=suffixMatch[1].replace(/\s+/g,' ').replace(/\bA\s?G\b/gi,'AG').trim(); c.contact=suffixMatch[2].replace(/\s+/g,' ').trim(); }
+  else{ c.company=rest.replace(/\s+/g,' ').trim(); }
+  const extraNames=lines.slice(1).filter(l=>!_importIsContinuationLine(l)).join(', ').trim();
+  if(extraNames) c.contact=(c.contact?c.contact+', ':'')+extraNames;
+  return c;
+}
+function _openImportLineGrouping(rows){
+  // Wiederkehrende Kopf-/Fusszeilen (Dateiname, reines Datum) herausfiltern – erscheinen auf jeder Seite
+  // erneut und würden sonst als eigene (falsche) Positionen erkannt.
+  const lines=rows.map(r=>r[0]).filter(l=>!/\.docx?\b/i.test(l) && !/^\d{2}\.\d{2}\.\d{4}$/.test(l.trim()));
+  // erkennt automatisch, ob es sich um eine BKP-Unternehmerliste handelt (viele Zeilen mit BKP-Nummer-Anfang)
+  const bkpLikeCount=lines.filter(l=>/^\d{1,3}\s?\.?\s?\d{0,2}\s+\S/.test(l.trim())).length;
+  const looksLikeBkpList=bkpLikeCount>=3;
+  modal(`<div class="modal-head"><h3>Zeilen zu Kontakten gruppieren</h3></div>
+    <div class="modal-body">
+      <p style="color:var(--muted);font-size:13px;margin-top:0">Aus dieser Datei konnten keine klaren Spalten erkannt werden (typisch bei Word-Fliesstext oder PDF).</p>
+      ${looksLikeBkpList?`<div class="card" style="padding:10px 14px;margin-bottom:10px;background:var(--brand-red-light);border:none">
+        <label style="font-size:13px;display:flex;align-items:center;gap:6px"><input type="radio" name="impStrategy" value="bkp" checked> Automatisch anhand BKP-Nummer gruppieren <b>(empfohlen für diese Datei)</b></label>
+      </div>`:''}
+      <label style="font-size:13px;display:flex;align-items:center;gap:6px;margin-bottom:8px"><input type="radio" name="impStrategy" value="fixed" ${looksLikeBkpList?'':'checked'}> Feste Anzahl Zeilen pro Kontakt:
+        <input type="number" id="impLinesPerContact" value="3" min="1" max="20" style="width:60px;margin-left:6px"></label>
+      <p style="color:var(--muted);font-size:12px">${lines.length} Textzeile(n) insgesamt gefunden${looksLikeBkpList?`, davon ${bkpLikeCount} mit erkennbarer BKP-Nummer`:''}.</p>
+      <div style="max-height:200px;overflow-y:auto;border:1px solid var(--line);border-radius:8px;padding:8px;font-size:12px;font-family:monospace;background:var(--paper-2)">${lines.slice(0,30).map(l=>esc(l)).join('<br>')}${lines.length>30?'<br>…':''}</div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal()">Abbrechen</button><button class="btn btn-primary" id="impGroupNext">Weiter</button></div>`,{wide:true});
+  document.getElementById('impGroupNext').onclick=()=>{
+    const strategy=document.querySelector('input[name="impStrategy"]:checked').value;
+    let contacts=[];
+    if(strategy==='bkp'){
+      let current=[];
+      const flush=()=>{ if(current.length) contacts.push(_importParseBkpRecord(current)); current=[]; };
+      lines.forEach(line=>{
+        if(!line.trim())return;
+        if(_importIsNewBkpRecord(line)){ flush(); current=[line]; }
+        else if(current.length) current.push(line);
+        // Zeilen vor der ersten erkannten Position (Titel/Kopfzeile) werden verworfen
+      });
+      flush();
+    }else{
+      const n=Math.max(1,parseInt(document.getElementById('impLinesPerContact').value)||1);
+      for(let i=0;i<lines.length;i+=n){
+        const block=lines.slice(i,i+n).filter(l=>l.trim());
+        if(block.length) contacts.push(_importGuessFromBlock(block));
+      }
+    }
+    _openImportPreview(contacts.filter(c=>c.company||c.contact||c.phone||c.email));
+  };
+}
+// --- Schritt 3: Vorschau, editierbar, erst auf Bestätigung wird importiert ---
+function _openImportPreview(contacts){
+  if(!contacts.length){ toast('Keine verwertbaren Einträge erkannt',false,true); return; }
+  modal(`<div class="modal-head"><h3>Vorschau: ${contacts.length} Kontakt(e)</h3></div>
+    <div class="modal-body">
+      <p style="color:var(--muted);font-size:13px;margin-top:0">Bitte prüfen und bei Bedarf korrigieren. Zeilen mit „×" werden nicht importiert.</p>
+      <div style="overflow-x:auto"><table class="tbl" id="impPreviewTbl" style="min-width:800px">
+        <thead><tr><th>Firma</th><th>Ansprechperson</th><th>Telefon</th><th>E-Mail</th><th>Strasse</th><th>PLZ</th><th>Ort</th><th>BKP</th><th></th></tr></thead>
+        <tbody>${contacts.map((c,i)=>`<tr data-improw="${i}">
+          <td><input data-f="company" value="${esc(c.company)}" style="width:120px"></td>
+          <td><input data-f="contact" value="${esc(c.contact)}" style="width:110px"></td>
+          <td><input data-f="phone" value="${esc((c.phones&&c.phones.length>1)?c.phones.map(p=>p.number).join(' / '):c.phone)}" style="width:120px" title="Mehrere Nummern mit / trennen"></td>
+          <td><input data-f="email" value="${esc(c.email)}" style="width:130px"></td>
+          <td><input data-f="street" value="${esc(c.street)}" style="width:110px"></td>
+          <td><input data-f="zip" value="${esc(c.zip)}" style="width:55px"></td>
+          <td><input data-f="city" value="${esc(c.city)}" style="width:90px"></td>
+          <td><input data-f="bkp" value="${esc(c.bkp)}" style="width:90px"></td>
+          <td><button type="button" class="btn-icon" data-imprm="${i}" title="Nicht importieren">×</button></td>
+        </tr>`).join('')}</tbody>
+      </table></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal()">Abbrechen</button><button class="btn btn-primary" id="impConfirm">＋ Importieren</button></div>`,{wide:true});
+  document.querySelectorAll('[data-imprm]').forEach(b=>b.onclick=()=>{ b.closest('tr').remove(); });
+  document.getElementById('impConfirm').onclick=async()=>{
+    const trs=[...document.querySelectorAll('#impPreviewTbl tbody tr')];
+    if(!trs.length){toast('Keine Zeilen zum Importieren',false,true);return;}
+    await loadBkpOverrides(state.projectId);
+    let n=0;
+    for(const tr of trs){
+      const get=f=>tr.querySelector(`[data-f="${f}"]`).value.trim();
+      const company=get('company'); if(!company)continue;
+      const phoneRaw=get('phone');
+      const phoneNums=phoneRaw?phoneRaw.split('/').map(p=>p.trim()).filter(Boolean):[];
+      const phones=phoneNums.map((num,i)=>({type:i===0?'Festnetz':'Mobil',number:num}));
+      // erkannte BKP-Nummer mit der offiziellen Liste abgleichen, damit sie im Dropdown korrekt erscheint
+      const bkpRaw=get('bkp');
+      const bkpMatch=bkpRaw?getEffectiveBKPFlat(state.projectId,['P','S']).find(s=>s.startsWith(bkpRaw+' ')):null;
+      const rec={id:uid(),projectId:state.projectId,list:'Unternehmer',company,
+        contact:get('contact'),role1:'',phone:phones[0]?.number||'',phones,email:get('email'),
+        contact2:'',role2:'',phone2:'',phones2:[],email2:'',contact3:'',role3:'',phone3:'',phones3:[],email3:'',contact4:'',role4:'',phone4:'',phones4:[],email4:'',
+        bkp:bkpMatch||'',trade:bkpMatch?'':bkpRaw,street:get('street'),zip:get('zip'),city:get('city'),lat:null,lon:null};
+      await put('contacts',rec);
+      await upsertDirectoryFromContact(rec);
+      n++;
+    }
+    closeModal();toast(`${n} Kontakt(e) importiert`,true);renderContacts();
+  };
+}
+
+/* ============================================================
    MODULE: DASHBOARD
    ============================================================ */
 async function renderDashboard(){
@@ -9771,9 +10380,49 @@ async function startApp(){
   const users=await all('users');
   await renderProjectSelect();
   await renderRail();await navigate('dashboard');updateNet();
+  await renderStartScreen(); // Kachel-Startbildschirm bei jedem App-Start, über der Ansicht
   if(!users.length){setTimeout(()=>openUserEditor(),400);}
   window.removeEventListener('resize',_resizeHandler);
   window.addEventListener('resize',_resizeHandler);
+}
+// --- Startbildschirm: Kachelansicht aller Projekte, sortiert nach Projektnummer ---
+// Erscheint bei jedem App-Start (auch bei nur einem Projekt), damit man bewusst wählt/wechselt.
+function _projectSortKey(p){
+  const n=parseFloat((p.number||'').replace(',','.'));
+  return isNaN(n)?Infinity:n; // Projekte ohne Nummer ans Ende
+}
+async function renderStartScreen(){
+  const projects=(await all('projects')).sort((a,b)=>{
+    const ka=_projectSortKey(a), kb=_projectSortKey(b);
+    if(ka!==kb)return ka-kb;
+    return (a.name||'').localeCompare(b.name||'');
+  });
+  const ov=document.createElement('div');
+  ov.id='startScreen';
+  ov.innerHTML=`
+    <div class="start-card">
+      <img class="start-logo" ${typeof BRAND!=='undefined'?`src="${BRAND.bauviewLogo}"`:''} alt="BauView">
+      <h2>Projekte</h2>
+      <div class="start-grid" id="startGrid">
+        ${projects.map(p=>`
+          <button class="start-tile" data-startproj="${p.id}">
+            ${p.number?`<span class="start-tile-num">${esc(p.number)}</span>`:''}
+            <span class="start-tile-name">${esc(p.name||'Ohne Namen')}</span>
+            ${(p.client||p.address)?`<span class="start-tile-sub">${esc([p.client,p.address].filter(Boolean).join(' · '))}</span>`:''}
+          </button>`).join('')}
+        <button class="start-tile start-tile-new" id="startNewProj">
+          <span class="start-tile-plus">＋</span>
+          <span class="start-tile-name">Neues Projekt</span>
+        </button>
+      </div>
+    </div>`;
+  document.body.appendChild(ov);
+  ov.querySelectorAll('[data-startproj]').forEach(b=>b.onclick=async()=>{
+    state.projectId=b.dataset.startproj;state.planId=null;state.defectId=null;state.selection.clear();state.module='dashboard';
+    ov.remove();
+    await renderProjectSelect();await renderRail();await navigate('dashboard');
+  });
+  document.getElementById('startNewProj').onclick=()=>{ ov.remove(); openProjectEditor(); };
 }
 function _resizeHandler(){ if(state.module==='plans'&&state.planId)renderPage(); }
 
