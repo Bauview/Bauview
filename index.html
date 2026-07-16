@@ -500,7 +500,14 @@ header.topbar{display:flex;align-items:center;gap:14px;padding:0 16px;height:58p
 .body-wrap{flex:1;display:flex;overflow:hidden}
 
 /* module rail */
-nav.rail{width:256px;background:var(--ink);flex-shrink:0;display:flex;flex-direction:column;padding:12px 12px;gap:4px;overflow-y:auto}
+nav.rail{width:256px;background:var(--ink);flex-shrink:0;display:flex;flex-direction:column;padding:12px 12px;gap:4px;overflow-y:auto;position:relative;transition:width .16s ease}
+nav.rail.collapsed{width:56px;padding:12px 8px;overflow:visible}
+nav.rail.collapsed .lbl,nav.rail.collapsed .rail-title,nav.rail.collapsed .railbadge{display:none}
+nav.rail.collapsed button{justify-content:center}
+nav.rail .rail-toggle{position:absolute;top:50%;right:0;transform:translateY(-50%);width:16px!important;height:52px;border-radius:8px 0 0 8px;background:var(--brand-red);border:none;border-left:1px solid rgba(0,0,0,.15);color:#fff;cursor:pointer;z-index:20;display:flex;align-items:center;justify-content:center;font-size:11px;transition:.16s ease;box-shadow:-2px 2px 8px rgba(0,0,0,.35);padding:0!important;gap:0!important}
+nav.rail .rail-toggle:hover{width:20px!important;background:var(--brand-red-deep)}
+nav.rail .rail-toggle:before{content:'❮';display:block}
+nav.rail.collapsed .rail-toggle:before{content:'❯'}
 nav.rail .rail-title{color:rgba(255,255,255,.4);font-size:10.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:8px 12px 4px}
 nav.rail button{display:flex;flex-direction:row;align-items:center;gap:14px;padding:13px 14px;color:rgba(255,255,255,.82);font-size:15px;font-weight:600;text-align:left;border-radius:10px;border-left:3px solid transparent;line-height:1.2;position:relative;width:100%;transition:.12s}
 nav.rail button .ic{font-size:22px;width:28px;text-align:center;flex-shrink:0}
@@ -678,11 +685,28 @@ main.stage{flex:1;display:flex;overflow:hidden;position:relative}
 
 /* PLAN VIEWER (reused engine) */
 .viewer{flex:1;display:flex;background:#e9e6df;overflow:hidden}
-.plan-side{width:260px;background:var(--paper-2);border-right:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0}
+.plan-side{width:260px;background:var(--paper-2);border-right:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0;transition:width .16s ease;position:relative;overflow:hidden}
+.plan-side.collapsed{width:34px}
+.plan-side.collapsed .plan-side-head,.plan-side.collapsed .plan-list,.plan-side.collapsed .plan-side-foot{display:none}
+.plan-side-toggle{position:absolute;top:50%;right:0;transform:translateY(-50%);width:16px;height:52px;border-radius:8px 0 0 8px;background:var(--brand-red);border:none;cursor:pointer;z-index:6;display:flex;align-items:center;justify-content:center;font-size:11px;box-shadow:-2px 2px 8px rgba(0,0,0,.2);color:#fff;transition:.16s ease}
+.plan-side-toggle:hover{width:20px;background:var(--brand-red-deep)}
+.plan-side-toggle:before{content:'❮';display:block}
+.plan-side.collapsed .plan-side-toggle:before{content:'❯'}
+.plan-cat-head{display:flex;align-items:center;gap:6px;padding:8px 12px;cursor:pointer;background:var(--paper);border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2);user-select:none}
+.plan-cat-head:first-child{border-top:none}
+.plan-cat-head .cat-arrow{font-size:10px;color:var(--muted);transition:transform .12s}
+.plan-cat-head.collapsed .cat-arrow{transform:rotate(-90deg)}
+.plan-cat-head .cat-name{font-weight:700;font-size:12.5px;flex:1}
+.plan-cat-head .cat-count{font-size:11px;color:var(--muted)}
+.plan-cat-body.collapsed{display:none}
 .plan-side-head{padding:12px 14px;border-bottom:1px solid var(--line-2);display:flex;align-items:center}
 .plan-side-head h2{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;flex:1}
 .plan-list{flex:1;overflow-y:auto}
 .plan-item{padding:11px 10px 11px 8px;border-bottom:1px solid var(--line-2);cursor:pointer;display:flex;gap:8px;align-items:flex-start;position:relative}
+.plan-chk{margin-top:3px;flex-shrink:0;cursor:pointer}
+.plan-sel-bar{display:flex;flex-direction:column;gap:6px;padding:8px 12px;background:var(--brand-red-light);border-bottom:1px solid var(--line);font-size:12px}
+.plan-sel-row1{display:flex;align-items:center;justify-content:space-between}
+.plan-sel-bar #planSelCount{font-weight:700;color:var(--brand-red-deep)}
 .plan-item:hover{background:var(--paper)}
 .plan-item.active{background:var(--steel-light);border-left:3px solid var(--signal)}
 .plan-item.drop-above{box-shadow:inset 0 3px 0 var(--brand-red)}
@@ -692,6 +716,10 @@ main.stage{flex:1;display:flex;overflow:hidden;position:relative}
 .plan-actions{display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0}
 .plan-move{width:20px;height:17px;border-radius:4px;background:transparent;color:var(--muted);font-size:9px;line-height:1;display:grid;place-items:center;opacity:0;transition:.12s}
 .plan-item:hover .plan-move{opacity:1}
+.plan-cat{width:22px;height:22px;border-radius:5px;background:transparent;color:var(--muted);font-size:12px;display:grid;place-items:center;opacity:0;transition:.12s;border:1px solid transparent}
+.plan-item:hover .plan-cat{opacity:1}
+.plan-cat:hover{background:var(--paper);border-color:var(--line)}
+.plan-catmenu-item:hover{background:var(--paper)!important}
 .plan-move:hover:not([disabled]){background:var(--steel-light);color:var(--ink)}
 .plan-move[disabled]{opacity:0 !important;pointer-events:none}
 .plan-del{width:22px;height:22px;border-radius:5px;background:transparent;color:var(--muted);font-size:18px;line-height:1;display:grid;place-items:center;opacity:0;transition:.12s}
@@ -3624,6 +3652,17 @@ async function cloudUploadPublicJSON(pathId, obj){
 // Merkt sich, welche (Tabelle:ID) beim letzten Hochladen fehlgeschlagen sind – cloudSyncDown darf
 // so einen Datensatz NIE als "anderswo gelöscht" werten und lokal entfernen (Datenverlust-Schutz).
 let _lastUploadFailures=new Set();
+// Merkt sich (dauerhaft, geräteübergreifend über localStorage), welche IDs beim letzten erfolgreichen
+// Abruf bereits in der Cloud vorhanden waren. Nötig, um sauber zu unterscheiden:
+//   a) ID war früher schon mal in der Cloud bekannt, ist jetzt aber weg -> ECHT anderswo gelöscht -> lokal entfernen
+//   b) ID war NIE in einer Cloud-Antwort zu sehen -> vermutlich einfach noch nicht hochgeladen (z.B. offline
+//      erstellt) -> NICHT lokal entfernen, sonst gehen frische, unsynchronisierte Datensätze verloren.
+function _getKnownCloudIds(table){
+  try{ const all=JSON.parse(localStorage.getItem('bauview_known_cloud_ids')||'{}'); return all[table]||null; }catch(e){ return null; }
+}
+function _setKnownCloudIds(table,ids){
+  try{ const all=JSON.parse(localStorage.getItem('bauview_known_cloud_ids')||'{}'); all[table]=ids; localStorage.setItem('bauview_known_cloud_ids',JSON.stringify(all)); }catch(e){}
+}
 // Lädt ALLE lokalen Datensätze in die Cloud hoch (für Geräte, die schon lokale Daten haben).
 async function cloudSyncUp(){
   _lastUploadFailures=new Set();
@@ -3649,15 +3688,11 @@ async function cloudSyncUp(){
 // Vorhandene lokale Datensätze mit eingebetteten Bildern werden NICHT durch
 // die schlanke Cloud-Version (nur URLs) ersetzt – lokal bleibt schnell/offline.
 //
-// WICHTIG (Fehlerbehebung Sync-Lücke): bisher wurden nur neue/geänderte Cloud-Datensätze lokal
-// gespiegelt, aber ein Datensatz, der auf einem ANDEREN Gerät gelöscht wurde, verschwand hier nie
-// lokal – er blieb als "Geister-Eintrag" bestehen. Jetzt wird nach dem Herunterladen zusätzlich
-// geprüft: Datensätze, die lokal vorhanden sind, aber nicht (mehr) in der vollständigen Cloud-Liste
-// auftauchen, werden als "anderswo gelöscht" erkannt und ebenfalls lokal entfernt – ausser:
-//  - der Datensatz ist noch nicht einmal eine Sekunde alt lokal bekannt (frisch erstellt, Race Guard)
-//  - der Upload dieses Datensatzes ist im unmittelbar vorangegangenen cloudSyncUp() fehlgeschlagen
-//  - der Abruf von der Cloud selbst fehlgeschlagen ist (kein Internet etc. – dann lieber nichts
-//    anfassen, als aus einem Fehler fälschlich "alles wurde gelöscht" zu schliessen)
+// WICHTIG (Fehlerbehebung Sync-Lücke): ein Datensatz, der auf einem ANDEREN Gerät gelöscht wurde,
+// muss auch hier lokal verschwinden, statt als "Geister-Eintrag" bestehen zu bleiben. Gleichzeitig
+// darf ein frisch (z.B. offline) erstellter, noch nie hochgeladener lokaler Datensatz NICHT
+// fälschlich als "anderswo gelöscht" gewertet und entfernt werden. Die dauerhafte
+// "known cloud ids"-Basis (siehe oben) unterscheidet diese beiden Fälle zuverlässig.
 async function cloudSyncDown(){
   if(!cloudEnabled()) return;
   for(const table of CLOUD_TABLES){
@@ -3679,16 +3714,22 @@ async function cloudSyncDown(){
         await putLocal(table,row);
       }catch(e){}
     }
-    // Verwaiste lokale Datensätze entfernen (siehe Erklärung oben)
-    try{
-      const localRows=await all(table);
-      for(const local of localRows){
-        if(cloudIds.has(local.id)) continue;
-        if(typeof _isTombstoned==='function' && _isTombstoned(table,local.id)) continue; // schon als eigenes Löschen erfasst
-        if(_lastUploadFailures.has(table+':'+local.id)) continue; // Upload fehlgeschlagen – nicht anfassen
-        await delLocal(table,local.id);
-      }
-    }catch(e){}
+    // Verwaiste lokale Datensätze entfernen (siehe Erklärung oben) – nur für IDs, die
+    // NACHWEISLICH schon einmal in der Cloud bekannt waren (siehe _getKnownCloudIds).
+    const prevKnown=_getKnownCloudIds(table);
+    if(prevKnown!==null){
+      try{
+        const localRows=await all(table);
+        for(const local of localRows){
+          if(cloudIds.has(local.id)) continue;
+          if(typeof _isTombstoned==='function' && _isTombstoned(table,local.id)) continue; // schon als eigenes Löschen erfasst
+          if(_lastUploadFailures.has(table+':'+local.id)) continue; // Upload fehlgeschlagen – nicht anfassen
+          if(!prevKnown.includes(local.id)) continue; // war noch nie in einer vorherigen Cloud-Antwort bekannt -> vermutlich einfach noch nicht hochgeladen
+          await delLocal(table,local.id);
+        }
+      }catch(e){}
+    }
+    _setKnownCloudIds(table,[...cloudIds]);
   }
 }
 function _hasEmbedded(o){
@@ -3773,8 +3814,13 @@ async function cloudUpdateAccount(account){
 }
 async function cloudDeleteAccount(id){
   if(!cloudEnabled()||!id) return;
-  try{ const {error}=await _sb.from('accounts').delete().eq('id',id); if(error)throw error; }
-  catch(e){ console.warn('[Cloud] Konto löschen:',e.message); }
+  try{
+    const {data,error}=await _sb.from('accounts').delete().eq('id',id).select('id');
+    if(error) throw error;
+    // Berechtigung (RLS) kann ein Löschen lautlos auf 0 Zeilen reduzieren (kein Fehler, aber auch
+    // nichts gelöscht) – genau das liess zusammengeführte/entfernte Konten scheinbar "wieder auftauchen".
+    if(!data||!data.length) throw new Error('Keine Berechtigung zum Löschen (0 Zeilen betroffen)');
+  }catch(e){ console.warn('[Cloud] Konto löschen:',e.message); throw e; }
 }
 // Eigenes Passwort ändern
 async function cloudUpdatePassword(newPassword){
@@ -4093,6 +4139,9 @@ const RAIL_GROUPS=[
 async function renderRail(){
   const rail=document.getElementById('rail');
   rail.innerHTML='';
+  const toggle=document.createElement('button');
+  toggle.className='rail-toggle';toggle.id='railToggle';toggle.title='Ein-/Ausklappen';
+  rail.appendChild(toggle);
   for(const g of RAIL_GROUPS){
     if(g.title){const t=document.createElement('div');t.className='rail-title';t.textContent=g.title;rail.appendChild(t);}
     for(const id of g.ids){
@@ -4100,6 +4149,7 @@ async function renderRail(){
       if(typeof roleCanSee==='function'&&!roleCanSee(m.id))continue; // app-seitige Rechte
       const b=document.createElement('button');
       b.className=(m.id===state.module?'active':'');
+      b.title=m.label.replace(/\n/g,' '); // wichtig im eingeklappten Zustand (nur Icon sichtbar)
       let badge='';
       if(m.badge){const n=await m.badge();if(n)badge=`<span class="railbadge">${n}</span>`;}
       b.innerHTML=`<span class="ic">${m.ic}</span><span class="lbl">${m.label.replace(/\n/g,' ')}</span>${badge}`;
@@ -4107,6 +4157,13 @@ async function renderRail(){
       rail.appendChild(b);
     }
   }
+  const collapsed=localStorage.getItem('bauview_rail_collapsed')==='1';
+  rail.classList.toggle('collapsed',collapsed);
+  toggle.onclick=()=>{
+    const now=!rail.classList.contains('collapsed');
+    rail.classList.toggle('collapsed',now);
+    try{localStorage.setItem('bauview_rail_collapsed',now?'1':'0');}catch(e){}
+  };
   await renderMobileNav();
 }
 // Untere Tableiste fürs Handy – kurze Labels, wichtigste Module zuerst
@@ -4465,8 +4522,13 @@ async function renderPlans(){
   const stage=document.getElementById('stage');
   stage.innerHTML=`
     <div class="viewer">
-      <div class="plan-side">
-        <div class="plan-side-head"><h2>Pläne</h2></div>
+      <div class="plan-side" id="planSide">
+        <button class="plan-side-toggle" id="planSideToggle" title="Ein-/Ausklappen"></button>
+        <div class="plan-side-head"><h2>Pläne</h2><button class="btn btn-ghost btn-sm" id="addCatBtn" title="Neue Kategorie anlegen">＋ Kategorie</button></div>
+        <div class="plan-sel-bar hidden" id="planSelBar">
+          <div class="plan-sel-row1"><span id="planSelCount">0 ausgewählt</span><button class="btn-icon" id="planSelClear" title="Auswahl aufheben">×</button></div>
+          <button class="btn btn-ghost btn-sm" id="planSelMove" style="width:100%">🗂 Kategorie zuweisen</button>
+        </div>
         <div class="plan-list" id="planList"></div>
         <div class="plan-side-foot"><button class="btn btn-primary" style="width:100%" id="addPlanBtn">＋ Pläne hochladen</button></div>
       </div>
@@ -4558,6 +4620,14 @@ async function renderPlans(){
       </div>
     </div>`;
   document.getElementById('addPlanBtn').onclick=()=>document.getElementById('planFileInput').click();
+  _setupSideToggle('planSide','planSideToggle','bauview_planside_collapsed');
+  document.getElementById('addCatBtn').onclick=()=>_promptNewPlanCategory();
+  _planListSelection=new Set(); // Auswahl zurücksetzen, wenn das Modul frisch geöffnet wird
+  document.getElementById('planSelMove').onclick=e=>{
+    if(!_planListSelection.size)return;
+    _openPlanCategoryMenu(e.currentTarget,[..._planListSelection],null);
+  };
+  document.getElementById('planSelClear').onclick=()=>{ _planListSelection.clear(); _updatePlanSelBar(); renderPlanList(); };
   document.getElementById('updatePlanBtn').onclick=()=>{if(state.planId)document.getElementById('updateFileInput').click();else toast('Zuerst einen Plan wählen');};
   document.getElementById('markerBtn').onclick=toggleArm;
   document.getElementById('drawBtn').onclick=toggleDrawMode;
@@ -4747,6 +4817,103 @@ function setupLupe(){
   });
 }
 
+// --- Wiederverwendbar: Seitenleiste ein-/ausklappen (Pläne & Mängel und Ausmass), Zustand gemerkt ---
+function _setupSideToggle(sideId,toggleId,storageKey){
+  const side=document.getElementById(sideId), btn=document.getElementById(toggleId);
+  if(!side||!btn)return;
+  const collapsed=localStorage.getItem(storageKey)==='1';
+  side.classList.toggle('collapsed',collapsed);
+  btn.onclick=()=>{
+    const now=!side.classList.contains('collapsed');
+    side.classList.toggle('collapsed',now);
+    try{localStorage.setItem(storageKey,now?'1':'0');}catch(e){}
+  };
+}
+// --- Plan-Kategorien (frei anlegbare Gliederung, z.B. "Werkpläne"/"Detailpläne"), pro Projekt ---
+async function _getPlanCategories(){
+  const rec=await get('app','planCategories:'+state.projectId);
+  return (rec&&rec.categories)||[];
+}
+async function _addPlanCategoryName(name){
+  const key='planCategories:'+state.projectId;
+  const rec=await get('app',key)||{id:key,categories:[]};
+  if(!rec.categories.includes(name)){rec.categories.push(name);await put('app',rec);}
+}
+async function _deletePlanCategory(name){
+  // Sicherheitsprüfung: nochmals serverseitig/aus den Daten bestätigen, dass wirklich kein Plan
+  // mehr in dieser Kategorie liegt (nicht nur auf den – evtl. veralteten – Anzeige-Stand vertrauen).
+  const plans=await byProject('plans');
+  if(plans.some(p=>p.category===name)){toast('Diese Kategorie enthält noch Pläne und kann nicht gelöscht werden',false,true);return;}
+  if(!confirm(`Leere Kategorie „${name}" wirklich löschen?`))return;
+  const key='planCategories:'+state.projectId;
+  const rec=await get('app',key);
+  if(rec){ rec.categories=rec.categories.filter(c=>c!==name); await put('app',rec); }
+  toast('Kategorie gelöscht',true);
+  renderPlanList();
+}
+function _promptNewPlanCategory(){
+  const name=prompt('Name der neuen Kategorie (z.B. "Werkpläne", "Detailpläne"):');
+  if(name===null)return;
+  const trimmed=name.trim();
+  if(!trimmed){toast('Bitte einen Namen eingeben',false,true);return;}
+  _addPlanCategoryName(trimmed).then(renderPlanList);
+}
+async function _movePlanToCategory(planId,category){
+  const p=await get('plans',planId);if(!p)return;
+  p.category=category;
+  await put('plans',p);
+  if(category)await _addPlanCategoryName(category);
+  renderPlanList();
+}
+// planIds: einzelne ID (string) ODER Array mehrerer IDs (Sammelverschieben)
+function _openPlanCategoryMenu(btn,planIds,currentCat){
+  const ids=Array.isArray(planIds)?planIds:[planIds];
+  document.querySelectorAll('.plan-catmenu').forEach(m=>{ if(m._closeHandler)document.removeEventListener('click',m._closeHandler); m.remove(); });
+  _getPlanCategories().then(cats=>{
+    const menu=document.createElement('div');
+    menu.className='plan-catmenu';
+    menu.style.cssText='position:fixed;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.15);z-index:500;min-width:170px;padding:4px;font-size:12.5px';
+    const r=btn.getBoundingClientRect();
+    menu.style.top=(r.bottom+4)+'px';menu.style.left=Math.max(4,r.right-180)+'px';
+    const opt=(label,val)=>`<div class="plan-catmenu-item" data-cat="${esc(val)}" style="padding:7px 10px;border-radius:6px;cursor:pointer;${ids.length===1&&val===(currentCat||'')?'background:var(--brand-red-light);font-weight:600':''}">${label}</div>`;
+    menu.innerHTML=(ids.length>1?`<div style="padding:6px 10px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--line);margin-bottom:4px">${ids.length} Pläne verschieben nach:</div>`:'')
+      +opt('— Ohne Kategorie —','')+cats.map(c=>opt(esc(c),c)).join('')+`<div style="border-top:1px solid var(--line);margin-top:4px;padding-top:4px"><div class="plan-catmenu-item" data-newcat="1" style="padding:7px 10px;border-radius:6px;cursor:pointer;color:var(--brand-red);font-weight:600">＋ Neue Kategorie…</div></div>`;
+    document.body.appendChild(menu);
+    // Ein einziger, sauber verwalteter Schliessen-Pfad – verhindert, dass ein "Ausserhalb-Klick"-Reste-Listener
+    // das NÄCHSTE Menü sofort wieder schliesst (das war der gemeldete Fehler).
+    const closeMenu=()=>{ document.removeEventListener('click',closeHandler); menu.remove(); };
+    const closeHandler=e=>{ if(!menu.contains(e.target)) closeMenu(); };
+    menu._closeHandler=closeHandler;
+    menu.querySelectorAll('[data-cat]').forEach(it=>it.onclick=e=>{
+      e.stopPropagation();
+      ids.forEach(id=>_movePlanToCategory(id,it.dataset.cat));
+      if(ids.length>1){_planListSelection.clear();_updatePlanSelBar();}
+      closeMenu();
+    });
+    const nc=menu.querySelector('[data-newcat]');
+    if(nc)nc.onclick=e=>{
+      e.stopPropagation();closeMenu();
+      const name=prompt('Name der neuen Kategorie:');if(name===null)return;
+      const t=name.trim();if(!t){toast('Bitte einen Namen eingeben',false,true);return;}
+      ids.forEach(id=>_movePlanToCategory(id,t));
+      if(ids.length>1){_planListSelection.clear();_updatePlanSelBar();}
+    };
+    setTimeout(()=>document.addEventListener('click',closeHandler),10);
+  });
+}
+// Ausgewählte Pläne fürs Sammelverschieben (nur innerhalb der Sitzung, kein Speichern nötig)
+let _planListSelection=new Set();
+// Merkt sich, welche Plan-Kategorien eingeklappt sind – MUSS über den kompletten Modul-Lebenszyklus
+// bestehen bleiben, da renderPlanList() die Liste bei jeder Änderung (z.B. Zuordnen einer Kategorie)
+// komplett neu aufbaut. Vorher wurde dieser Zustand nirgends wirklich gespeichert, nur "gelesen" -
+// dadurch klappte beim nächsten Neuaufbau immer alles automatisch wieder auf.
+let _planCatCollapsed=new Set();
+function _updatePlanSelBar(){
+  const bar=document.getElementById('planSelBar');if(!bar)return;
+  const n=_planListSelection.size;
+  bar.classList.toggle('hidden',n===0);
+  const cnt=document.getElementById('planSelCount');if(cnt)cnt.textContent=n+' ausgewählt';
+}
 async function renderPlanList(){
   let plans=await byProject('plans');
   const list=document.getElementById('planList');
@@ -4762,30 +4929,77 @@ async function renderPlanList(){
   if(changed){for(const p of plans)await put('plans',p);}
   plans.sort((a,b)=>(a.sortIndex||0)-(b.sortIndex||0));
   const defs=await byProject('defects');
-  list.innerHTML=plans.map((p,i)=>{
+  const knownCats=await _getPlanCategories();
+  const itemHtml=(p,i)=>{
     const c=defs.filter(d=>d.planId===p.id).length;
     const cur=p.versions.find(v=>v.v===p.currentVersion);
     return `<div class="plan-item ${p.id===state.planId?'active':''}" data-plan="${p.id}" draggable="true">
+      <input type="checkbox" class="plan-chk" data-chk="${p.id}" ${_planListSelection.has(p.id)?'checked':''} title="Zum Sammelverschieben auswählen">
       <span class="plan-drag" title="Zum Sortieren ziehen">⠿</span>
       <div class="plan-thumb" id="thumb-${p.id}">PDF</div>
       <div class="plan-meta"><div class="pn">${esc(p.name)}</div>
         <div class="pv">${esc(cur?cur.fileName:'')} · <span class="ver-badge">v${p.currentVersion}</span></div>
         ${c?`<div class="pcount">● ${c} ${c===1?'Mangel':'Mängel'}</div>`:''}</div>
       <div class="plan-actions">
+        <button class="plan-cat" data-catbtn="${p.id}" title="Kategorie zuordnen/verschieben">🗂</button>
         <button class="plan-move" data-up="${p.id}" title="Nach oben" ${i===0?'disabled':''}>▲</button>
         <button class="plan-move" data-down="${p.id}" title="Nach unten" ${i===plans.length-1?'disabled':''}>▼</button>
         <button class="plan-del" data-del="${p.id}" title="Plan löschen">×</button>
       </div></div>`;
+  };
+  // Kategorien in bekannter Reihenfolge + "Ohne Kategorie" zuletzt; nur nicht-leere Gruppen zeigen
+  // (ausser die Kategorie wurde bewusst per "+ Kategorie" angelegt, dann auch leer sichtbar)
+  const groups=[];
+  knownCats.forEach(cat=>groups.push({cat,items:[]}));
+  const uncatGroup={cat:'',items:[]};
+  plans.forEach((p,i)=>{
+    const cat=p.category&&knownCats.includes(p.category)?p.category:'';
+    const idx=plans.indexOf(p);
+    const item={p,i:idx};
+    if(cat){ groups.find(g=>g.cat===cat).items.push(item); }
+    else{ uncatGroup.items.push(item); }
+  });
+  groups.push(uncatGroup);
+  const visibleGroups=groups.filter(g=>g.items.length||g.cat); // leere "Ohne Kategorie" ausblenden, leere benannte Kategorien zeigen (extra angelegt)
+  const singleGroup=visibleGroups.length<=1;
+  list.innerHTML=singleGroup?plans.map((p,i)=>itemHtml(p,i)).join(''):visibleGroups.map((g,gi)=>{
+    const label=g.cat||'Ohne Kategorie';
+    const collapsed=_planCatCollapsed.has(g.cat);
+    const canDelete=g.cat&&!g.items.length; // nur benannte, LEERE Kategorien lassen sich löschen
+    return `<div class="plan-cat-head${collapsed?' collapsed':''}" data-catgroup="${esc(g.cat)}"><span class="cat-arrow">▾</span><span class="cat-name">${esc(label)}</span><span class="cat-count">${g.items.length}</span>${canDelete?`<button class="btn-icon" data-delcat="${esc(g.cat)}" title="Leere Kategorie löschen">🗑</button>`:''}</div>
+      <div class="plan-cat-body${collapsed?' collapsed':''}" data-catbody="${esc(g.cat)}">${g.items.map(({p,i})=>itemHtml(p,i)).join('')||`<div style="padding:12px 14px;color:var(--muted);font-size:11.5px">Noch keine Pläne hier – per 🗂 zuordnen.</div>`}</div>`;
   }).join('');
+  list.querySelectorAll('.plan-cat-head').forEach(h=>h.onclick=e=>{
+    if(e.target.closest('[data-delcat]'))return;
+    const cat=h.dataset.catgroup;
+    if(_planCatCollapsed.has(cat))_planCatCollapsed.delete(cat);else _planCatCollapsed.add(cat);
+    const body=list.querySelector(`[data-catbody="${CSS.escape(cat)}"]`);
+    h.classList.toggle('collapsed');body.classList.toggle('collapsed');
+  });
+  list.querySelectorAll('[data-delcat]').forEach(b=>b.onclick=e=>{
+    e.stopPropagation();
+    _deletePlanCategory(b.dataset.delcat);
+  });
   list.querySelectorAll('.plan-item').forEach(el=>el.onclick=e=>{
-    if(e.target.closest('.plan-del,.plan-move,.plan-drag'))return;
+    if(e.target.closest('.plan-del,.plan-move,.plan-drag,.plan-cat,.plan-chk'))return;
     openPlan(el.dataset.plan);
+  });
+  list.querySelectorAll('.plan-chk').forEach(cb=>cb.onclick=e=>{
+    e.stopPropagation();
+    cb.checked?_planListSelection.add(cb.dataset.chk):_planListSelection.delete(cb.dataset.chk);
+    _updatePlanSelBar();
   });
   list.querySelectorAll('.plan-del').forEach(b=>b.onclick=e=>{e.stopPropagation();deletePlan(b.dataset.del);});
   list.querySelectorAll('[data-up]').forEach(b=>b.onclick=e=>{e.stopPropagation();movePlan(b.dataset.up,-1);});
   list.querySelectorAll('[data-down]').forEach(b=>b.onclick=e=>{e.stopPropagation();movePlan(b.dataset.down,1);});
+  list.querySelectorAll('[data-catbtn]').forEach(b=>b.onclick=e=>{
+    e.stopPropagation();
+    const p=plans.find(x=>x.id===b.dataset.catbtn);
+    _openPlanCategoryMenu(b,b.dataset.catbtn,p?p.category:'');
+  });
   setupPlanDnD(list);
   plans.forEach(renderThumb);
+  _updatePlanSelBar();
 }
 
 // Plan in der Reihenfolge verschieben (Pfeile)
@@ -4873,28 +5087,94 @@ document.getElementById('planFileInput').onchange=async e=>{
   const files=[...e.target.files].filter(f=>f);
   if(!files.length)return;
   try{
-    // höchsten bestehenden sortIndex ermitteln
     const existing=await byProject('plans');
-    let maxSort=existing.reduce((m,p)=>Math.max(m,(p.sortIndex??0)),0);
-    let firstId=null;
-    for(const f of files){
-      const b64=await fileToB64(f);
+    // Namensgleiche, bereits vorhandene Pläne erkennen (ohne Gross-/Kleinschreibung), BEVOR hochgeladen wird –
+    // das war der gemeldete Grund für Plan-Duplikate: aus Versehen "Pläne hochladen" statt "Plan aktualisieren" benutzt.
+    const dupes=files.map((f,i)=>({f,i,name:f.name.replace(/\.pdf$/i,'')}))
+      .map(x=>({...x,match:existing.find(p=>p.name.trim().toLowerCase()===x.name.trim().toLowerCase())}))
+      .filter(x=>x.match);
+    if(dupes.length){
+      e.target.value=''; // Input früh zurücksetzen, Auswahl bleibt in "files" erhalten
+      _openDuplicatePlanDialog(files,dupes);
+      return;
+    }
+    await _performPlanUpload(files);
+  }catch(err){
+    console.error('[Plan-Upload]',err);
+    toast('Hochladen fehlgeschlagen: '+(err.message||'unbekannter Fehler'),false,true);
+    e.target.value='';
+  }
+};
+// Führt den eigentlichen Upload durch. "asVersionOf": Map von Datei-Index -> bestehende Plan-ID,
+// für die diese Datei stattdessen als NEUE VERSION angehängt wird (Marker bleiben erhalten),
+// statt einen separaten, namensgleichen Plan anzulegen.
+async function _performPlanUpload(files,asVersionOf){
+  asVersionOf=asVersionOf||{};
+  const existing=await byProject('plans');
+  let maxSort=existing.reduce((m,p)=>Math.max(m,(p.sortIndex??0)),0);
+  let firstId=null, newCount=0, updatedCount=0;
+  for(let i=0;i<files.length;i++){
+    const f=files[i];
+    if(!f)continue; // per Duplikat-Dialog übersprungene Datei
+    const b64=await fileToB64(f);
+    if(asVersionOf[i]){
+      // Als neue Version eines bestehenden Plans anhängen (Marker bleiben erhalten)
+      const plan=await get('plans',asVersionOf[i]);if(!plan)continue;
+      _normalizePlan(plan);
+      const newV=plan.currentVersion+1;
+      plan.versions.push({v:newV,fileName:f.name,pdfData:b64,uploadedAt:nowISO(),uploadedBy:CURRENT_USER.name});
+      plan.currentVersion=newV;await put('plans',plan);
+      const planDefs=(await byProject('defects')).filter(d=>d.planId===plan.id);
+      for(const d of planDefs){d.excerpt=await cropPlanAround(plan,d.rx,d.ry,d.num,d.status);await put('defects',d);}
+      if(!firstId)firstId=plan.id;
+      updatedCount++;
+    }else{
       maxSort+=1;
       const plan={id:uid(),projectId:state.projectId,name:f.name.replace(/\.pdf$/i,''),currentVersion:1,sortIndex:maxSort,
         versions:[{v:1,fileName:f.name,pdfData:b64,uploadedAt:nowISO(),uploadedBy:CURRENT_USER.name}]};
       await put('plans',plan);
       if(!firstId)firstId=plan.id;
+      newCount++;
     }
-    toast(files.length===1?'Plan hochgeladen':files.length+' Pläne hochgeladen',true);
-    await renderPlanList();
-    if(firstId)openPlan(firstId);
-  }catch(err){
-    console.error('[Plan-Upload]',err);
-    toast('Hochladen fehlgeschlagen: '+(err.message||'unbekannter Fehler'),false,true);
-  }finally{
-    e.target.value='';
   }
-};
+  const parts=[];
+  if(newCount)parts.push(newCount===1?'1 Plan hochgeladen':newCount+' Pläne hochgeladen');
+  if(updatedCount)parts.push(updatedCount===1?'1 Plan aktualisiert':updatedCount+' Pläne aktualisiert');
+  if(parts.length)toast(parts.join(' · '),true);
+  await renderPlanList();
+  if(firstId)openPlan(firstId);
+}
+// Zeigt für jede namensgleiche Datei eine Wahlmöglichkeit: als neue Version des bestehenden Plans
+// übernehmen (Marker bleiben erhalten) oder trotzdem als separaten, neuen Plan hochladen.
+function _openDuplicatePlanDialog(files,dupes){
+  modal(`<div class="modal-head"><h3>⚠ Gleichnamige Pläne gefunden</h3>
+      <p>Für ${dupes.length===1?'diese Datei existiert':'diese Dateien existieren'} bereits ${dupes.length===1?'ein Plan':'Pläne'} mit demselben Namen. Bitte wählen, was damit geschehen soll.</p></div>
+    <div class="modal-body">
+      ${dupes.map(d=>`<div class="card" style="padding:12px 14px;margin-bottom:8px">
+        <div style="font-weight:700;font-size:13.5px;margin-bottom:6px">${esc(d.name)}</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Bereits vorhanden: v${d.match.currentVersion} · ${d.match.versions.length} Version(en)</div>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;margin-bottom:4px"><input type="radio" name="dupchoice-${d.i}" value="version" checked> Als neue Version übernehmen <span style="color:var(--muted)">(Mängel-Marker bleiben erhalten)</span></label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;margin-bottom:4px"><input type="radio" name="dupchoice-${d.i}" value="new"> Trotzdem als separaten, neuen Plan hochladen</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="radio" name="dupchoice-${d.i}" value="skip"> Diese Datei überspringen</label>
+      </div>`).join('')}
+      ${files.length>dupes.length?`<p style="font-size:12px;color:var(--muted)">${files.length-dupes.length} weitere Datei(en) ohne Namenskonflikt werden normal als neue Pläne hochgeladen.</p>`:''}
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal()">Abbrechen</button><button class="btn btn-primary" id="dupConfirm">Fortfahren</button></div>`,{wide:true});
+  document.getElementById('dupConfirm').onclick=async()=>{
+    const asVersionOf={};
+    const toUpload=[...files];
+    dupes.forEach(d=>{
+      const choice=document.querySelector(`input[name="dupchoice-${d.i}"]:checked`).value;
+      if(choice==='version')asVersionOf[d.i]=d.match.id;
+      else if(choice==='skip')toUpload[d.i]=null;
+      // 'new' -> nichts tun, Datei wird normal als neuer Plan hochgeladen
+    });
+    closeModal();
+    toast('Wird verarbeitet…');
+    try{ await _performPlanUpload(toUpload,asVersionOf); }
+    catch(err){ console.error('[Plan-Upload]',err); toast('Hochladen fehlgeschlagen: '+(err.message||'unbekannter Fehler'),false,true); }
+  };
+}
 document.getElementById('updateFileInput').onchange=async e=>{
   const f=e.target.files[0];if(!f||!state.planId)return;
   try{
@@ -8455,8 +8735,9 @@ async function renderTakeoff(){
   const stage=document.getElementById('stage');
   stage.innerHTML=`
     <div class="viewer">
-      <div class="plan-side">
-        <div class="plan-side-head"><h2>Ausmass</h2></div>
+      <div class="plan-side" id="takeoffSide">
+        <button class="plan-side-toggle" id="takeoffSideToggle" title="Ein-/Ausklappen"></button>
+        <div class="plan-side-head"><h2>Ausmass</h2><button class="btn btn-ghost btn-sm" id="addTtCatBtn" title="Neue Kategorie anlegen">＋ Kategorie</button></div>
         <div class="plan-list" id="takeoffList"></div>
         <div class="plan-side-foot"><button class="btn btn-primary" style="width:100%" id="newTakeoffBtn">＋ Neues Ausmass</button></div>
       </div>
@@ -8512,6 +8793,8 @@ async function renderTakeoff(){
         </div>
       </div>
     </div>`;
+  _setupSideToggle('takeoffSide','takeoffSideToggle','bauview_takeoffside_collapsed');
+  document.getElementById('addTtCatBtn').onclick=()=>_promptNewTakeoffCategory();
   document.getElementById('newTakeoffBtn').onclick=async()=>{
     const plans=(await byProject('plans')).map(_normalizePlan);
     if(!plans.length){toast('Bitte zuerst im Modul „Pläne & Mängel" einen Plan hochladen',false,true);return;}
@@ -8519,20 +8802,108 @@ async function renderTakeoff(){
   };
   await renderTakeoffList();
 }
+// --- Ausmass-Kategorien (frei anlegbare Gliederung, z.B. "Aussenbereich"/"Untergeschoss"), pro Projekt ---
+async function _getTakeoffCategories(){
+  const rec=await get('app','takeoffCategories:'+state.projectId);
+  return (rec&&rec.categories)||[];
+}
+async function _addTakeoffCategoryName(name){
+  const key='takeoffCategories:'+state.projectId;
+  const rec=await get('app',key)||{id:key,categories:[]};
+  if(!rec.categories.includes(name)){rec.categories.push(name);await put('app',rec);}
+}
+async function _deleteTakeoffCategory(name){
+  const takeoffs=await byProject('takeoffs');
+  if(takeoffs.some(t=>t.category===name)){toast('Diese Kategorie enthält noch Ausmasse und kann nicht gelöscht werden',false,true);return;}
+  if(!confirm(`Leere Kategorie „${name}" wirklich löschen?`))return;
+  const key='takeoffCategories:'+state.projectId;
+  const rec=await get('app',key);
+  if(rec){ rec.categories=rec.categories.filter(c=>c!==name); await put('app',rec); }
+  toast('Kategorie gelöscht',true);
+  renderTakeoffList();
+}
+function _promptNewTakeoffCategory(){
+  const name=prompt('Name der neuen Kategorie (z.B. "Aussenbereich", "Untergeschoss"):');
+  if(name===null)return;
+  const trimmed=name.trim();
+  if(!trimmed){toast('Bitte einen Namen eingeben',false,true);return;}
+  _addTakeoffCategoryName(trimmed).then(renderTakeoffList);
+}
+async function _moveTakeoffToCategory(takeoffId,category){
+  const t=await get('takeoffs',takeoffId);if(!t)return;
+  t.category=category;
+  await put('takeoffs',t);
+  if(category)await _addTakeoffCategoryName(category);
+  renderTakeoffList();
+}
+function _openTakeoffCategoryMenu(btn,takeoffId,currentCat){
+  document.querySelectorAll('.plan-catmenu').forEach(m=>{ if(m._closeHandler)document.removeEventListener('click',m._closeHandler); m.remove(); });
+  _getTakeoffCategories().then(cats=>{
+    const menu=document.createElement('div');
+    menu.className='plan-catmenu';
+    menu.style.cssText='position:fixed;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.15);z-index:500;min-width:170px;padding:4px;font-size:12.5px';
+    const r=btn.getBoundingClientRect();
+    menu.style.top=(r.bottom+4)+'px';menu.style.left=Math.max(4,r.right-180)+'px';
+    const opt=(label,val)=>`<div class="plan-catmenu-item" data-cat="${esc(val)}" style="padding:7px 10px;border-radius:6px;cursor:pointer;${val===(currentCat||'')?'background:var(--brand-red-light);font-weight:600':''}">${label}</div>`;
+    menu.innerHTML=opt('— Ohne Kategorie —','')+cats.map(c=>opt(esc(c),c)).join('')+`<div style="border-top:1px solid var(--line);margin-top:4px;padding-top:4px"><div class="plan-catmenu-item" data-newcat="1" style="padding:7px 10px;border-radius:6px;cursor:pointer;color:var(--brand-red);font-weight:600">＋ Neue Kategorie…</div></div>`;
+    document.body.appendChild(menu);
+    const closeMenu=()=>{ document.removeEventListener('click',closeHandler); menu.remove(); };
+    const closeHandler=e=>{ if(!menu.contains(e.target)) closeMenu(); };
+    menu._closeHandler=closeHandler;
+    menu.querySelectorAll('[data-cat]').forEach(it=>it.onclick=e=>{e.stopPropagation();_moveTakeoffToCategory(takeoffId,it.dataset.cat);closeMenu();});
+    const nc=menu.querySelector('[data-newcat]');
+    if(nc)nc.onclick=e=>{e.stopPropagation();closeMenu();const name=prompt('Name der neuen Kategorie:');if(name===null)return;const t=name.trim();if(!t){toast('Bitte einen Namen eingeben',false,true);return;}_moveTakeoffToCategory(takeoffId,t);};
+    setTimeout(()=>document.addEventListener('click',closeHandler),10);
+  });
+}
+// Merkt sich analog zu den Plan-Kategorien, welche Ausmass-Kategorien eingeklappt sind
+let _takeoffCatCollapsed=new Set();
 async function renderTakeoffList(){
   const list=document.getElementById('takeoffList');if(!list)return;
   const takeoffs=(await byProject('takeoffs')).sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
-  list.innerHTML=takeoffs.length?takeoffs.map(t=>{
+  if(!takeoffs.length){list.innerHTML=`<div style="padding:24px 14px;text-align:center;color:var(--muted);font-size:12.5px">Noch kein Ausmass.</div>`;return;}
+  const knownCats=await _getTakeoffCategories();
+  const itemHtml=t=>{
     const area=(t.items||[]).reduce((s,i)=>s+(i.area||0),0);
     return `<div class="plan-item ${t.id===_toState.takeoffId?'active':''}" data-id="${t.id}">
       <div style="flex:1;min-width:0">
         <div style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(t.name||'Ausmass')}</div>
         <div style="font-size:11px;color:var(--muted)">${(t.items||[]).length} Pos. · Σ ${area.toFixed(2)} m²</div>
       </div>
+      <button class="plan-cat" data-catbtn="${t.id}" title="Kategorie zuordnen/verschieben">🗂</button>
       <button class="row-del" data-del="${t.id}" title="Löschen">×</button>
     </div>`;
-  }).join(''):`<div style="padding:24px 14px;text-align:center;color:var(--muted);font-size:12.5px">Noch kein Ausmass.</div>`;
-  list.querySelectorAll('[data-id]').forEach(el=>el.onclick=async e=>{if(e.target.closest('[data-del]'))return;openTakeoffEditor(await get('takeoffs',el.dataset.id));});
+  };
+  const groups=[];
+  knownCats.forEach(cat=>groups.push({cat,items:[]}));
+  const uncatGroup={cat:'',items:[]};
+  takeoffs.forEach(t=>{
+    const cat=t.category&&knownCats.includes(t.category)?t.category:'';
+    if(cat){ groups.find(g=>g.cat===cat).items.push(t); }
+    else{ uncatGroup.items.push(t); }
+  });
+  groups.push(uncatGroup);
+  const visibleGroups=groups.filter(g=>g.items.length||g.cat);
+  const singleGroup=visibleGroups.length<=1;
+  list.innerHTML=singleGroup?takeoffs.map(itemHtml).join(''):visibleGroups.map(g=>{
+    const label=g.cat||'Ohne Kategorie';
+    const canDelete=g.cat&&!g.items.length;
+    const collapsed=_takeoffCatCollapsed.has(g.cat);
+    return `<div class="plan-cat-head${collapsed?' collapsed':''}" data-catgroup="${esc(g.cat)}"><span class="cat-arrow">▾</span><span class="cat-name">${esc(label)}</span><span class="cat-count">${g.items.length}</span>${canDelete?`<button class="btn-icon" data-delcat="${esc(g.cat)}" title="Leere Kategorie löschen">🗑</button>`:''}</div>
+      <div class="plan-cat-body${collapsed?' collapsed':''}" data-catbody="${esc(g.cat)}">${g.items.map(itemHtml).join('')||`<div style="padding:12px 14px;color:var(--muted);font-size:11.5px">Noch kein Ausmass hier – per 🗂 zuordnen.</div>`}</div>`;
+  }).join('');
+  list.querySelectorAll('.plan-cat-head').forEach(h=>h.onclick=e=>{
+    if(e.target.closest('[data-delcat]'))return;
+    const cat=h.dataset.catgroup;
+    if(_takeoffCatCollapsed.has(cat))_takeoffCatCollapsed.delete(cat);else _takeoffCatCollapsed.add(cat);
+    const body=list.querySelector(`[data-catbody="${CSS.escape(cat)}"]`);
+    h.classList.toggle('collapsed');body.classList.toggle('collapsed');
+  });
+  list.querySelectorAll('[data-delcat]').forEach(b=>b.onclick=e=>{
+    e.stopPropagation();
+    _deleteTakeoffCategory(b.dataset.delcat);
+  });
+  list.querySelectorAll('[data-id]').forEach(el=>el.onclick=async e=>{if(e.target.closest('[data-del],[data-catbtn]'))return;openTakeoffEditor(await get('takeoffs',el.dataset.id));});
   list.querySelectorAll('[data-del]').forEach(b=>b.onclick=async e=>{
     e.stopPropagation();
     const t=await get('takeoffs',b.dataset.del);
@@ -8540,6 +8911,11 @@ async function renderTakeoffList(){
       if(_toState.takeoffId===b.dataset.del)_ttShowEmpty();
       await renderTakeoffList();
     });
+  });
+  list.querySelectorAll('[data-catbtn]').forEach(b=>b.onclick=async e=>{
+    e.stopPropagation();
+    const t=await get('takeoffs',b.dataset.catbtn);
+    _openTakeoffCategoryMenu(b,b.dataset.catbtn,t?t.category:'');
   });
 }
 function _ttShowEmpty(){
@@ -10253,18 +10629,29 @@ async function _loadAdminAccounts(){
     acc.name=body.querySelector(`[data-name="${id}"]`).value.trim();
     acc.role=body.querySelector(`[data-role="${id}"]`).value;
     acc.status=body.querySelector(`[data-status="${id}"]`).value;
-    for(const did of acc.dupIds){ if(did!==acc.id){ try{await cloudDeleteAccount(did);}catch(e){} try{await del('users',did);}catch(e){} } }
+    let failCount=0;
+    for(const did of acc.dupIds){
+      if(did===acc.id)continue;
+      try{await cloudDeleteAccount(did);}catch(e){failCount++;}
+      try{await del('users',did);}catch(e){}
+    }
     try{ await cloudUpdateAccount({id:acc.id,email:acc.email,name:acc.name,role:acc.role,status:acc.status,createdAt:nowISO()}); }catch(e){}
     const lu=await get('users',acc.id);if(lu){lu.name=acc.name;lu.role=acc.role;await put('users',lu);}
-    toast('Konto gespeichert',true);
+    if(failCount){ toast(`Achtung: ${failCount} Duplikat(e) konnten in der Cloud nicht entfernt werden (Berechtigung?) – sie könnten wieder auftauchen. Bitte erneut versuchen oder Supabase-Setup prüfen.`,false,true); }
+    else{ toast('Konto gespeichert und Duplikate entfernt',true); }
     await _loadAdminAccounts();
   });
   body.querySelectorAll('[data-delacc]').forEach(btn=>btn.onclick=async()=>{
     const id=btn.dataset.delacc;const acc=find(id);if(!acc)return;
     if(cloudIsAdmin(acc.email) && acc.dupIds.length<=1){toast('Das aktive Admin-Konto kann nicht entfernt werden');return;}
     if(!confirm(`Konto „${acc.name||acc.email}" entfernen? Die Person verliert den App-Zugang.`))return;
-    for(const did of acc.dupIds){ try{ await cloudDeleteAccount(did); }catch(e){} try{ await del('users',did); }catch(e){} }
-    toast('Konto entfernt');
+    let failCount=0;
+    for(const did of acc.dupIds){
+      try{ await cloudDeleteAccount(did); }catch(e){ failCount++; }
+      try{ await del('users',did); }catch(e){}
+    }
+    if(failCount){ toast(`Achtung: Konto konnte in der Cloud nicht vollständig entfernt werden (Berechtigung?) – es könnte wieder auftauchen.`,false,true); }
+    else{ toast('Konto entfernt',true); }
     await _loadAdminAccounts();
   });
 }
@@ -10340,8 +10727,12 @@ async function afterLogin(sessionUser){
   renderSyncPill('syncing');
   CURRENT_AUTH = sessionUser||null;
   try{
-    await cloudSyncUp();    // vorhandene lokale Daten zuerst hochladen
-    await cloudSyncDown();  // dann Cloud-Daten herunterladen (zusammenführen)
+    // WICHTIG: zuerst herunterladen (zeigt u.a. anderswo gelöschte Datensätze korrekt an),
+    // erst DANACH lokale Änderungen hochladen. Bei umgekehrter Reihenfolge könnte ein Gerät
+    // mit veraltetem lokalem Stand einen anderswo bereits gelöschten Datensatz versehentlich
+    // wieder in die Cloud hochladen, bevor es überhaupt geprüft hat, was aktuell dort steht.
+    await cloudSyncDown();
+    await cloudSyncUp();
     await cloudFlushQueue();
   }catch(e){ console.warn('Sync:',e.message); }
   // Konto-Register bei JEDEM Login sicherstellen (damit Admin alle Konten sieht)
