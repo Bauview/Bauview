@@ -1,19 +1,19 @@
 // BauView Service Worker
 //
-// Strategie: "Netz zuerst, Speicher nur als echter Rückfall" (network-first).
+// Strategie: "Netz zuerst, Speicher als echter Offline-Rückfall" (network-first).
 //   - Ist Internet da: IMMER die aktuellste Version vom Server holen und anzeigen.
 //     Nie eine veraltete, gespeicherte Version zeigen, solange online.
-//   - Erst wenn das Netz wirklich nicht erreichbar ist (echtes Offline): auf die zuletzt
-//     erfolgreich geladene Version aus dem Speicher zurückfallen.
-//   - Bei jedem erfolgreichen Online-Laden wird die gespeicherte Version automatisch aktualisiert.
+//   - Ist wirklich kein Internet da (z.B. auf der Baustelle): sofort auf die zuletzt
+//     erfolgreich geladene Version aus dem Speicher zurückfallen, damit das Programm trotzdem
+//     startet und nutzbar ist.
+//   - Bei jedem erfolgreichen Online-Laden wird die gespeicherte Version automatisch aktualisiert
+//     (das passiert also automatisch immer dann, wenn im Büro synchronisiert/gearbeitet wird).
 //
-// (Vorherige Version nutzte "Speicher zuerst" – das führte während der aktiven Entwicklung dazu,
-// dass Geräte zeitweise eine veraltete, bereits überholte Version anzeigten, obwohl online.
-// Für eine sich noch häufig ändernde App ist "Netz zuerst" das richtige Verhalten.)
-//
-// CACHE_VERSION bei grösseren Änderungen an DIESER Datei hochzählen, damit alte Caches sauber
-// entfernt werden. v2 hier bewusst hochgezählt, um alte v1-Caches (Stale-Zustand) zu verwerfen.
-const CACHE_VERSION = 'bauview-cache-v2';
+// CACHE_VERSION bei grösseren Änderungen an dieser Datei hochzählen.
+// v3: räumt beim ersten Aktivieren EINMALIG sämtliche zuvor angelegten Caches auf (unabhängig
+// von deren Namen) - das behebt hängengebliebene ältere Service-Worker-Zustände auf einzelnen
+// Geräten sauber, bevor als korrekt funktionierende Version weitergearbeitet wird.
+const CACHE_VERSION = 'bauview-cache-v3';
 const APP_URLS = ['./', './index.html'];
 const NETWORK_TIMEOUT_MS = 4000; // wie lange maximal aufs Netz gewartet wird, bevor auf den Speicher zurückgefallen wird
 
@@ -26,9 +26,13 @@ self.addEventListener('install', event => {
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_VERSION).map(k => caches.delete(k)))
-    ).then(() => self.clients.claim())
+    (async () => {
+      // ALLE bisherigen Caches entfernen (nicht nur die mit "falschem" Namen) – räumt zuverlässig
+      // auch ältere, evtl. hängengebliebene Service-Worker-Generationen auf einzelnen Geräten auf.
+      const keys = await caches.keys();
+      await Promise.all(keys.map(k => caches.delete(k)));
+      await self.clients.claim();
+    })()
   );
 });
 
@@ -50,6 +54,6 @@ self.addEventListener('fetch', event => {
         }
         return response;
       })
-      .catch(() => caches.match(event.request)) // Netz nicht erreichbar/zu langsam -> auf Speicher zurückfallen
+      .catch(() => caches.match(event.request)) // Netz nicht erreichbar/zu langsam -> auf Speicher zurückfallen (Offline-Nutzung)
   );
 });
