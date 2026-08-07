@@ -1,18 +1,21 @@
 // BauView Service Worker
-// Sorgt dafür, dass die App-Seite zuverlässig offline geladen werden kann, nicht nur "meistens"
-// über den normalen (unzuverlässigen) Browser-Cache.
 //
-// Strategie: "Cache, dann im Hintergrund aktualisieren" (stale-while-revalidate)
-//   - Ist die Seite schon im Cache: SOFORT daraus laden (funktioniert auch komplett offline).
-//   - Gleichzeitig im Hintergrund die neueste Version vom Netz holen und den Cache aktualisieren,
-//     damit man beim NÄCHSTEN Laden automatisch die neueste Version bekommt.
-//   - Ist noch nichts im Cache (allererster Aufruf) und kein Netz da: kann natürlich nicht laden,
-//     das ist unvermeidbar (die Seite muss mindestens einmal online geöffnet worden sein).
+// Strategie: "Netz zuerst, Speicher nur als echter Rückfall" (network-first).
+//   - Ist Internet da: IMMER die aktuellste Version vom Server holen und anzeigen.
+//     Nie eine veraltete, gespeicherte Version zeigen, solange online.
+//   - Erst wenn das Netz wirklich nicht erreichbar ist (echtes Offline): auf die zuletzt
+//     erfolgreich geladene Version aus dem Speicher zurückfallen.
+//   - Bei jedem erfolgreichen Online-Laden wird die gespeicherte Version automatisch aktualisiert.
 //
-// CACHE_VERSION bei grösseren Änderungen an DIESER Datei (nicht an der App selbst) hochzählen,
-// damit alte, evtl. inkompatible Caches sauber entfernt werden.
-const CACHE_VERSION = 'bauview-cache-v1';
+// (Vorherige Version nutzte "Speicher zuerst" – das führte während der aktiven Entwicklung dazu,
+// dass Geräte zeitweise eine veraltete, bereits überholte Version anzeigten, obwohl online.
+// Für eine sich noch häufig ändernde App ist "Netz zuerst" das richtige Verhalten.)
+//
+// CACHE_VERSION bei grösseren Änderungen an DIESER Datei hochzählen, damit alte Caches sauber
+// entfernt werden. v2 hier bewusst hochgezählt, um alte v1-Caches (Stale-Zustand) zu verwerfen.
+const CACHE_VERSION = 'bauview-cache-v2';
 const APP_URLS = ['./', './index.html'];
+const NETWORK_TIMEOUT_MS = 4000; // wie lange maximal aufs Netz gewartet wird, bevor auf den Speicher zurückgefallen wird
 
 self.addEventListener('install', event => {
   self.skipWaiting(); // neue Version sofort aktiv werden lassen, nicht erst beim nächsten kompletten Neustart
@@ -29,21 +32,24 @@ self.addEventListener('activate', event => {
   );
 });
 
+function timeout(ms){
+  return new Promise((_, reject) => setTimeout(() => reject(new Error('Netzwerk-Zeitlimit')), ms));
+}
+
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   // Nur eigene Seiten-Anfragen behandeln (nicht z.B. Supabase-API-Aufrufe abfangen/cachen)
   if (new URL(event.request.url).origin !== self.location.origin) return;
 
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      const networkFetch = fetch(event.request).then(response => {
+    Promise.race([fetch(event.request), timeout(NETWORK_TIMEOUT_MS)])
+      .then(response => {
         if (response && response.status === 200) {
           const clone = response.clone();
           caches.open(CACHE_VERSION).then(cache => cache.put(event.request, clone));
         }
         return response;
-      }).catch(() => cached); // offline -> auf den Cache zurückfallen
-      return cached || networkFetch; // sofort aus dem Cache, sonst aufs Netz warten
-    })
+      })
+      .catch(() => caches.match(event.request)) // Netz nicht erreichbar/zu langsam -> auf Speicher zurückfallen
   );
 });
