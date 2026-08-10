@@ -22,6 +22,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 input,select,textarea{font-family:inherit;font-size:16px}
 .hidden{display:none!important}
 img{max-width:100%;display:block}
+svg{display:block}
 
 #mobRoot{display:flex;flex-direction:column;height:100vh;height:100dvh}
 
@@ -78,24 +79,21 @@ img{max-width:100%;display:block}
 #mobNav{flex-shrink:0;display:flex;align-items:flex-end;border-top:1px solid var(--line);padding-bottom:var(--safe-bottom);position:relative;background:var(--paper)}
 #mobNav .mob-navbtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:11px 0 12px;color:var(--muted);border-top:3px solid transparent;min-height:58px;justify-content:center}
 #mobNav .mob-navbtn.active{color:var(--accent);border-top-color:var(--accent)}
-#mobNav .mob-navbtn i{font-size:25px}
 #mobNav .mob-navbtn span{font-size:11px;font-weight:500}
 #mobNav .mob-cam-wrap{flex:0 0 76px;display:flex;justify-content:center;align-items:flex-start;padding-top:0}
-#mobCamBtn{width:60px;height:60px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(0,0,0,.22);transform:translateY(-16px);flex-shrink:0}
+#mobCamBtn{width:60px;height:60px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(0,0,0,.22);transform:translateY(-8px);flex-shrink:0}
 #mobCamBtn:active{opacity:.85}
-#mobCamBtn i{font-size:27px}
 
 /* ---------- Detail-/Vollbild-Ansichten: BLEIBEN innerhalb mobBody, Fussleiste bleibt sichtbar ---------- */
 .mob-detail{position:absolute;inset:0;background:var(--paper);display:flex;flex-direction:column;z-index:5}
 .mob-ov-head{flex-shrink:0;display:flex;align-items:center;gap:8px;padding:10px 8px 10px;border-bottom:1px solid var(--line)}
 .mob-ov-back{display:flex;align-items:center;gap:4px;height:46px;padding:0 12px 0 6px;border-radius:23px;flex-shrink:0;color:var(--ink);font-size:15.5px;font-weight:500}
 .mob-ov-back:active{background:var(--hl)}
-.mob-ov-back i{font-size:24px}
 .mob-ov-title{flex:1;font-size:17px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mob-ov-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px 24px}
 
 /* Plan-Betrachter: eigene Zoom/Pan-Fläche, kein Seiten-Scroll */
-.mob-plan-viewer{flex:1;overflow:hidden;position:relative;background:var(--hl);touch-action:none}
+.mob-plan-viewer{flex:1;overflow:hidden;position:relative;background:var(--hl);touch-action:none;margin-bottom:10px}
 .mob-plan-canvas-wrap{position:absolute;top:0;left:0;transform-origin:0 0;will-change:transform}
 
 .mob-photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
@@ -118,6 +116,21 @@ img{max-width:100%;display:block}
 /* Kamera-/Neu-Mangel-Fluss */
 .mob-camera-input{display:none}
 
+/* ---------- Pläne: Listen-/Rasteransicht, Kategorien, Offline ---------- */
+.mob-viewtoggle-btn{display:flex;align-items:center;gap:6px;height:38px;padding:0 14px;border:1px solid var(--line);border-radius:20px;font-size:13px;font-weight:500;color:var(--muted)}
+.mob-viewtoggle-btn[data-active="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+.mob-cat-title{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;padding:14px 4px 6px}
+.mob-plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mob-plan-tile{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--hl)}
+.mob-plan-tile:active{opacity:.8}
+.mob-plan-tile-thumb{aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;background:#fff;overflow:hidden}
+.mob-plan-tile-thumb canvas{width:100%;height:100%;object-fit:contain}
+.mob-plan-tile-name{font-size:12.5px;font-weight:500;padding:8px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mob-offline-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.mob-offline-dot.is-offline{background:#2f7d54}
+.mob-ov-offline-btn{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ink);flex-shrink:0}
+.mob-ov-offline-btn:active{background:var(--hl)}
+
 /* ---------- Start-/Projektauswahl mit Büro-Logo ---------- */
 #projPickScreen{display:flex;flex-direction:column;height:100%;padding-top:calc(28px + var(--safe-top))}
 .pp-logo-wrap{display:flex;flex-direction:column;align-items:center;padding:0 20px 22px}
@@ -136,7 +149,6 @@ img{max-width:100%;display:block}
 .mob-logout-btn{width:100%;height:48px;border:1px solid var(--danger);color:var(--danger);border-radius:12px;font-size:15px;font-weight:500}
 .mob-logout-btn:active{background:var(--danger-bg)}
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icons.min.css">
 </head>
 <body>
 <div id="mobRoot"></div>
@@ -184,6 +196,34 @@ let _sb=null;
 let state={ user:null, projectId:null, project:null, view:'plans' };
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+// Direkt eingebettete Strich-Icons (kein externes Icon-Schriftpaket mehr nötig) – zuverlässig,
+// funktioniert garantiert auch bei schlechter/blockierter Verbindung zu Drittanbietern.
+const ICON_PATHS={
+  settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+  'folder-off':'<path d="M3 3l18 18"/><path d="M4 4c-.6 0-1 .4-1 1v13c0 .6.4 1 1 1h13.5M21 16V8a1 1 0 0 0-1-1h-8l-2-2H6"/>',
+  building:'<rect x="4" y="2" width="16" height="20" rx="1"/><path d="M9 22v-4h6v4M9 8h1M14 8h1M9 12h1M14 12h1M9 16h1M14 16h1"/>',
+  'chevron-right':'<path d="M9 6l6 6-6 6"/>',
+  'chevron-left':'<path d="M15 6l-6 6 6 6"/>',
+  ruler:'<path d="M3 17l4-4 2 2 8-8 4 4-10 10-4-4z"/><path d="M14 6l2 2M11 9l2 2M8 12l2 2"/>',
+  'alert-triangle':'<path d="M12 3l10 18H2L12 3z"/><path d="M12 10v4M12 17h.01"/>',
+  camera:'<path d="M4 8a2 2 0 0 1 2-2h1.5l1-1.5h7l1 1.5H18a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8z"/><circle cx="12" cy="13" r="3.5"/>',
+  inbox:'<path d="M3 12h4.5l1.5 3h6l1.5-3H21"/><path d="M5.5 5h13l2.5 7v7a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-7l2.5-7z"/>',
+  folder:'<path d="M3 6a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6z"/>',
+  'alert-circle':'<circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/>',
+  'file-text':'<path d="M6 2h9l5 5v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/><path d="M9 13h6M9 17h6M9 9h2"/>',
+  'clipboard-text':'<rect x="5" y="4" width="14" height="17" rx="1"/><path d="M9 2h6v3H9z"/><path d="M8 11h8M8 15h5"/>',
+  file:'<path d="M6 2h9l5 5v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/>',
+  'layout-grid':'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+  list:'<path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/>',
+  download:'<path d="M12 3v13M7 11l5 5 5-5"/><path d="M4 19h16"/>',
+  check:'<path d="M4 12l5 5 11-11"/>',
+  home:'<path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/>',
+};
+function ICON(name,size){
+  const d=ICON_PATHS[name]||'';
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:${size||22}px;height:${size||22}px;flex-shrink:0" aria-hidden="true">${d}</svg>`;
+}
 
 function toast(msg){
   let t=$('mobToast');
@@ -313,7 +353,6 @@ let _mockDefectsStore=null; // veränderbare Kopie, damit Status-Änderungen/neu
 function renderLogin(){
   $('mobRoot').innerHTML=`
     <div id="loginScreen">
-      <div class="login-logo"></div>
       <h1>BauView Mobil</h1>
       <p>Pläne, Mängel und Dokumente unterwegs</p>
       <div class="mob-field"><label>E-Mail</label><input id="mlEmail" type="email" autocomplete="username" placeholder="name@helbling-architektur.ch"></div>
@@ -356,20 +395,20 @@ function renderStartScreen(){
   $('mobRoot').innerHTML=`
     <div id="projPickScreen">
       <div class="pp-logo-wrap">
-        <div class="pp-logo">${orgSettings.headerLogo?`<img src="${esc(orgSettings.headerLogo)}">`:''}</div>
+        ${orgSettings.headerLogo?`<div class="pp-logo"><img src="${esc(orgSettings.headerLogo)}"></div>`:''}
         <h1>BauView</h1>
         <p>Projekt wählen</p>
       </div>
       <div class="mob-list" id="projPickList" style="flex:1"></div>
       <div style="padding:12px 16px calc(14px + var(--safe-bottom))">
-        <button class="mob-btn-secondary" id="ppSettingsBtn"><i class="ti ti-settings" aria-hidden="true"></i>Einstellungen</button>
+        <button class="mob-btn-secondary" id="ppSettingsBtn">${ICON('settings')}Einstellungen</button>
       </div>
     </div>`;
   const wrap=$('projPickList');
   if(!projects.length){
-    wrap.innerHTML=`<div class="mob-empty"><i class="ti ti-folder-off" aria-hidden="true"></i><p>Für dieses Konto ist noch kein Projekt freigegeben.</p></div>`;
+    wrap.innerHTML=`<div class="mob-empty">${ICON('folder-off',34)}<p>Für dieses Konto ist noch kein Projekt freigegeben.</p></div>`;
   }else{
-    wrap.innerHTML=projects.map(p=>`<div class="mob-card" data-pid="${esc(p.id)}"><i class="ti ti-building" style="font-size:22px;color:var(--muted);flex-shrink:0" aria-hidden="true"></i><div class="mob-card-main"><div class="mob-card-title">${esc(p.name)}</div><div class="mob-card-sub">${esc(p.number||'')}</div></div><i class="ti ti-chevron-right mob-chev" aria-hidden="true"></i></div>`).join('');
+    wrap.innerHTML=projects.map(p=>`<div class="mob-card" data-pid="${esc(p.id)}"><span style="color:var(--muted)">${ICON('building')}</span><div class="mob-card-main"><div class="mob-card-title">${esc(p.name)}</div><div class="mob-card-sub">${esc(p.number||'')}</div></div><span class="mob-chev">${ICON('chevron-right',20)}</span></div>`).join('');
     wrap.querySelectorAll('.mob-card').forEach(c=>c.onclick=()=>{
       state.project=projects.find(p=>p.id===c.dataset.pid);
       state.projectId=state.project.id;
@@ -388,7 +427,7 @@ function renderSettingsScreen(){
   $('mobRoot').innerHTML=`
     <div style="display:flex;flex-direction:column;height:100%">
       <div class="mob-ov-head">
-        <button class="mob-ov-back" id="setBack"><i class="ti ti-chevron-left" aria-hidden="true"></i>${cameFromApp?'Zurück':'Projekte'}</button>
+        <button class="mob-ov-back" id="setBack">${ICON('chevron-left',24)}${cameFromApp?'Zurück':'Projekte'}</button>
         <div class="mob-ov-title">Einstellungen</div>
       </div>
       <div class="mob-ov-body">
@@ -482,22 +521,24 @@ function renderSettingsScreen(){
 function renderApp(){
   $('mobRoot').innerHTML=`
     <header id="mobHeader">
+      <button id="mobHomeBtn" aria-label="Zur Projektübersicht" style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0">${ICON('home',21)}</button>
       <div class="htitle"><div class="proj">${esc(state.project.name)}</div><div class="view" id="mobViewTitle">Pläne</div></div>
-      <button id="mobSettingsBtn" aria-label="Einstellungen" style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted)"><i class="ti ti-settings" style="font-size:22px" aria-hidden="true"></i></button>
+      <button id="mobSettingsBtn" aria-label="Einstellungen" style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted)">${ICON('settings',22)}</button>
       <button id="mobRefreshBtn" aria-label="Aktualisieren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 4v5h-5"/></svg></button>
     </header>
     <div id="mobBody"></div>
     <nav id="mobNav">
-      <button class="mob-navbtn" data-view="plans"><i class="ti ti-ruler-2" aria-hidden="true"></i><span>Pläne</span></button>
-      <button class="mob-navbtn" data-view="defects"><i class="ti ti-alert-triangle" aria-hidden="true"></i><span>Mängel</span></button>
-      <div class="mob-cam-wrap"><button id="mobCamBtn" aria-label="Foto aufnehmen, neuer Mangel"><i class="ti ti-camera" aria-hidden="true"></i></button></div>
-      <button class="mob-navbtn" data-view="pendenzen"><i class="ti ti-inbox" aria-hidden="true"></i><span>Pendenzen</span></button>
-      <button class="mob-navbtn" data-view="docs"><i class="ti ti-folder" aria-hidden="true"></i><span>Dokumente</span></button>
+      <button class="mob-navbtn" data-view="plans">${ICON('ruler')}<span>Pläne</span></button>
+      <button class="mob-navbtn" data-view="defects">${ICON('alert-triangle')}<span>Mängel</span></button>
+      <div class="mob-cam-wrap"><button id="mobCamBtn" aria-label="Foto aufnehmen, neuer Mangel">${ICON('camera',27)}</button></div>
+      <button class="mob-navbtn" data-view="pendenzen">${ICON('inbox')}<span>Pendenzen</span></button>
+      <button class="mob-navbtn" data-view="docs">${ICON('folder')}<span>Dokumente</span></button>
     </nav>`;
   $('mobNav').querySelectorAll('.mob-navbtn').forEach(b=>b.onclick=()=>switchView(b.dataset.view));
   $('mobCamBtn').onclick=()=>startNewDefectFlow();
   $('mobRefreshBtn').onclick=()=>loadView(state.view,true);
   $('mobSettingsBtn').onclick=()=>renderSettingsScreen();
+  $('mobHomeBtn').onclick=()=>renderStartScreen();
   switchView('plans');
 }
 
@@ -518,30 +559,121 @@ async function loadView(v,forceRefresh){
     else if(v==='pendenzen') await renderPendenzenView(body);
     else if(v==='docs') await renderDocsView(body);
   }catch(e){
-    body.innerHTML=`<div class="mob-empty"><i class="ti ti-alert-circle" aria-hidden="true"></i><p>Laden fehlgeschlagen. Bitte Internetverbindung prüfen und erneut versuchen.</p></div>`;
+    body.innerHTML=`<div class="mob-empty">${ICON('alert-circle',34)}<p>Laden fehlgeschlagen. Bitte Internetverbindung prüfen und erneut versuchen.</p></div>`;
     console.warn('[Mobil] Ansicht-Fehler:',e.message);
   }
   if(spinBtn)spinBtn.classList.remove('spinning');
 }
 
+/* ---------- Pläne offline verfügbar machen (bewusst nur auf Wunsch, nie automatisch) ---------- */
+// Nutzt die Cache-API des Browsers, um einzelne, vom Nutzer ausgewählte Plan-PDFs lokal
+// verfügbar zu halten. Im Normalfall (nicht ausgewählt) wird NIE etwas gespeichert – jeder Plan
+// wird bei jedem Öffnen frisch von der Cloud geladen, wie gewünscht.
+const OFFLINE_CACHE_NAME='bauview-offline-plans-v1';
+// Die Speicher-API des Browsers verlangt einen gültigen, URL-artigen Schlüssel (kein beliebiger
+// Text) – daher eine synthetische, aber gültige Adresse statt einer einfachen Zeichenkette.
+const _offlineCacheKey=planId=>'https://bauview-offline.local/plan/'+encodeURIComponent(planId);
+async function isPlanOffline(planId){
+  try{ const c=await caches.open(OFFLINE_CACHE_NAME); return !!(await c.match(_offlineCacheKey(planId))); }catch(e){ return false; }
+}
+async function makePlanOffline(planId, pdfUrl){
+  try{
+    const resp=await fetch(pdfUrl);
+    if(!resp.ok) throw new Error('Herunterladen fehlgeschlagen');
+    const c=await caches.open(OFFLINE_CACHE_NAME);
+    await c.put(_offlineCacheKey(planId), resp.clone());
+    return true;
+  }catch(e){ return false; }
+}
+async function removePlanOffline(planId){
+  try{ const c=await caches.open(OFFLINE_CACHE_NAME); await c.delete(_offlineCacheKey(planId)); }catch(e){}
+}
+async function getOfflinePlanBlob(planId){
+  try{ const c=await caches.open(OFFLINE_CACHE_NAME); const r=await c.match(_offlineCacheKey(planId)); return r?await r.blob():null; }catch(e){ return null; }
+}
+
 /* ============================================================
-   PLÄNE — immer live geladen, NIE lokal gespeichert
+   PLÄNE — immer live geladen (ausser explizit als offline markiert),
+   NIE automatisch lokal gespeichert. Listen- und Rasteransicht,
+   nach Kategorien gruppiert.
    ============================================================ */
+let _planViewMode=localStorage.getItem('bauview_plan_viewmode')||'list';
 async function renderPlansView(body){
   const plans=await fetchTable('plans',state.projectId);
   plans.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
   if(!plans.length){
-    body.innerHTML=`<div class="mob-empty"><i class="ti ti-ruler-2" aria-hidden="true"></i><p>Noch keine Pläne in diesem Projekt.</p></div>`;
+    body.innerHTML=`<div class="mob-empty">${ICON('ruler',34)}<p>Noch keine Pläne in diesem Projekt.</p></div>`;
     return;
   }
-  body.innerHTML=`<div class="mob-list" id="planListWrap"></div>`;
+  body.innerHTML=`
+    <div class="mob-view">
+      <div style="display:flex;gap:8px;padding:10px 14px 0">
+        <button class="mob-viewtoggle-btn" id="planViewList" data-active="${_planViewMode==='list'}">${ICON('list',18)}Liste</button>
+        <button class="mob-viewtoggle-btn" id="planViewGrid" data-active="${_planViewMode==='grid'}">${ICON('layout-grid',18)}Raster</button>
+      </div>
+      <div class="mob-list" id="planListWrap"></div>
+    </div>`;
+  $('planViewList').onclick=()=>{ _planViewMode='list'; localStorage.setItem('bauview_plan_viewmode','list'); renderPlansView(body); };
+  $('planViewGrid').onclick=()=>{ _planViewMode='grid'; localStorage.setItem('bauview_plan_viewmode','grid'); renderPlansView(body); };
+
+  // Nach Kategorie gruppieren (entspricht der Ordnerstruktur im Browser-Tool)
+  const groups={};
+  plans.forEach(p=>{ const k=p.category||'Ohne Kategorie'; (groups[k]=groups[k]||[]).push(p); });
+  const catNames=Object.keys(groups).sort((a,b)=>a==='Ohne Kategorie'?1:b==='Ohne Kategorie'?-1:a.localeCompare(b));
+
   const wrap=$('planListWrap');
-  wrap.innerHTML=plans.map(p=>`<div class="mob-card" data-id="${esc(p.id)}">
-    <i class="ti ti-file-text" style="font-size:22px;color:var(--muted);flex-shrink:0" aria-hidden="true"></i>
-    <div class="mob-card-main"><div class="mob-card-title">${esc(p.name)}</div><div class="mob-card-sub">${p.category?esc(p.category):'Version '+(p.currentVersion||1)}</div></div>
-    <i class="mob-chev">›</i>
-  </div>`).join('');
-  wrap.querySelectorAll('.mob-card').forEach(c=>c.onclick=()=>openPlanViewer(plans.find(p=>p.id===c.dataset.id)));
+  wrap.innerHTML=catNames.map(cat=>`
+    <div class="mob-cat-title">${esc(cat)}</div>
+    <div class="${_planViewMode==='grid'?'mob-plan-grid':''}" data-cat="${esc(cat)}"></div>
+  `).join('');
+
+  for(const cat of catNames){
+    const catWrap=wrap.querySelector(`[data-cat="${CSS.escape(cat)}"]`);
+    if(_planViewMode==='list'){
+      catWrap.innerHTML=groups[cat].map(p=>`<div class="mob-card" data-id="${esc(p.id)}">
+        <span style="color:var(--muted)">${ICON('file-text')}</span>
+        <div class="mob-card-main"><div class="mob-card-title">${esc(p.name)}</div><div class="mob-card-sub">Version ${p.currentVersion||1}</div></div>
+        <span class="mob-offline-dot" data-offid="${esc(p.id)}"></span>
+        <span class="mob-chev">${ICON('chevron-right',20)}</span>
+      </div>`).join('');
+    }else{
+      catWrap.innerHTML=groups[cat].map(p=>`<div class="mob-plan-tile" data-id="${esc(p.id)}">
+        <div class="mob-plan-tile-thumb" id="thumb-${esc(p.id)}"><div class="mob-loading" style="position:static;font-size:11px">Lädt…</div></div>
+        <div class="mob-plan-tile-name">${esc(p.name)}</div>
+        <span class="mob-offline-dot" data-offid="${esc(p.id)}" style="position:absolute;top:6px;right:6px"></span>
+      </div>`).join('');
+      groups[cat].forEach(p=>_renderPlanThumb(p));
+    }
+  }
+  wrap.querySelectorAll('[data-id]').forEach(c=>c.onclick=()=>openPlanViewer(plans.find(p=>p.id===c.dataset.id)));
+  // Offline-Markierungen anzeigen (grüner Punkt bei bereits heruntergeladenen Plänen)
+  plans.forEach(async p=>{
+    if(await isPlanOffline(p.id)){
+      wrap.querySelectorAll(`[data-offid="${CSS.escape(p.id)}"]`).forEach(el=>el.classList.add('is-offline'));
+    }
+  });
+}
+
+// Kleine Vorschau (erste Seite) für die Rasteransicht rendern – wird NICHT dauerhaft gespeichert,
+// nur solange die Ansicht offen ist (reines Arbeitsspeicher-Bild für die Anzeige).
+async function _renderPlanThumb(plan){
+  const el=$('thumb-'+plan.id); if(!el)return;
+  try{
+    const ver=(plan.versions||[]).find(v=>v.v===plan.currentVersion)||plan.versions?.[plan.versions.length-1];
+    const src=ver?.pdfUrl;
+    if(!src) throw new Error('kein PDF');
+    const doc=await pdfjsLib.getDocument({url:src}).promise;
+    const page=await doc.getPage(1);
+    const base=page.getViewport({scale:1});
+    const scale=160/base.width;
+    const vp=page.getViewport({scale});
+    const canvas=document.createElement('canvas');
+    canvas.width=vp.width; canvas.height=vp.height;
+    await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
+    if($('thumb-'+plan.id)){ el.innerHTML=''; el.appendChild(canvas); }
+  }catch(e){
+    if($('thumb-'+plan.id)) el.innerHTML=`<span style="color:var(--muted)">${ICON('file-text',28)}</span>`;
+  }
 }
 
 async function openPlanViewer(plan){
@@ -549,29 +681,62 @@ async function openPlanViewer(plan){
   ov.className='mob-detail';
   ov.innerHTML=`
     <div class="mob-ov-head">
-      <button class="mob-ov-back" id="planOvBack"><i class="ti ti-chevron-left" aria-hidden="true"></i>Pläne</button>
+      <button class="mob-ov-back" id="planOvBack">${ICON('chevron-left',24)}Pläne</button>
       <div class="mob-ov-title">${esc(plan.name)}</div>
+      <button class="mob-ov-offline-btn" id="planOfflineBtn" aria-label="Offline verfügbar machen">${ICON('download',20)}</button>
     </div>
     <div class="mob-plan-viewer" id="planViewerArea">
       <div class="mob-loading" style="position:absolute;inset:0">Plan wird geladen…</div>
     </div>`;
   $('mobBody').appendChild(ov);
-  $('planOvBack').onclick=()=>ov.remove();
+  $('planOvBack').onclick=()=>{ ov.remove(); if(state.view==='plans') loadView('plans'); };
+
+  const offlineBtn=$('planOfflineBtn');
+  const refreshOfflineBtn=async()=>{
+    const off=await isPlanOffline(plan.id);
+    offlineBtn.innerHTML=off?ICON('check',20):ICON('download',20);
+    offlineBtn.title=off?'Offline verfügbar – erneut antippen zum Entfernen':'Für offline verfügbar machen';
+    offlineBtn.dataset.off=off?'1':'0';
+  };
+  await refreshOfflineBtn();
+  offlineBtn.onclick=async()=>{
+    const ver=(plan.versions||[]).find(v=>v.v===plan.currentVersion)||plan.versions?.[plan.versions.length-1];
+    if(offlineBtn.dataset.off==='1'){
+      await removePlanOffline(plan.id); toast('Nicht mehr offline verfügbar');
+    }else{
+      if(!ver?.pdfUrl){ toast('Kein Plan-Dokument vorhanden'); return; }
+      offlineBtn.innerHTML=ICON('download',20); offlineBtn.style.opacity='.5';
+      const ok=await makePlanOffline(plan.id, ver.pdfUrl);
+      offlineBtn.style.opacity='1';
+      toast(ok?'Für offline verfügbar gemacht':'Herunterladen fehlgeschlagen');
+    }
+    await refreshOfflineBtn();
+  };
+
   try{
     const ver=(plan.versions||[]).find(v=>v.v===plan.currentVersion)||plan.versions?.[plan.versions.length-1];
     const src=ver?.pdfUrl;
     if(!src) throw new Error('Kein Plan-Dokument hinterlegt.');
-    // Direkt von der Cloud laden, NICHT im Gerät ablegen (auch nicht zwischenspeichern).
-    const doc=await pdfjsLib.getDocument({url:src}).promise;
+    // Erst prüfen, ob eine offline gespeicherte Version vorliegt (nur wenn zuvor bewusst
+    // ausgewählt) – sonst wie gewünscht immer frisch von der Cloud laden, nie automatisch
+    // zwischenspeichern.
+    const offlineBlob=await getOfflinePlanBlob(plan.id);
+    const docSrc=offlineBlob?{data:await offlineBlob.arrayBuffer()}:{url:src};
+    const doc=await pdfjsLib.getDocument(docSrc).promise;
     const page=await doc.getPage(1);
     const base=page.getViewport({scale:1});
     const area=$('planViewerArea');
     const areaW=area.clientWidth, areaH=area.clientHeight;
-    const fitScale=Math.min(areaW/base.width, areaH/base.height)*2; // *2 = Grundschärfe für Zoom
+    // Höhere Grundauflösung (x3.5 statt x2) für spürbar mehr Zoom-Spielraum, bevor es
+    // verschwommen wirkt – das PDF wird einmalig hochauflösend gerendert, danach nur noch
+    // (verlustfrei) vergrössert/verschoben dargestellt.
+    const fitScale=Math.min(areaW/base.width, areaH/base.height)*3.5;
     const vp=page.getViewport({scale:fitScale});
     const canvas=document.createElement('canvas');
     canvas.width=vp.width; canvas.height=vp.height;
-    await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
+    const ctx=canvas.getContext('2d');
+    ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
+    await page.render({canvasContext:ctx,viewport:vp}).promise;
     area.innerHTML='';
     const wrapEl=document.createElement('div');
     wrapEl.className='mob-plan-canvas-wrap';
@@ -581,38 +746,55 @@ async function openPlanViewer(plan){
     area.appendChild(wrapEl);
     _attachPinchPan(area, wrapEl, initialScale, vp.width, vp.height);
   }catch(e){
-    $('planViewerArea').innerHTML=`<div class="mob-empty" style="position:absolute;inset:0"><i class="ti ti-alert-circle" aria-hidden="true"></i><p>Plan konnte nicht geladen werden. Bitte Internetverbindung prüfen.</p></div>`;
+    $('planViewerArea').innerHTML=`<div class="mob-empty" style="position:absolute;inset:0">${ICON('alert-circle',34)}<p>Plan konnte nicht geladen werden. Bitte Internetverbindung prüfen.</p></div>`;
   }
 }
 
-// Einfaches, robustes Pinch-Zoom + Pan per Touch (ohne Bibliothek, minimaler Code).
+// Pinch-Zoom + Pan per Touch: korrekte, ankerpunkt-erhaltende Mathematik (vorherige Version
+// hatte doppelte/tote Berechnungen und keine Begrenzung, was zu Sprüngen beim Zoomen führte).
 function _attachPinchPan(area, el, initialScale, contentW, contentH){
   let scale=initialScale, tx=(area.clientWidth-contentW*initialScale)/2, ty=(area.clientHeight-contentH*initialScale)/2;
+  const minScale=initialScale*0.8, maxScale=initialScale*8;
   const apply=()=>{ el.style.transform=`translate(${tx}px,${ty}px) scale(${scale})`; };
+  // Verhindert, dass der Plan komplett aus dem sichtbaren Bereich herausgeschoben werden kann
+  // (mindestens 60px des Inhalts bleiben immer sichtbar) – das "Springen" entstand u.a. dadurch,
+  // dass der Inhalt beliebig weit weggeschoben werden konnte.
+  const clamp=()=>{
+    const w=contentW*scale, h=contentH*scale, areaW=area.clientWidth, areaH=area.clientHeight;
+    const minVisible=60;
+    tx=Math.min(areaW-minVisible, Math.max(minVisible-w, tx));
+    ty=Math.min(areaH-minVisible, Math.max(minVisible-h, ty));
+  };
   apply();
-  let touches=[], start=null;
+  let start=null;
   const dist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
   const mid=t=>({x:(t[0].clientX+t[1].clientX)/2,y:(t[0].clientY+t[1].clientY)/2});
-  area.addEventListener('touchstart',e=>{
-    touches=[...e.touches];
+  const beginGesture=touches=>{
     start={scale,tx,ty,d:touches.length===2?dist(touches):0,m:touches.length===2?mid(touches):{x:touches[0].clientX,y:touches[0].clientY},t0:touches[0]};
-  },{passive:true});
+  };
+  area.addEventListener('touchstart',e=>{ beginGesture([...e.touches]); },{passive:true});
   area.addEventListener('touchmove',e=>{
     e.preventDefault();
     const now=[...e.touches];
-    if(now.length===2&&start.d){
+    if(!start){ beginGesture(now); return; }
+    const rect=area.getBoundingClientRect();
+    if(now.length===2 && start.d){
       const nd=dist(now), nm=mid(now);
-      const ns=Math.min(6,Math.max(initialScale*0.6,start.scale*(nd/start.d)));
-      tx=start.tx+(nm.x-start.m.x)-(nm.x-area.getBoundingClientRect().left)*(ns/start.scale-1)+ (ns-start.scale)*0;
-      tx=nm.x-area.getBoundingClientRect().left-((start.m.x-area.getBoundingClientRect().left-start.tx)/start.scale)*ns;
-      ty=nm.y-area.getBoundingClientRect().top-((start.m.y-area.getBoundingClientRect().top-start.ty)/start.scale)*ns;
+      const ns=Math.min(maxScale,Math.max(minScale,start.scale*(nd/start.d)));
+      // Ankerpunkt (Mitte zwischen den beiden Fingern) bleibt an derselben Bildschirmposition
+      const anchorX=start.m.x-rect.left, anchorY=start.m.y-rect.top;
+      const contentAnchorX=(anchorX-start.tx)/start.scale, contentAnchorY=(anchorY-start.ty)/start.scale;
+      tx=(nm.x-rect.left)-contentAnchorX*ns;
+      ty=(nm.y-rect.top)-contentAnchorY*ns;
       scale=ns;
-    }else if(now.length===1&&start.t0){
+    }else if(now.length===1 && start.t0){
       tx=start.tx+(now[0].clientX-start.t0.clientX);
       ty=start.ty+(now[0].clientY-start.t0.clientY);
     }
+    clamp();
     apply();
   },{passive:false});
+  area.addEventListener('touchend',e=>{ beginGesture([...e.touches]); },{passive:true});
 }
 
 /* ============================================================
@@ -634,13 +816,13 @@ async function renderDefectsView(body){
     </div>`;
   const wrap=$('defListWrap');
   if(!defects.length){
-    wrap.innerHTML=`<div class="mob-empty"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>Noch keine Mängel erfasst.</p></div>`;
+    wrap.innerHTML=`<div class="mob-empty">${ICON('alert-triangle')}<p>Noch keine Mängel erfasst.</p></div>`;
   }else{
     wrap.innerHTML=defects.map(d=>`<div class="mob-card" data-id="${esc(d.id)}">
       <span class="mob-dot" style="background:${STATUS_COLORS[d.status]||'var(--muted)'}"></span>
       ${d.photos&&d.photos[0]?`<img class="mob-card-thumb" src="${esc(d.photos[0])}">`:''}
       <div class="mob-card-main"><div class="mob-card-title">#${String(d.num||0).padStart(3,'0')} ${esc(d.title||'Ohne Titel')}</div><div class="mob-card-sub">${esc([d.floor,d.room].filter(Boolean).join(' · ')||d.status)}</div></div>
-      <i class="ti ti-chevron-right mob-chev" aria-hidden="true"></i>
+      <span class="mob-chev">${ICON('chevron-right',20)}</span>
     </div>`).join('');
     wrap.querySelectorAll('.mob-card').forEach(c=>c.onclick=()=>openDefectDetail(defects.find(d=>d.id===c.dataset.id)));
   }
@@ -651,7 +833,7 @@ async function openDefectDetail(d){
   ov.className='mob-detail';
   ov.innerHTML=`
     <div class="mob-ov-head">
-      <button class="mob-ov-back" id="defOvBack"><i class="ti ti-chevron-left" aria-hidden="true"></i>Mängel</button>
+      <button class="mob-ov-back" id="defOvBack">${ICON('chevron-left',24)}Mängel</button>
     </div>
     <div class="mob-ov-body">
       <div class="mob-field-ro"><div class="l">#${String(d.num||0).padStart(3,'0')}</div><div class="v" style="font-size:19px;font-weight:600">${esc(d.title||'')}</div></div>
@@ -666,7 +848,7 @@ async function openDefectDetail(d){
       ${d.due?`<div class="mob-field-ro"><div class="l">Frist</div><div class="v">${esc(d.due)}</div></div>`:''}
       <div class="mob-field-ro"><div class="l">Fotos</div>
         <div class="mob-photo-grid" id="defPhotoGrid">${(d.photos||[]).map(p=>`<img src="${esc(p)}">`).join('')}</div>
-        <button class="mob-btn-secondary" id="defAddPhotoBtn" style="margin-top:12px"><i class="ti ti-camera" aria-hidden="true"></i>Foto hinzufügen</button>
+        <button class="mob-btn-secondary" id="defAddPhotoBtn" style="margin-top:12px">${ICON('camera',27)}Foto hinzufügen</button>
         <input type="file" accept="image/*" capture="environment" class="mob-camera-input" id="defAddPhotoInput">
       </div>
     </div>`;
@@ -726,7 +908,7 @@ async function renderPendenzenView(body){
     ...notes.filter(n=>n.due).map(n=>({title:n.title||n.text?.slice(0,60),sub:[n.assignee,n.due].filter(Boolean).join(' · '),kind:'Notiz'})),
   ];
   if(!items.length){
-    body.innerHTML=`<div class="mob-empty"><i class="ti ti-inbox" aria-hidden="true"></i><p>Keine offenen Pendenzen.</p></div>`;
+    body.innerHTML=`<div class="mob-empty">${ICON('inbox')}<p>Keine offenen Pendenzen.</p></div>`;
     return;
   }
   body.innerHTML=`<div class="mob-list" id="pendListWrap"></div>`;
@@ -742,16 +924,16 @@ async function renderPendenzenView(body){
 async function renderDocsView(body){
   const [protocols,files]=await Promise.all([fetchTable('protocols',state.projectId),fetchTable('files',state.projectId)]);
   const items=[
-    ...protocols.map(p=>({title:p.title||'Protokoll',sub:p.date||'',kind:'Protokoll',url:p.pdfUrl||null,icon:'ti-clipboard-text'})),
-    ...files.map(f=>({title:f.name||'Datei',sub:f.date||'',kind:'Datei',url:f.url||null,icon:'ti-file'})),
+    ...protocols.map(p=>({title:p.title||'Protokoll',sub:p.date||'',kind:'Protokoll',url:p.pdfUrl||null,icon:'clipboard-text'})),
+    ...files.map(f=>({title:f.name||'Datei',sub:f.date||'',kind:'Datei',url:f.url||null,icon:'file'})),
   ];
   if(!items.length){
-    body.innerHTML=`<div class="mob-empty"><i class="ti ti-folder" aria-hidden="true"></i><p>Keine Dokumente vorhanden.</p></div>`;
+    body.innerHTML=`<div class="mob-empty">${ICON('folder')}<p>Keine Dokumente vorhanden.</p></div>`;
     return;
   }
   body.innerHTML=`<div class="mob-list" id="docListWrap"></div>`;
   $('docListWrap').innerHTML=items.map(it=>`<div class="mob-card" data-url="${it.url?esc(it.url):''}" style="${it.url?'':'opacity:.55'}">
-    <i class="ti ${it.icon}" style="font-size:22px;color:var(--muted);flex-shrink:0" aria-hidden="true"></i>
+    <span style="color:var(--muted)">${ICON(it.icon)}</span>
     <div class="mob-card-main"><div class="mob-card-title">${esc(it.title)}</div><div class="mob-card-sub">${esc(it.kind)}${it.sub?' · '+esc(it.sub):''}</div></div>
     ${it.url?'<i class="mob-chev">›</i>':''}
   </div>`).join('');
