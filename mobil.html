@@ -346,7 +346,7 @@ async function afterLogin(authUser){
     state.userProfile=userRows?fromRow(userRows):{id:authUser.id,email:authUser.email,name:authUser.email};
   }catch(e){ state.userProfile={id:authUser.id,email:authUser.email,name:authUser.email}; }
   // Projekte holen, an denen der Benutzer beteiligt ist
-  const {data:projRows}=await _sb.from('projects').select('*').or(`ownerId.eq.${authUser.id},members.cs.{${authUser.id}}`);
+  const {data:projRows}=await _sb.from('projects').select('*');
   state.projects=(projRows||[]).map(fromRow);
   renderStartScreen();
 }
