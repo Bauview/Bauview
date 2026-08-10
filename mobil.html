@@ -119,7 +119,8 @@ svg{display:block}
 /* ---------- Pläne: Listen-/Rasteransicht, Kategorien, Offline ---------- */
 .mob-viewtoggle-btn{display:flex;align-items:center;gap:6px;height:38px;padding:0 14px;border:1px solid var(--line);border-radius:20px;font-size:13px;font-weight:500;color:var(--muted)}
 .mob-viewtoggle-btn[data-active="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
-.mob-cat-title{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;padding:14px 4px 6px}
+.mob-cat-title{display:flex;align-items:center;justify-content:space-between;width:100%;font-size:13px;font-weight:600;color:var(--text-primary,#1a1a1a);text-transform:uppercase;letter-spacing:.3px;padding:14px 4px 8px;min-height:30px}
+.mob-cat-chevron{display:flex;color:var(--muted);transition:transform .15s}
 .mob-plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .mob-plan-tile{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--hl)}
 .mob-plan-tile:active{opacity:.8}
@@ -134,7 +135,8 @@ svg{display:block}
 /* ---------- Start-/Projektauswahl mit Büro-Logo ---------- */
 #projPickScreen{display:flex;flex-direction:column;height:100%;padding-top:calc(28px + var(--safe-top))}
 .pp-logo-wrap{display:flex;flex-direction:column;align-items:center;padding:0 20px 22px}
-.pp-logo{width:60px;height:60px;border-radius:16px;background:var(--accent);margin-bottom:12px}
+.pp-logo{width:64px;height:64px;border-radius:16px;background:var(--hl);margin-bottom:12px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:8px}
+.pp-logo img{width:100%;height:100%;object-fit:contain}
 .pp-logo img{width:100%;height:100%;object-fit:contain;border-radius:16px}
 .pp-logo-wrap h1{font-size:19px;font-weight:600}
 .pp-logo-wrap p{font-size:12.5px;color:var(--muted);margin-top:2px}
@@ -220,6 +222,7 @@ const ICON_PATHS={
   check:'<path d="M4 12l5 5 11-11"/>',
   home:'<path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/>',
 };
+const HELBLING_LOGO="data:image/png;base64,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";
 function ICON(name,size){
   const d=ICON_PATHS[name]||'';
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:${size||22}px;height:${size||22}px;flex-shrink:0" aria-hidden="true">${d}</svg>`;
@@ -408,7 +411,7 @@ function renderStartScreen(){
   $('mobRoot').innerHTML=`
     <div id="projPickScreen">
       <div class="pp-logo-wrap">
-        ${orgSettings.headerLogo?`<div class="pp-logo"><img src="${esc(orgSettings.headerLogo)}"></div>`:''}
+        <div class="pp-logo"><img src="${esc(orgSettings.headerLogo||HELBLING_LOGO)}"></div>
         <h1>BauView</h1>
         <p>Projekt wählen</p>
       </div>
@@ -534,9 +537,10 @@ function renderSettingsScreen(){
 function renderApp(){
   $('mobRoot').innerHTML=`
     <header id="mobHeader">
-      <button id="mobHomeBtn" aria-label="Zur Projektübersicht" style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0">${ICON('home',21)}</button>
+      <button id="mobHomeBtn" aria-label="Zur Projektübersicht" style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0">${ICON('home',19)}</button>
       <div class="htitle"><div class="proj">${esc(state.project.name)}</div><div class="view" id="mobViewTitle">Pläne</div></div>
-      <button id="mobSettingsBtn" aria-label="Einstellungen" style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted)">${ICON('settings',22)}</button>
+      <button id="mobOfflineToggle" aria-label="Projekt offline verfügbar machen" title="Pläne dieses Projekts offline verfügbar machen" style="width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0;position:relative">${ICON('download',18)}</button>
+      <button id="mobSettingsBtn" aria-label="Einstellungen" style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted)">${ICON('settings',20)}</button>
       <button id="mobRefreshBtn" aria-label="Aktualisieren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 4v5h-5"/></svg></button>
     </header>
     <div id="mobBody"></div>
@@ -552,6 +556,7 @@ function renderApp(){
   $('mobRefreshBtn').onclick=()=>loadView(state.view,true);
   $('mobSettingsBtn').onclick=()=>renderSettingsScreen();
   $('mobHomeBtn').onclick=()=>renderStartScreen();
+  initOfflineToggle();
   switchView('plans');
 }
 
@@ -605,6 +610,50 @@ async function getOfflinePlanBlob(planId){
   try{ const c=await caches.open(OFFLINE_CACHE_NAME); const r=await c.match(_offlineCacheKey(planId)); return r?await r.blob():null; }catch(e){ return null; }
 }
 
+/* ---------- Projekt-weiter Offline-Schalter (Kopfzeile) ---------- */
+// Bewusst dezent gehalten (kleines Symbol, keine grelle Farbe) – lädt bei Aktivierung alle
+// aktuell gelisteten Pläne des Projekts fürs Offline-Arbeiten herunter; bei Deaktivierung werden
+// sie wieder entfernt. Reine Browser-Speicherung, kein Server-/App-Vorgang nötig.
+async function initOfflineToggle(){
+  const btn=$('mobOfflineToggle');
+  const projKey='proj-offline:'+state.projectId;
+  const setState=(mode)=>{ // 'off' | 'partial' | 'on' | 'loading'
+    btn.dataset.state=mode;
+    btn.innerHTML = mode==='loading' ? ICON('download',18) : mode==='on' ? ICON('check',18) : ICON('download',18);
+    btn.style.color = mode==='on' ? 'var(--accent)' : 'var(--muted)';
+    btn.style.opacity = mode==='loading' ? '.5' : '1';
+    btn.title = mode==='on' ? 'Offline verfügbar – erneut antippen zum Entfernen' : 'Pläne dieses Projekts offline verfügbar machen';
+  };
+  const isOn=localStorage.getItem(projKey)==='1';
+  setState(isOn?'on':'off');
+  btn.onclick=async()=>{
+    const currentlyOn=btn.dataset.state==='on';
+    setState('loading');
+    try{
+      const plans=await fetchTable('plans',state.projectId);
+      if(currentlyOn){
+        for(const p of plans) await removePlanOffline(p.id);
+        localStorage.setItem(projKey,'0');
+        setState('off');
+        toast('Projekt nicht mehr offline verfügbar');
+      }else{
+        let ok=0;
+        for(const p of plans){
+          const ver=(p.versions||[]).find(v=>v.v===p.currentVersion)||p.versions?.[p.versions.length-1];
+          if(ver?.pdfUrl && await makePlanOffline(p.id,ver.pdfUrl)) ok++;
+        }
+        localStorage.setItem(projKey,'1');
+        setState('on');
+        toast(`${ok} von ${plans.length} Plänen offline verfügbar gemacht`);
+      }
+      if(state.view==='plans') loadView('plans'); // grüne Punkte in der Liste aktualisieren
+    }catch(e){
+      setState(currentlyOn?'on':'off');
+      toast('Offline-Vorgang fehlgeschlagen');
+    }
+  };
+}
+
 /* ============================================================
    PLÄNE — immer live geladen (ausser explizit als offline markiert),
    NIE automatisch lokal gespeichert. Listen- und Rasteransicht,
@@ -633,12 +682,26 @@ async function renderPlansView(body){
   const groups={};
   plans.forEach(p=>{ const k=p.category||'Ohne Kategorie'; (groups[k]=groups[k]||[]).push(p); });
   const catNames=Object.keys(groups).sort((a,b)=>a==='Ohne Kategorie'?1:b==='Ohne Kategorie'?-1:a.localeCompare(b));
+  let collapsedCats={}; try{ collapsedCats=JSON.parse(localStorage.getItem('bauview_plan_cats_collapsed')||'{}'); }catch(e){}
 
   const wrap=$('planListWrap');
-  wrap.innerHTML=catNames.map(cat=>`
-    <div class="mob-cat-title">${esc(cat)}</div>
-    <div class="${_planViewMode==='grid'?'mob-plan-grid':''}" data-cat="${esc(cat)}"></div>
-  `).join('');
+  wrap.innerHTML=catNames.map(cat=>{
+    const isCollapsed=!!collapsedCats[cat];
+    return `
+    <button class="mob-cat-title" data-cattoggle="${esc(cat)}">
+      <span>${esc(cat)} <span style="color:var(--muted);font-weight:400">(${groups[cat].length})</span></span>
+      <span class="mob-cat-chevron" style="transform:rotate(${isCollapsed?'-90deg':'0deg'})">${ICON('chevron-right',16)}</span>
+    </button>
+    <div class="${_planViewMode==='grid'?'mob-plan-grid':''} ${isCollapsed?'hidden':''}" data-cat="${esc(cat)}"></div>
+  `;}).join('');
+  wrap.querySelectorAll('[data-cattoggle]').forEach(btn=>btn.onclick=()=>{
+    const cat=btn.dataset.cattoggle;
+    collapsedCats[cat]=!collapsedCats[cat];
+    try{ localStorage.setItem('bauview_plan_cats_collapsed',JSON.stringify(collapsedCats)); }catch(e){}
+    const content=wrap.querySelector(`[data-cat="${CSS.escape(cat)}"]`);
+    content.classList.toggle('hidden',collapsedCats[cat]);
+    btn.querySelector('.mob-cat-chevron').style.transform=collapsedCats[cat]?'rotate(-90deg)':'rotate(0deg)';
+  });
 
   for(const cat of catNames){
     const catWrap=wrap.querySelector(`[data-cat="${CSS.escape(cat)}"]`);
@@ -655,7 +718,7 @@ async function renderPlansView(body){
         <div class="mob-plan-tile-name">${esc(p.name)}</div>
         <span class="mob-offline-dot" data-offid="${esc(p.id)}" style="position:absolute;top:6px;right:6px"></span>
       </div>`).join('');
-      groups[cat].forEach(p=>_renderPlanThumb(p));
+      if(!collapsedCats[cat]) groups[cat].forEach(p=>_renderPlanThumb(p)); // eingeklappte Kategorien nicht unnötig vorab rendern
     }
   }
   wrap.querySelectorAll('[data-id]').forEach(c=>c.onclick=()=>openPlanViewer(plans.find(p=>p.id===c.dataset.id)));
@@ -749,7 +812,16 @@ async function openPlanViewer(plan){
     // Plänen (A0/A1) konnte die Auflösung sonst weit über 8000px Kantenlänge erreichen, was auf
     // dem Handy zum Speicher-Absturz führte. 2600px Kantenlänge ist ein sicherer, auf praktisch
     // allen Geräten funktionierender Wert und liefert trotzdem eine sehr scharfe Darstellung.
-    const MAX_EDGE_PX=2600;
+    // Feste Pixel-Obergrenze (nicht nur ein Skalierungsfaktor) – bei grossformatigen Plänen
+    // (A0/A1) konnte die Auflösung sonst weit über 8000px Kantenlänge erreichen, was auf dem
+    // Handy zum Speicher-Absturz führte. Moderat auf 3200px angehoben (von 2600px) – bewusst
+    // vorsichtig, nicht weiter, um die Stabilität nicht zu gefährden.
+    const MAX_EDGE_PX=3200;
+    // Bildschirme mit hoher Pixel-Dichte (die meisten aktuellen Smartphones: Faktor 2-3) brauchen
+    // entsprechend mehr tatsächliche Bild-Pixel, damit es wirklich "gestochen scharf" wirkt -
+    // sonst wird selbst ein "scharf" gerechnetes Bild durch die Bildschirm-Skalierung wieder leicht
+    // unscharf. Bewusst auf 2.5 begrenzt (nicht den vollen Faktor 3), als Kompromiss Schärfe/Speicher.
+    const dpr=Math.min(window.devicePixelRatio||1,2.5);
     function _clampScaleToSafeSize(pdfScale){
       const w=base.width*pdfScale, h=base.height*pdfScale;
       const overshoot=Math.max(w,h)/MAX_EDGE_PX;
@@ -772,7 +844,7 @@ async function openPlanViewer(plan){
     area.appendChild(wrapEl);
     // Grundauflösung: x2.2 der Bildschirmgrösse, damit auch ohne Nachladen schon Zoom-Reserve
     // besteht; bei stärkerem Zoom wird zusätzlich automatisch nachgerendert.
-    const first=await renderAtScale(fitToScreenScale*2.2);
+    const first=await renderAtScale(fitToScreenScale*2.2*dpr);
     wrapEl.style.width=first.width+'px'; wrapEl.style.height=first.height+'px';
     wrapEl.appendChild(first.canvas);
     _attachPinchPan(area, wrapEl, fitToScreenScale/first.actualScale, first.width, first.height, {
@@ -816,8 +888,7 @@ function _attachPinchPan(area, el, initialScale, contentW, contentH, adaptive){
   // des Fingerbewegens), damit es nicht ruckelt.
   const maybeSharpen=async()=>{
     if(!adaptive || rerenderInFlight) return;
-    if(scale<1.3) return; // noch innerhalb der vorhandenen Schärfe, kein Nachrendern nötig
-    if(currentPdfScale>=adaptive.fitToScreenScale*7) return; // bereits an der sicheren Auflösungsgrenze angekommen, nichts weiter tun
+    if(scale<1.25) return; // noch innerhalb der vorhandenen Schärfe, kein Nachrendern nötig
     rerenderInFlight=true;
     try{
       const requestedPdfScale=currentPdfScale*scale;
