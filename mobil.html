@@ -379,10 +379,23 @@ function renderLogin(){
 async function afterLogin(authUser){
   state.user=authUser;
   await fetchOrgSettings(); applyMobTheme();
-  // Eigene Benutzerdaten holen (für Einstellungen: Name/E-Mail/Initialen)
+  // WICHTIG: exakt dieselbe Zuordnungs-Logik wie im Desktop-Tool verwenden – zuerst anhand der
+  // E-Mail-Adresse suchen (case-insensitive), erst danach anhand der Konto-ID. Andernfalls können
+  // (wie tatsächlich passiert) für dieselbe Person zwei getrennte Benutzer-Datensätze entstehen,
+  // wenn die interne Kontonummer auf dem Handy von der im Browser abweicht.
   try{
-    const {data:userRows}=await _sb.from('users').select('*').eq('id',authUser.id).single();
-    state.userProfile=userRows?fromRow(userRows):{id:authUser.id,email:authUser.email,name:authUser.email};
+    const {data:allUsers}=await _sb.from('users').select('*');
+    const users=(allUsers||[]).map(fromRow);
+    const mail=(authUser.email||'').toLowerCase();
+    let u=users.find(x=>(x.email||'').toLowerCase()===mail) || users.find(x=>x.id===authUser.id);
+    if(!u){
+      // Kein bestehender Benutzer gefunden - genau wie im Desktop-Tool neu anlegen (nicht nur
+      // lokal vorhalten, sondern auch tatsächlich einmal speichern, damit beide Seiten künftig
+      // denselben Datensatz finden).
+      u={id:authUser.id, name:(authUser.email||'').split('@')[0]||'Benutzer', role:'Bauleitung', email:mail, authId:authUser.id};
+      await upsertRow('users',u);
+    }
+    state.userProfile=u;
   }catch(e){ state.userProfile={id:authUser.id,email:authUser.email,name:authUser.email}; }
   // Projekte holen, an denen der Benutzer beteiligt ist
   const {data:projRows}=await _sb.from('projects').select('*');
@@ -727,40 +740,54 @@ async function openPlanViewer(plan){
     const base=page.getViewport({scale:1});
     const area=$('planViewerArea');
     const areaW=area.clientWidth, areaH=area.clientHeight;
-    // Höhere Grundauflösung (x3.5 statt x2) für spürbar mehr Zoom-Spielraum, bevor es
-    // verschwommen wirkt – das PDF wird einmalig hochauflösend gerendert, danach nur noch
-    // (verlustfrei) vergrössert/verschoben dargestellt.
-    const fitScale=Math.min(areaW/base.width, areaH/base.height)*3.5;
-    const vp=page.getViewport({scale:fitScale});
-    const canvas=document.createElement('canvas');
-    canvas.width=vp.width; canvas.height=vp.height;
-    const ctx=canvas.getContext('2d');
-    ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
-    await page.render({canvasContext:ctx,viewport:vp}).promise;
+    const fitToScreenScale=Math.min(areaW/base.width, areaH/base.height);
+
+    // Rendert das PDF bei genau dem angeforderten Massstab neu – wird beim Hineinzoomen
+    // automatisch mit höherer Auflösung erneut aufgerufen, damit es scharf bleibt (statt nur
+    // ein einmal gerendertes Bild optisch zu strecken, was unscharf wirkt).
+    async function renderAtScale(pdfScale){
+      const vp=page.getViewport({scale:pdfScale});
+      const canvas=document.createElement('canvas');
+      canvas.width=vp.width; canvas.height=vp.height;
+      const ctx=canvas.getContext('2d');
+      ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
+      await page.render({canvasContext:ctx,viewport:vp}).promise;
+      return {canvas, width:vp.width, height:vp.height};
+    }
+
     area.innerHTML='';
     const wrapEl=document.createElement('div');
     wrapEl.className='mob-plan-canvas-wrap';
-    const initialScale=Math.min(areaW/vp.width, areaH/vp.height);
-    wrapEl.style.width=vp.width+'px'; wrapEl.style.height=vp.height+'px';
-    wrapEl.appendChild(canvas);
     area.appendChild(wrapEl);
-    _attachPinchPan(area, wrapEl, initialScale, vp.width, vp.height);
+    // Grundauflösung: x2.2 der Bildschirmgrösse, damit auch ohne Nachladen schon Zoom-Reserve
+    // besteht; bei stärkerem Zoom wird zusätzlich automatisch nachgerendert.
+    const first=await renderAtScale(fitToScreenScale*2.2);
+    wrapEl.style.width=first.width+'px'; wrapEl.style.height=first.height+'px';
+    wrapEl.appendChild(first.canvas);
+    _attachPinchPan(area, wrapEl, fitToScreenScale/(fitToScreenScale*2.2), first.width, first.height, {
+      renderAtScale, fitToScreenScale, basePdfScale: fitToScreenScale*2.2,
+    });
   }catch(e){
     $('planViewerArea').innerHTML=`<div class="mob-empty" style="position:absolute;inset:0">${ICON('alert-circle',34)}<p>Plan konnte nicht geladen werden. Bitte Internetverbindung prüfen.</p></div>`;
   }
 }
 
-// Pinch-Zoom + Pan per Touch: korrekte, ankerpunkt-erhaltende Mathematik (vorherige Version
-// hatte doppelte/tote Berechnungen und keine Begrenzung, was zu Sprüngen beim Zoomen führte).
-function _attachPinchPan(area, el, initialScale, contentW, contentH){
+// Pinch-Zoom + Pan per Touch: korrekte, ankerpunkt-erhaltende Mathematik, MIT automatischer
+// Nachschärfung – sobald der sichtbare Massstab die aktuell gerenderte Auflösung übersteigt,
+// wird das PDF automatisch bei höherer Auflösung neu gezeichnet (statt nur das bestehende Bild
+// unscharf zu vergrössern).
+function _attachPinchPan(area, el, initialScale, contentW, contentH, adaptive){
   let scale=initialScale, tx=(area.clientWidth-contentW*initialScale)/2, ty=(area.clientHeight-contentH*initialScale)/2;
-  const minScale=initialScale*0.8, maxScale=initialScale*8;
+  let curW=contentW, curH=contentH; // aktuelle Pixel-Grösse des gerenderten Bilds (ändert sich nach einer Nachschärfung)
+  const minScale=initialScale*0.7, maxScale=initialScale*10;
+  let currentPdfScale=adaptive?adaptive.basePdfScale:null;
+  let rerenderInFlight=false;
   const apply=()=>{ el.style.transform=`translate(${tx}px,${ty}px) scale(${scale})`; };
   // Verhindert, dass der Plan komplett aus dem sichtbaren Bereich herausgeschoben werden kann
   // (mindestens 60px des Inhalts bleiben immer sichtbar) – das "Springen" entstand u.a. dadurch,
   // dass der Inhalt beliebig weit weggeschoben werden konnte.
   const clamp=()=>{
-    const w=contentW*scale, h=contentH*scale, areaW=area.clientWidth, areaH=area.clientHeight;
+    const w=curW*scale, h=curH*scale, areaW=area.clientWidth, areaH=area.clientHeight;
     const minVisible=60;
     tx=Math.min(areaW-minVisible, Math.max(minVisible-w, tx));
     ty=Math.min(areaH-minVisible, Math.max(minVisible-h, ty));
@@ -770,7 +797,31 @@ function _attachPinchPan(area, el, initialScale, contentW, contentH){
   const dist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
   const mid=t=>({x:(t[0].clientX+t[1].clientX)/2,y:(t[0].clientY+t[1].clientY)/2});
   const beginGesture=touches=>{
-    start={scale,tx,ty,d:touches.length===2?dist(touches):0,m:touches.length===2?mid(touches):{x:touches[0].clientX,y:touches[0].clientY},t0:touches[0]};
+    start={scale,tx,ty,d:touches.length===2?dist(touches):0,m:touches.length===2?mid(touches):(touches[0]?{x:touches[0].clientX,y:touches[0].clientY}:null),t0:touches[0]};
+  };
+  // Sobald deutlich stärker gezoomt wurde, als die aktuelle Auflösung hergibt: das PDF bei der
+  // neuen, höheren Auflösung neu zeichnen – dadurch bleibt der Plan auch bei starkem Zoom scharf,
+  // statt nur ein bestehendes Bild unscharf zu strecken. Läuft erst NACH der Geste (nicht während
+  // des Fingerbewegens), damit es nicht ruckelt.
+  const maybeSharpen=async()=>{
+    if(!adaptive || rerenderInFlight) return;
+    if(scale<1.35) return; // noch innerhalb der vorhandenen Schärfe, kein Nachrendern nötig
+    rerenderInFlight=true;
+    try{
+      const newPdfScale=Math.min(currentPdfScale*scale, adaptive.fitToScreenScale*22); // Obergrenze gegen zu grosse Bilder
+      const {canvas,width,height}=await adaptive.renderAtScale(newPdfScale);
+      // Sichtbaren Mittelpunkt/Zoom-Stand beibehalten, nur die Bildgrundlage austauschen
+      const centerXOld=(area.clientWidth/2-tx)/scale, centerYOld=(area.clientHeight/2-ty)/scale;
+      const ratio=width/curW;
+      el.innerHTML=''; el.appendChild(canvas);
+      el.style.width=width+'px'; el.style.height=height+'px';
+      curW=width; curH=height; currentPdfScale=newPdfScale;
+      scale=scale/ratio;
+      tx=area.clientWidth/2-centerXOld*ratio*scale;
+      ty=area.clientHeight/2-centerYOld*ratio*scale;
+      clamp(); apply();
+    }catch(e){ /* Nachschärfen fehlgeschlagen – bestehende Ansicht bleibt einfach wie sie ist */ }
+    rerenderInFlight=false;
   };
   area.addEventListener('touchstart',e=>{ beginGesture([...e.touches]); },{passive:true});
   area.addEventListener('touchmove',e=>{
@@ -794,7 +845,10 @@ function _attachPinchPan(area, el, initialScale, contentW, contentH){
     clamp();
     apply();
   },{passive:false});
-  area.addEventListener('touchend',e=>{ beginGesture([...e.touches]); },{passive:true});
+  area.addEventListener('touchend',e=>{
+    beginGesture([...e.touches]);
+    if(e.touches.length===0) maybeSharpen();
+  },{passive:true});
 }
 
 /* ============================================================
