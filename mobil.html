@@ -406,8 +406,16 @@ async function afterLogin(authUser){
   renderStartScreen();
 }
 
+function _mobProjectSortKey(p){
+  const n=parseFloat((p.number||'').replace(',','.'));
+  return isNaN(n)?Infinity:n; // Projekte ohne Nummer ans Ende
+}
 function renderStartScreen(){
-  const projects=state.projects||[];
+  const projects=(state.projects||[]).slice().sort((a,b)=>{
+    const ka=_mobProjectSortKey(a), kb=_mobProjectSortKey(b);
+    if(ka!==kb)return ka-kb;
+    return (a.name||'').localeCompare(b.name||'');
+  });
   $('mobRoot').innerHTML=`
     <div id="projPickScreen">
       <div class="pp-logo-wrap">
@@ -424,7 +432,7 @@ function renderStartScreen(){
   if(!projects.length){
     wrap.innerHTML=`<div class="mob-empty">${ICON('folder-off',34)}<p>Für dieses Konto ist noch kein Projekt freigegeben.</p></div>`;
   }else{
-    wrap.innerHTML=projects.map(p=>`<div class="mob-card" data-pid="${esc(p.id)}"><span style="color:var(--muted)">${ICON('building')}</span><div class="mob-card-main"><div class="mob-card-title">${esc(p.name)}</div><div class="mob-card-sub">${esc(p.number||'')}</div></div><span class="mob-chev">${ICON('chevron-right',20)}</span></div>`).join('');
+    wrap.innerHTML=projects.map(p=>`<div class="mob-card" data-pid="${esc(p.id)}"><span style="color:var(--muted)">${ICON('building')}</span><div class="mob-card-main"><div class="mob-card-title">${p.number?esc(p.number)+' – ':''}${esc(p.name)}</div></div><span class="mob-chev">${ICON('chevron-right',20)}</span></div>`).join('');
     wrap.querySelectorAll('.mob-card').forEach(c=>c.onclick=()=>{
       state.project=projects.find(p=>p.id===c.dataset.pid);
       state.projectId=state.project.id;
@@ -539,7 +547,9 @@ function renderApp(){
     <header id="mobHeader">
       <button id="mobHomeBtn" aria-label="Zur Projektübersicht" style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0">${ICON('home',19)}</button>
       <div class="htitle"><div class="proj">${esc(state.project.name)}</div><div class="view" id="mobViewTitle">Pläne</div></div>
-      <button id="mobOfflineToggle" aria-label="Projekt offline verfügbar machen" title="Pläne dieses Projekts offline verfügbar machen" style="width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0;position:relative">${ICON('download',18)}</button>
+      <label id="mobOfflineToggle" aria-label="Projekt offline verfügbar machen" title="Pläne dieses Projekts offline verfügbar machen" style="display:flex;align-items:center;flex-shrink:0;cursor:pointer">
+        <span id="mobOfflineTrack" style="width:34px;height:20px;border-radius:11px;background:#c0392b;position:relative;transition:background .15s"><span id="mobOfflineThumb" style="position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 3px rgba(0,0,0,.25)"></span></span>
+      </label>
       <button id="mobSettingsBtn" aria-label="Einstellungen" style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted)">${ICON('settings',20)}</button>
       <button id="mobRefreshBtn" aria-label="Aktualisieren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 4v5h-5"/></svg></button>
     </header>
@@ -616,13 +626,15 @@ async function getOfflinePlanBlob(planId){
 // sie wieder entfernt. Reine Browser-Speicherung, kein Server-/App-Vorgang nötig.
 async function initOfflineToggle(){
   const btn=$('mobOfflineToggle');
+  const track=$('mobOfflineTrack');
+  const thumb=$('mobOfflineThumb');
   const projKey='proj-offline:'+state.projectId;
-  const setState=(mode)=>{ // 'off' | 'partial' | 'on' | 'loading'
+  const setState=(mode)=>{ // 'off' | 'on' | 'loading'
     btn.dataset.state=mode;
-    btn.innerHTML = mode==='loading' ? ICON('download',18) : mode==='on' ? ICON('check',18) : ICON('download',18);
-    btn.style.color = mode==='on' ? 'var(--accent)' : 'var(--muted)';
-    btn.style.opacity = mode==='loading' ? '.5' : '1';
-    btn.title = mode==='on' ? 'Offline verfügbar – erneut antippen zum Entfernen' : 'Pläne dieses Projekts offline verfügbar machen';
+    track.style.background = mode==='on' ? '#2f9e5e' : '#c0392b';
+    track.style.opacity = mode==='loading' ? '.5' : '1';
+    thumb.style.left = mode==='on' ? '16px' : '2px';
+    btn.title = mode==='on' ? 'Offline verfügbar – zum Entfernen antippen' : 'Pläne dieses Projekts offline verfügbar machen';
   };
   const isOn=localStorage.getItem(projKey)==='1';
   setState(isOn?'on':'off');
