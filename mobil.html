@@ -128,6 +128,7 @@ svg{display:block}
 .mob-plan-tile-thumb canvas{width:100%;height:100%;object-fit:contain}
 .mob-plan-tile-name{font-size:12.5px;font-weight:500;padding:8px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mob-offline-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.mob-contr-ic{width:32px;height:32px;border-radius:50%;background:var(--hl);display:flex;align-items:center;justify-content:center;color:var(--ink);flex-shrink:0}
 .mob-offline-dot.is-offline{background:#2f7d54}
 .mob-ov-offline-btn{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ink);flex-shrink:0}
 .mob-ov-offline-btn:active{background:var(--hl)}
@@ -221,6 +222,9 @@ const ICON_PATHS={
   download:'<path d="M12 3v13M7 11l5 5 5-5"/><path d="M4 19h16"/>',
   check:'<path d="M4 12l5 5 11-11"/>',
   home:'<path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/>',
+  phone:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',
+  mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+  'map-pin':'<path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/>',
 };
 const HELBLING_LOGO="data:image/png;base64,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";
 function ICON(name,size){
@@ -245,6 +249,7 @@ async function fetchTable(table, projectId){
     if(table==='notes') return MOCK_NOTES;
     if(table==='protocols') return MOCK_PROTOCOLS;
     if(table==='files') return MOCK_FILES;
+    if(table==='contacts') return MOCK_CONTACTS;
     return [];
   }
   const {data,error}=await _sb.from(table).select('*').eq('projectId',projectId);
@@ -321,6 +326,11 @@ const MOCK_DEFECTS=[
 const MOCK_NOTES=[{id:'demo-n1',projectId:'demo-p1',title:'Rückruf Bauherrschaft',assignee:'Hans Muster',due:'2026-08-18'}];
 const MOCK_PROTOCOLS=[{id:'demo-pr1',projectId:'demo-p1',title:'Baubesprechung Nr. 4',date:'2026-08-01',pdfUrl:null}];
 const MOCK_FILES=[{id:'demo-f1',projectId:'demo-p1',name:'Baubeschrieb.pdf',date:'2026-07-15',url:null}];
+const MOCK_CONTACTS=[
+  {id:'demo-c1',projectId:'demo-p1',company:'Muster Sanitär AG',bkp:'211',contact:'Hans Muster',phones:[{type:'',number:'079 123 45 67'}],email:'h.muster@muster-sanitaer.ch',street:'Bahnhofstrasse 1',zip:'8000',city:'Zürich'},
+  {id:'demo-c2',projectId:'demo-p1',company:'Elektro Weber GmbH',bkp:'232',contact:'Peter Weber',phones:[{type:'',number:'044 555 66 77'}],email:'p.weber@elektro-weber.ch',street:'Seestrasse 5',zip:'8001',city:'Zürich'},
+  {id:'demo-c3',projectId:'demo-p1',company:'Gipser Keller AG',bkp:'',contact:'',phones:[],email:'',street:'',zip:'',city:''},
+];
 const MOCK_ORG_SETTINGS={uiThemeMode:'default',uiBrandColor:'#a8392a',headerLogo:null};
 let _mockDefectsStore=null; // veränderbare Kopie, damit Status-Änderungen/neue Mängel in der Vorschau sichtbar bleiben
 
@@ -407,7 +417,7 @@ async function afterLogin(authUser){
 }
 
 function _mobProjectSortKey(p){
-  const n=parseFloat((p.number||'').replace(',','.'));
+  const n=parseFloat(String(p.number??'').replace(',','.'));
   return isNaN(n)?Infinity:n; // Projekte ohne Nummer ans Ende
 }
 function renderStartScreen(){
@@ -559,7 +569,7 @@ function renderApp(){
       <button class="mob-navbtn" data-view="defects">${ICON('alert-triangle')}<span>Mängel</span></button>
       <div class="mob-cam-wrap"><button id="mobCamBtn" aria-label="Foto aufnehmen, neuer Mangel">${ICON('camera',27)}</button></div>
       <button class="mob-navbtn" data-view="pendenzen">${ICON('inbox')}<span>Pendenzen</span></button>
-      <button class="mob-navbtn" data-view="docs">${ICON('folder')}<span>Dokumente</span></button>
+      <button class="mob-navbtn" data-view="contractors">${ICON('building')}<span>Unternehmer</span></button>
     </nav>`;
   $('mobNav').querySelectorAll('.mob-navbtn').forEach(b=>b.onclick=()=>switchView(b.dataset.view));
   $('mobCamBtn').onclick=()=>startNewDefectFlow();
@@ -570,7 +580,7 @@ function renderApp(){
   switchView('plans');
 }
 
-const VIEW_TITLES={plans:'Pläne',defects:'Mängel',pendenzen:'Pendenzen',docs:'Dokumente'};
+const VIEW_TITLES={plans:'Pläne',defects:'Mängel',pendenzen:'Pendenzen',contractors:'Unternehmer'};
 function switchView(v){
   state.view=v;
   $('mobViewTitle').textContent=VIEW_TITLES[v];
@@ -585,7 +595,7 @@ async function loadView(v,forceRefresh){
     if(v==='plans') await renderPlansView(body);
     else if(v==='defects') await renderDefectsView(body);
     else if(v==='pendenzen') await renderPendenzenView(body);
-    else if(v==='docs') await renderDocsView(body);
+    else if(v==='contractors') await renderContractorsView(body);
   }catch(e){
     body.innerHTML=`<div class="mob-empty">${ICON('alert-circle',34)}<p>Laden fehlgeschlagen. Bitte Internetverbindung prüfen und erneut versuchen.</p></div>`;
     console.warn('[Mobil] Ansicht-Fehler:',e.message);
@@ -1069,27 +1079,44 @@ async function renderPendenzenView(body){
 }
 
 /* ============================================================
-   DOKUMENTE — Protokolle + Dateien, nur Ansicht
+   UNTERNEHMER — nur Ansicht, reine Kontaktaufnahme (Anruf/Mail/Karte).
+   Kein Bearbeiten/Löschen auf dem Handy - dafür bleibt das Desktop-Tool zuständig.
    ============================================================ */
-async function renderDocsView(body){
-  const [protocols,files]=await Promise.all([fetchTable('protocols',state.projectId),fetchTable('files',state.projectId)]);
-  const items=[
-    ...protocols.map(p=>({title:p.title||'Protokoll',sub:p.date||'',kind:'Protokoll',url:p.pdfUrl||null,icon:'clipboard-text'})),
-    ...files.map(f=>({title:f.name||'Datei',sub:f.date||'',kind:'Datei',url:f.url||null,icon:'file'})),
-  ];
-  if(!items.length){
-    body.innerHTML=`<div class="mob-empty">${ICON('folder')}<p>Keine Dokumente vorhanden.</p></div>`;
+function _mobFirstPhone(c){
+  if(Array.isArray(c.phones)&&c.phones.length&&c.phones[0].number) return c.phones[0].number;
+  return c.phone||'';
+}
+async function renderContractorsView(body){
+  const contacts=(await fetchTable('contacts',state.projectId)).sort((a,b)=>(a.company||'').localeCompare(b.company||''));
+  if(!contacts.length){
+    body.innerHTML=`<div class="mob-empty">${ICON('building',34)}<p>Noch keine Unternehmer erfasst.</p></div>`;
     return;
   }
-  body.innerHTML=`<div class="mob-list" id="docListWrap"></div>`;
-  $('docListWrap').innerHTML=items.map(it=>`<div class="mob-card" data-url="${it.url?esc(it.url):''}" style="${it.url?'':'opacity:.55'}">
-    <span style="color:var(--muted)">${ICON(it.icon)}</span>
-    <div class="mob-card-main"><div class="mob-card-title">${esc(it.title)}</div><div class="mob-card-sub">${esc(it.kind)}${it.sub?' · '+esc(it.sub):''}</div></div>
-    ${it.url?'<i class="mob-chev">›</i>':''}
-  </div>`).join('');
-  $('docListWrap').querySelectorAll('.mob-card[data-url]').forEach(c=>{
-    if(c.dataset.url) c.onclick=()=>window.open(c.dataset.url,'_blank');
-  });
+  body.innerHTML=`<div style="padding:10px 14px 0"><input id="contrSearch" placeholder="Suche nach Firma…" style="width:100%;height:42px;border:1px solid var(--line);border-radius:10px;padding:0 14px;font-size:15px"></div><div class="mob-list" id="contrListWrap"></div>`;
+  const renderFiltered=(q)=>{
+    const qn=(q||'').trim().toLowerCase();
+    const shown=qn?contacts.filter(c=>(c.company||'').toLowerCase().includes(qn)):contacts;
+    const wrap=$('contrListWrap');
+    if(!shown.length){ wrap.innerHTML=`<div class="mob-empty">${ICON('building',34)}<p>Keine Treffer.</p></div>`; return; }
+    wrap.innerHTML=shown.map(c=>{
+      const addr=[c.street,[c.zip,c.city].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+      const phone=_mobFirstPhone(c);
+      return `<div class="mob-card" style="align-items:flex-start">
+        <span style="color:var(--muted);margin-top:2px">${ICON('building')}</span>
+        <div class="mob-card-main">
+          <div class="mob-card-title">${esc(c.company||'Ohne Namen')}</div>
+          <div class="mob-card-sub">${esc(c.bkp||c.trade||'')}${c.contact?(c.bkp||c.trade?' · ':'')+esc(c.contact):''}</div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            ${phone?`<a href="tel:${esc(phone)}" onclick="event.stopPropagation()" class="mob-contr-ic">${ICON('phone',16)}</a>`:''}
+            ${c.email?`<a href="mailto:${esc(c.email)}" onclick="event.stopPropagation()" class="mob-contr-ic">${ICON('mail',16)}</a>`:''}
+            ${addr?`<a href="https://maps.google.com/?q=${encodeURIComponent(addr)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="mob-contr-ic">${ICON('map-pin',16)}</a>`:''}
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  };
+  renderFiltered('');
+  $('contrSearch').addEventListener('input',e=>renderFiltered(e.target.value));
 }
 </script>
 </body>
