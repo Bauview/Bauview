@@ -251,6 +251,7 @@ async function fetchTable(table, projectId){
     if(table==='protocols') return MOCK_PROTOCOLS;
     if(table==='files') return MOCK_FILES;
     if(table==='journal') return MOCK_JOURNAL;
+    if(table==='baubeschriebe') return MOCK_BAUBESCHRIEB;
     if(table==='contacts') return MOCK_CONTACTS;
     return [];
   }
@@ -328,6 +329,7 @@ const MOCK_DEFECTS=[
 const MOCK_NOTES=[{id:'demo-n1',projectId:'demo-p1',title:'Rückruf Bauherrschaft',assignee:'Hans Muster',due:'2026-08-18'}];
 const MOCK_PROTOCOLS=[{id:'demo-pr1',projectId:'demo-p1',title:'Baubesprechung Nr. 4',date:'2026-08-01',pdfUrl:null}];
 const MOCK_JOURNAL=[{id:'demo-j1',projectId:'demo-p1',date:'2026-08-10',weather:'Sonnig',temp:'22',workers:'Muster AG (3), Weber GmbH (2)',text:'Rohbau 1.OG fortgesetzt, Betonage Decke geplant.',author:'S. Yavuz'}];
+const MOCK_BAUBESCHRIEB=[{id:'demo-bb1',projectId:'demo-p1',object:'Neubau MFH Musterweg',bauherr:'Muster Immobilien AG',address:'Musterweg 1, 9000 St. Gallen',date:'2026-07-01',sections:[{id:'s1',title:'Rohbau',content:'Massivbau in Backstein, tragende Wände 20cm.'},{id:'s2',title:'Fassade',content:''}]}];
 const MOCK_FILES=[{id:'demo-f1',projectId:'demo-p1',name:'Baubeschrieb.pdf',date:'2026-07-15',url:null}];
 const MOCK_CONTACTS=[
   {id:'demo-c1',projectId:'demo-p1',company:'Muster Sanitär AG',bkp:'211',contact:'Hans Muster',phones:[{type:'',number:'079 123 45 67'}],email:'h.muster@muster-sanitaer.ch',street:'Bahnhofstrasse 1',zip:'8000',city:'Zürich'},
@@ -569,9 +571,8 @@ function renderApp(){
     <div id="mobBody"></div>
     <nav id="mobNav">
       <button class="mob-navbtn" data-view="plans">${ICON('ruler')}<span>Pläne</span></button>
-      <button class="mob-navbtn" data-view="docs">${ICON('folder')}<span>Dokumente</span></button>
       <div class="mob-cam-wrap"><button id="mobCamBtn" aria-label="Foto aufnehmen, neuer Mangel">${ICON('camera',27)}</button></div>
-      <button class="mob-navbtn" data-view="contractors">${ICON('building')}<span>Unternehmer</span></button>
+      <button class="mob-navbtn" data-view="docs">${ICON('folder')}<span>Dokumente</span></button>
     </nav>`;
   $('mobNav').querySelectorAll('.mob-navbtn').forEach(b=>b.onclick=()=>switchView(b.dataset.view));
   $('mobCamBtn').onclick=()=>startNewDefectFlow();
@@ -582,7 +583,7 @@ function renderApp(){
   switchView('plans');
 }
 
-const VIEW_TITLES={plans:'Pläne',docs:'Dokumente',contractors:'Unternehmer'};
+const VIEW_TITLES={plans:'Pläne',docs:'Dokumente'};
 function switchView(v){
   state.view=v;
   $('mobViewTitle').textContent=VIEW_TITLES[v];
@@ -596,7 +597,6 @@ async function loadView(v,forceRefresh){
   try{
     if(v==='plans') await renderPlansView(body);
     else if(v==='docs') await renderDocsHubView(body);
-    else if(v==='contractors') await renderContractorsView(body);
   }catch(e){
     body.innerHTML=`<div class="mob-empty">${ICON('alert-circle',34)}<p>Laden fehlgeschlagen. Bitte Internetverbindung prüfen und erneut versuchen.</p></div>`;
     console.warn('[Mobil] Ansicht-Fehler:',e.message);
@@ -1066,6 +1066,8 @@ const DOCS_CATEGORIES=[
   {key:'pendenzen',label:'Pendenzen',icon:'inbox'},
   {key:'journal',label:'Baujournal',icon:'notebook'},
   {key:'protocols',label:'Besprechung/Protokoll',icon:'clipboard-text'},
+  {key:'contractors',label:'Unternehmer',icon:'building'},
+  {key:'baubeschrieb',label:'Baubeschrieb',icon:'file-text'},
 ];
 async function renderDocsHubView(body){
   body.innerHTML=`<div class="mob-view"><div class="mob-list" id="docsHubList"></div></div>`;
@@ -1085,7 +1087,7 @@ async function openDocsSubView(cat){
       <button class="mob-ov-back" id="docsSubBack">${ICON('chevron-left',24)}Dokumente</button>
       <div class="mob-ov-title">${esc(meta.label)}</div>
     </div>
-    <div class="mob-ov-body" id="docsSubBody" style="padding:0;display:flex;flex-direction:column;flex:1;overflow:hidden"></div>`;
+    <div class="mob-ov-body" id="docsSubBody" style="padding:0;display:flex;flex-direction:column;flex:1;overflow:hidden;position:relative"></div>`;
   $('mobBody').appendChild(ov);
   $('docsSubBack').onclick=()=>ov.remove();
   const target=$('docsSubBody');
@@ -1095,6 +1097,8 @@ async function openDocsSubView(cat){
     else if(cat==='pendenzen') await renderPendenzenView(target);
     else if(cat==='journal') await renderJournalReadOnlyView(target);
     else if(cat==='protocols') await renderProtocolsReadOnlyView(target);
+    else if(cat==='contractors') await renderContractorsView(target);
+    else if(cat==='baubeschrieb') await renderBaubeschriebReadOnlyView(target);
   }catch(e){
     target.innerHTML=`<div class="mob-empty">${ICON('alert-circle',34)}<p>Laden fehlgeschlagen.</p></div>`;
   }
@@ -1124,15 +1128,78 @@ async function renderProtocolsReadOnlyView(body){
     return;
   }
   body.innerHTML=`<div class="mob-list" id="protoListWrap" style="flex:1;overflow-y:auto"></div>`;
-  $('protoListWrap').innerHTML=protos.map(p=>`<div class="mob-card" style="cursor:default">
+  $('protoListWrap').innerHTML=protos.map(p=>`<div class="mob-card" data-id="${esc(p.id)}">
     <span style="color:var(--muted)">${ICON('clipboard-text')}</span>
     <div class="mob-card-main">
       <div class="mob-card-title">${esc(p.title||'Protokoll')}</div>
       <div class="mob-card-sub">Nr. ${esc(p.number||'—')} · ${fmtMobDate(p.date)}${p.nextMeeting?' · Nächster Termin: '+fmtMobDate(p.nextMeeting):''}</div>
     </div>
+    <span class="mob-chev">${ICON('chevron-right',20)}</span>
   </div>`).join('');
+  $('protoListWrap').querySelectorAll('.mob-card').forEach(c=>c.onclick=()=>openProtocolDetail(protos.find(p=>p.id===c.dataset.id)));
+}
+// Protokoll öffnen und lesen - reine Ansicht, kein Bearbeiten auf dem Handy
+async function openProtocolDetail(p){
+  const ov=document.createElement('div');
+  ov.className='mob-detail';
+  const statusColor=s=>({Offen:'#c0392b','In Arbeit':'#d99a1c',Erledigt:'#2f9e5e'}[s]||'var(--muted)');
+  ov.innerHTML=`
+    <div class="mob-ov-head">
+      <button class="mob-ov-back" id="protoOvBack">${ICON('chevron-left',24)}Besprechung/Protokoll</button>
+    </div>
+    <div class="mob-ov-body">
+      <div class="mob-field-ro"><div class="l">Nr. ${esc(p.number||'—')}</div><div class="v" style="font-size:19px;font-weight:600">${esc(p.title||'Protokoll')}</div></div>
+      <div class="mob-field-ro"><div class="l">Datum</div><div class="v">${fmtMobDate(p.date)}${p.location?' · '+esc(p.location):''}</div></div>
+      ${p.nextMeeting?`<div class="mob-field-ro"><div class="l">Nächster Termin</div><div class="v">${fmtMobDate(p.nextMeeting)}</div></div>`:''}
+      ${(p.attendees&&p.attendees.length)?`<div class="mob-field-ro"><div class="l">Teilnehmer</div><div class="v">${p.attendees.map(a=>esc(a.name||a)).join('<br>')}</div></div>`:''}
+      ${(p.distribution&&p.distribution.length)?`<div class="mob-field-ro"><div class="l">Verteiler</div><div class="v">${p.distribution.map(a=>esc(a.name||a)).join('<br>')}</div></div>`:''}
+      ${(p.items&&p.items.length)?`<div class="mob-field-ro"><div class="l">Traktanden</div>
+        ${p.items.map((it,i)=>`<div style="border-top:1px solid var(--line);padding:10px 0">
+          <div style="display:flex;align-items:baseline;gap:8px"><b style="font-size:13px">${i+1}. ${esc(it.topic||'')}</b>${it.status?`<span style="margin-left:auto;font-size:11px;font-weight:700;color:${statusColor(it.status)}">${esc(it.status)}</span>`:''}</div>
+          ${it.text?`<div style="font-size:13px;color:var(--muted);margin-top:4px">${esc(it.text)}</div>`:''}
+          ${(it.responsible||it.due)?`<div style="font-size:11.5px;color:var(--muted);margin-top:4px">${esc([it.responsible,it.due?fmtMobDate(it.due):''].filter(Boolean).join(' · '))}</div>`:''}
+        </div>`).join('')}
+      </div>`:''}
+    </div>`;
+  $('mobBody').appendChild(ov);
+  $('protoOvBack').onclick=()=>ov.remove();
 }
 function fmtMobDate(iso){ if(!iso)return '—'; const [y,m,d]=String(iso).split('-'); return (y&&m&&d)?`${d}.${m}.${y}`:iso; }
+// Baubeschrieb - reine Ansicht, kein Bearbeiten auf dem Handy
+async function renderBaubeschriebReadOnlyView(body){
+  const list=(await fetchTable('baubeschriebe',state.projectId)).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  if(!list.length){
+    body.innerHTML=`<div class="mob-empty">${ICON('file-text',34)}<p>Noch kein Baubeschrieb vorhanden.</p></div>`;
+    return;
+  }
+  body.innerHTML=`<div class="mob-list" id="bbListWrap" style="flex:1;overflow-y:auto"></div>`;
+  $('bbListWrap').innerHTML=list.map(bb=>`<div class="mob-card" data-id="${esc(bb.id)}">
+    <span style="color:var(--muted)">${ICON('file-text')}</span>
+    <div class="mob-card-main">
+      <div class="mob-card-title">${esc(bb.object||'Baubeschrieb')}</div>
+      <div class="mob-card-sub">${esc(bb.bauherr||'')}${bb.bauherr?' · ':''}${fmtMobDate(bb.date)}</div>
+    </div>
+    <span class="mob-chev">${ICON('chevron-right',20)}</span>
+  </div>`).join('');
+  $('bbListWrap').querySelectorAll('.mob-card').forEach(c=>c.onclick=()=>openBaubeschriebDetail(list.find(b=>b.id===c.dataset.id)));
+}
+async function openBaubeschriebDetail(bb){
+  const ov=document.createElement('div');
+  ov.className='mob-detail';
+  const sections=(bb.sections||[]).filter(s=>s.content&&s.content.trim());
+  ov.innerHTML=`
+    <div class="mob-ov-head">
+      <button class="mob-ov-back" id="bbOvBack">${ICON('chevron-left',24)}Baubeschrieb</button>
+    </div>
+    <div class="mob-ov-body">
+      <div class="mob-field-ro"><div class="l">Objekt</div><div class="v" style="font-size:19px;font-weight:600">${esc(bb.object||'')}</div></div>
+      ${bb.bauherr?`<div class="mob-field-ro"><div class="l">Bauherr</div><div class="v">${esc(bb.bauherr)}</div></div>`:''}
+      ${bb.address?`<div class="mob-field-ro"><div class="l">Adresse</div><div class="v">${esc(bb.address)}</div></div>`:''}
+      ${sections.length?sections.map(s=>`<div class="mob-field-ro"><div class="l">${esc(s.title||'')}</div><div class="v" style="white-space:pre-wrap">${esc(s.content)}</div></div>`).join(''):'<div class="mob-empty" style="padding-top:20px">Keine Kapitel ausgefüllt.</div>'}
+    </div>`;
+  $('mobBody').appendChild(ov);
+  $('bbOvBack').onclick=()=>ov.remove();
+}
 
 /* ============================================================
    UNTERNEHMER — nur Ansicht, reine Kontaktaufnahme (Anruf/Mail/Karte).
