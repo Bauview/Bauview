@@ -1151,8 +1151,10 @@ async function openProtocolDetail(p){
       <div class="mob-field-ro"><div class="l">Nr. ${esc(p.number||'—')}</div><div class="v" style="font-size:19px;font-weight:600">${esc(p.title||'Protokoll')}</div></div>
       <div class="mob-field-ro"><div class="l">Datum</div><div class="v">${fmtMobDate(p.date)}${p.location?' · '+esc(p.location):''}</div></div>
       ${p.nextMeeting?`<div class="mob-field-ro"><div class="l">Nächster Termin</div><div class="v">${fmtMobDate(p.nextMeeting)}</div></div>`:''}
-      ${(p.attendees&&p.attendees.length)?`<div class="mob-field-ro"><div class="l">Teilnehmer</div><div class="v">${p.attendees.map(a=>esc(a.name||a)).join('<br>')}</div></div>`:''}
-      ${(p.distribution&&p.distribution.length)?`<div class="mob-field-ro"><div class="l">Verteiler</div><div class="v">${p.distribution.map(a=>esc(a.name||a)).join('<br>')}</div></div>`:''}
+      ${(p.attendees&&p.attendees.length)?`<div class="mob-field-ro"><div class="l">Teilnehmer</div><div class="v">${p.attendees.map(a=>esc(a.name||a)+(a.role?' · '+esc(a.role):'')+(a.company?' · '+esc(a.company):'')).join('<br>')}</div></div>`:''}
+      ${p.protocolAuthor?`<div class="mob-field-ro"><div class="l">Protokoll</div><div class="v">${esc(p.protocolAuthor.name||'')}${p.protocolAuthor.role?' · '+esc(p.protocolAuthor.role):''}${p.protocolAuthor.company?' · '+esc(p.protocolAuthor.company):''}</div></div>`:''}
+      ${p.meetingLead?`<div class="mob-field-ro"><div class="l">Sitzungsleitung</div><div class="v">${esc(p.meetingLead.name||'')}${p.meetingLead.role?' · '+esc(p.meetingLead.role):''}${p.meetingLead.company?' · '+esc(p.meetingLead.company):''}</div></div>`:''}
+      ${(p.distribution&&p.distribution.length)?`<div class="mob-field-ro"><div class="l">Verteiler</div><div class="v">${p.distribution.map(a=>esc(a.name||a)+(a.role?' · '+esc(a.role):'')+(a.company?' · '+esc(a.company):'')).join('<br>')}</div></div>`:''}
       ${(p.items&&p.items.length)?`<div class="mob-field-ro"><div class="l">Traktanden</div>
         ${p.items.map((it,i)=>`<div style="border-top:1px solid var(--line);padding:10px 0">
           <div style="display:flex;align-items:baseline;gap:8px"><b style="font-size:13px">${i+1}. ${esc(it.topic||'')}</b>${it.status?`<span style="margin-left:auto;font-size:11px;font-weight:700;color:${statusColor(it.status)}">${esc(it.status)}</span>`:''}</div>
@@ -1160,6 +1162,7 @@ async function openProtocolDetail(p){
           ${(it.responsible||it.due)?`<div style="font-size:11.5px;color:var(--muted);margin-top:4px">${esc([it.responsible,it.due?fmtMobDate(it.due):''].filter(Boolean).join(' · '))}</div>`:''}
         </div>`).join('')}
       </div>`:''}
+      ${(p.attachments&&p.attachments.length)?`<div class="mob-field-ro"><div class="l">Beilagen</div><div class="v">${p.attachments.map(a=>esc(a)).join('<br>')}</div></div>`:''}
     </div>`;
   $('mobBody').appendChild(ov);
   $('protoOvBack').onclick=()=>ov.remove();
