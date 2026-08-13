@@ -225,6 +225,7 @@ const ICON_PATHS={
   phone:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',
   mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
   'map-pin':'<path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/>',
+  notebook:'<rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M8 3v18M8 7h4M8 11h4M8 15h4"/>',
 };
 const HELBLING_LOGO="data:image/png;base64,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";
 function ICON(name,size){
@@ -249,6 +250,7 @@ async function fetchTable(table, projectId){
     if(table==='notes') return MOCK_NOTES;
     if(table==='protocols') return MOCK_PROTOCOLS;
     if(table==='files') return MOCK_FILES;
+    if(table==='journal') return MOCK_JOURNAL;
     if(table==='contacts') return MOCK_CONTACTS;
     return [];
   }
@@ -325,6 +327,7 @@ const MOCK_DEFECTS=[
 ];
 const MOCK_NOTES=[{id:'demo-n1',projectId:'demo-p1',title:'Rückruf Bauherrschaft',assignee:'Hans Muster',due:'2026-08-18'}];
 const MOCK_PROTOCOLS=[{id:'demo-pr1',projectId:'demo-p1',title:'Baubesprechung Nr. 4',date:'2026-08-01',pdfUrl:null}];
+const MOCK_JOURNAL=[{id:'demo-j1',projectId:'demo-p1',date:'2026-08-10',weather:'Sonnig',temp:'22',workers:'Muster AG (3), Weber GmbH (2)',text:'Rohbau 1.OG fortgesetzt, Betonage Decke geplant.',author:'S. Yavuz'}];
 const MOCK_FILES=[{id:'demo-f1',projectId:'demo-p1',name:'Baubeschrieb.pdf',date:'2026-07-15',url:null}];
 const MOCK_CONTACTS=[
   {id:'demo-c1',projectId:'demo-p1',company:'Muster Sanitär AG',bkp:'211',contact:'Hans Muster',phones:[{type:'',number:'079 123 45 67'}],email:'h.muster@muster-sanitaer.ch',street:'Bahnhofstrasse 1',zip:'8000',city:'Zürich'},
@@ -566,9 +569,8 @@ function renderApp(){
     <div id="mobBody"></div>
     <nav id="mobNav">
       <button class="mob-navbtn" data-view="plans">${ICON('ruler')}<span>Pläne</span></button>
-      <button class="mob-navbtn" data-view="defects">${ICON('alert-triangle')}<span>Mängel</span></button>
+      <button class="mob-navbtn" data-view="docs">${ICON('folder')}<span>Dokumente</span></button>
       <div class="mob-cam-wrap"><button id="mobCamBtn" aria-label="Foto aufnehmen, neuer Mangel">${ICON('camera',27)}</button></div>
-      <button class="mob-navbtn" data-view="pendenzen">${ICON('inbox')}<span>Pendenzen</span></button>
       <button class="mob-navbtn" data-view="contractors">${ICON('building')}<span>Unternehmer</span></button>
     </nav>`;
   $('mobNav').querySelectorAll('.mob-navbtn').forEach(b=>b.onclick=()=>switchView(b.dataset.view));
@@ -580,7 +582,7 @@ function renderApp(){
   switchView('plans');
 }
 
-const VIEW_TITLES={plans:'Pläne',defects:'Mängel',pendenzen:'Pendenzen',contractors:'Unternehmer'};
+const VIEW_TITLES={plans:'Pläne',docs:'Dokumente',contractors:'Unternehmer'};
 function switchView(v){
   state.view=v;
   $('mobViewTitle').textContent=VIEW_TITLES[v];
@@ -593,8 +595,7 @@ async function loadView(v,forceRefresh){
   const spinBtn=$('mobRefreshBtn'); if(spinBtn)spinBtn.classList.add('spinning');
   try{
     if(v==='plans') await renderPlansView(body);
-    else if(v==='defects') await renderDefectsView(body);
-    else if(v==='pendenzen') await renderPendenzenView(body);
+    else if(v==='docs') await renderDocsHubView(body);
     else if(v==='contractors') await renderContractorsView(body);
   }catch(e){
     body.innerHTML=`<div class="mob-empty">${ICON('alert-circle',34)}<p>Laden fehlgeschlagen. Bitte Internetverbindung prüfen und erneut versuchen.</p></div>`;
@@ -998,41 +999,18 @@ async function openDefectDetail(d){
     <div class="mob-ov-body">
       <div class="mob-field-ro"><div class="l">#${String(d.num||0).padStart(3,'0')}</div><div class="v" style="font-size:19px;font-weight:600">${esc(d.title||'')}</div></div>
       <div class="mob-field-ro"><div class="l">Status</div>
-        <div class="mob-status-row" id="statusRow">
-          ${['Offen','In Arbeit','Erledigt'].map(s=>`<button class="mob-status-btn ${d.status===s?'active':''}" data-s="${s}">${s}</button>`).join('')}
+        <div class="mob-status-row">
+          <span class="mob-status-btn active" style="background:${STATUS_COLORS[d.status]||'var(--muted)'};color:#fff;border-color:transparent">${esc(d.status||'Offen')}</span>
         </div>
       </div>
       ${(d.floor||d.room)?`<div class="mob-field-ro"><div class="l">Ort</div><div class="v">${esc([d.floor,d.room].filter(Boolean).join(' · '))}</div></div>`:''}
       ${d.desc?`<div class="mob-field-ro"><div class="l">Beschreibung</div><div class="v">${esc(d.desc)}</div></div>`:''}
       ${d.assignee?`<div class="mob-field-ro"><div class="l">Zugewiesen</div><div class="v">${esc(d.assignee)}</div></div>`:''}
       ${d.due?`<div class="mob-field-ro"><div class="l">Frist</div><div class="v">${esc(d.due)}</div></div>`:''}
-      <div class="mob-field-ro"><div class="l">Fotos</div>
-        <div class="mob-photo-grid" id="defPhotoGrid">${(d.photos||[]).map(p=>`<img src="${esc(p)}">`).join('')}</div>
-        <button class="mob-btn-secondary" id="defAddPhotoBtn" style="margin-top:12px">${ICON('camera',27)}Foto hinzufügen</button>
-        <input type="file" accept="image/*" capture="environment" class="mob-camera-input" id="defAddPhotoInput">
-      </div>
+      ${(d.photos&&d.photos.length)?`<div class="mob-field-ro"><div class="l">Fotos</div><div class="mob-photo-grid">${d.photos.map(p=>`<img src="${esc(p)}">`).join('')}</div></div>`:''}
     </div>`;
   $('mobBody').appendChild(ov);
   $('defOvBack').onclick=()=>ov.remove();
-  $('statusRow').querySelectorAll('.mob-status-btn').forEach(b=>b.onclick=async()=>{
-    d.status=b.dataset.s;
-    $('statusRow').querySelectorAll('.mob-status-btn').forEach(x=>x.classList.toggle('active',x===b));
-    try{ await upsertRow('defects',d); toast('Status gespeichert'); }
-    catch(e){ toast('Speichern fehlgeschlagen'); }
-  });
-  $('defAddPhotoBtn').onclick=()=>$('defAddPhotoInput').click();
-  $('defAddPhotoInput').onchange=async e=>{
-    const file=e.target.files[0]; if(!file)return;
-    $('defAddPhotoBtn').textContent='Wird hochgeladen…'; $('defAddPhotoBtn').disabled=true;
-    try{
-      const url=await uploadPhoto(state.projectId,file,'ph_');
-      d.photos=[...(d.photos||[]),url];
-      await upsertRow('defects',d);
-      $('defPhotoGrid').innerHTML+=`<img src="${esc(url)}">`;
-      toast('Foto gespeichert');
-    }catch(err){ toast('Foto-Upload fehlgeschlagen'); }
-    $('defAddPhotoBtn').textContent='＋ Foto hinzufügen'; $('defAddPhotoBtn').disabled=false;
-  };
 }
 
 async function startNewDefectFlow(){
@@ -1071,12 +1049,90 @@ async function renderPendenzenView(body){
     body.innerHTML=`<div class="mob-empty">${ICON('inbox')}<p>Keine offenen Pendenzen.</p></div>`;
     return;
   }
-  body.innerHTML=`<div class="mob-list" id="pendListWrap"></div>`;
+  body.innerHTML=`<div class="mob-view"><div class="mob-list" id="pendListWrap"></div></div>`;
   $('pendListWrap').innerHTML=items.map(it=>`<div class="mob-card" style="cursor:default">
     <span class="mob-dot" style="background:var(--muted)"></span>
     <div class="mob-card-main"><div class="mob-card-title">${esc(it.title||'Ohne Titel')}</div><div class="mob-card-sub">${esc(it.kind)}${it.sub?' · '+esc(it.sub):''}</div></div>
   </div>`).join('');
 }
+
+/* ============================================================
+   DOKUMENTE — Sammelbereich (Mängelliste/Pendenzen/Baujournal/Protokoll),
+   ausschliesslich zur Ansicht. Fasst mehrere, seltener genutzte Bereiche
+   zusammen, damit die Fussleiste nicht überfüllt wirkt.
+   ============================================================ */
+const DOCS_CATEGORIES=[
+  {key:'defects',label:'Mängelliste',icon:'alert-triangle'},
+  {key:'pendenzen',label:'Pendenzen',icon:'inbox'},
+  {key:'journal',label:'Baujournal',icon:'notebook'},
+  {key:'protocols',label:'Besprechung/Protokoll',icon:'clipboard-text'},
+];
+async function renderDocsHubView(body){
+  body.innerHTML=`<div class="mob-view"><div class="mob-list" id="docsHubList"></div></div>`;
+  $('docsHubList').innerHTML=DOCS_CATEGORIES.map(c=>`<div class="mob-card" data-cat="${c.key}">
+    <span style="color:var(--muted)">${ICON(c.icon)}</span>
+    <div class="mob-card-main"><div class="mob-card-title">${esc(c.label)}</div></div>
+    <span class="mob-chev">${ICON('chevron-right',20)}</span>
+  </div>`).join('');
+  $('docsHubList').querySelectorAll('[data-cat]').forEach(c=>c.onclick=()=>openDocsSubView(c.dataset.cat));
+}
+async function openDocsSubView(cat){
+  const meta=DOCS_CATEGORIES.find(c=>c.key===cat);
+  const ov=document.createElement('div');
+  ov.className='mob-detail';
+  ov.innerHTML=`
+    <div class="mob-ov-head">
+      <button class="mob-ov-back" id="docsSubBack">${ICON('chevron-left',24)}Dokumente</button>
+      <div class="mob-ov-title">${esc(meta.label)}</div>
+    </div>
+    <div class="mob-ov-body" id="docsSubBody" style="padding:0;display:flex;flex-direction:column;flex:1;overflow:hidden"></div>`;
+  $('mobBody').appendChild(ov);
+  $('docsSubBack').onclick=()=>ov.remove();
+  const target=$('docsSubBody');
+  target.innerHTML=`<div class="mob-loading">Lädt…</div>`;
+  try{
+    if(cat==='defects') await renderDefectsView(target);
+    else if(cat==='pendenzen') await renderPendenzenView(target);
+    else if(cat==='journal') await renderJournalReadOnlyView(target);
+    else if(cat==='protocols') await renderProtocolsReadOnlyView(target);
+  }catch(e){
+    target.innerHTML=`<div class="mob-empty">${ICON('alert-circle',34)}<p>Laden fehlgeschlagen.</p></div>`;
+  }
+}
+// Baujournal - reine Ansicht, kein Bearbeiten auf dem Handy
+async function renderJournalReadOnlyView(body){
+  const entries=(await fetchTable('journal',state.projectId)).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  if(!entries.length){
+    body.innerHTML=`<div class="mob-empty">${ICON('notebook',34)}<p>Noch kein Baujournal vorhanden.</p></div>`;
+    return;
+  }
+  body.innerHTML=`<div class="mob-list" id="journalListWrap" style="flex:1;overflow-y:auto"></div>`;
+  $('journalListWrap').innerHTML=entries.map(j=>`<div class="mob-card" style="align-items:flex-start;cursor:default">
+    <span style="color:var(--muted);margin-top:2px">${ICON('notebook')}</span>
+    <div class="mob-card-main">
+      <div class="mob-card-title">${fmtMobDate(j.date)}${j.weather?' · '+esc(j.weather):''}</div>
+      <div class="mob-card-sub">${esc((j.text||'').slice(0,140))}${(j.text||'').length>140?'…':''}</div>
+      ${j.workers?`<div class="mob-card-sub">👷 ${esc(j.workers)}</div>`:''}
+    </div>
+  </div>`).join('');
+}
+// Besprechung/Protokoll - reine Ansicht, kein Bearbeiten auf dem Handy
+async function renderProtocolsReadOnlyView(body){
+  const protos=(await fetchTable('protocols',state.projectId)).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  if(!protos.length){
+    body.innerHTML=`<div class="mob-empty">${ICON('clipboard-text',34)}<p>Noch keine Protokolle vorhanden.</p></div>`;
+    return;
+  }
+  body.innerHTML=`<div class="mob-list" id="protoListWrap" style="flex:1;overflow-y:auto"></div>`;
+  $('protoListWrap').innerHTML=protos.map(p=>`<div class="mob-card" style="cursor:default">
+    <span style="color:var(--muted)">${ICON('clipboard-text')}</span>
+    <div class="mob-card-main">
+      <div class="mob-card-title">${esc(p.title||'Protokoll')}</div>
+      <div class="mob-card-sub">Nr. ${esc(p.number||'—')} · ${fmtMobDate(p.date)}${p.nextMeeting?' · Nächster Termin: '+fmtMobDate(p.nextMeeting):''}</div>
+    </div>
+  </div>`).join('');
+}
+function fmtMobDate(iso){ if(!iso)return '—'; const [y,m,d]=String(iso).split('-'); return (y&&m&&d)?`${d}.${m}.${y}`:iso; }
 
 /* ============================================================
    UNTERNEHMER — nur Ansicht, reine Kontaktaufnahme (Anruf/Mail/Karte).
