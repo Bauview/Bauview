@@ -982,7 +982,7 @@ async function renderDefectsView(body){
     wrap.innerHTML=defects.map(d=>`<div class="mob-card" data-id="${esc(d.id)}">
       <span class="mob-dot" style="background:${STATUS_COLORS[d.status]||'var(--muted)'}"></span>
       ${d.photos&&d.photos[0]?`<img class="mob-card-thumb" src="${esc(d.photos[0])}">`:''}
-      <div class="mob-card-main"><div class="mob-card-title">#${String(d.num||0).padStart(3,'0')} ${esc(d.title||'Ohne Titel')}</div><div class="mob-card-sub">${esc([d.floor,d.room].filter(Boolean).join(' · ')||d.status)}</div></div>
+      <div class="mob-card-main"><div class="mob-card-title">#${String(d.num||0).padStart(3,'0')} ${esc(d.title||'Ohne Titel')}</div><div class="mob-card-sub">${esc((d.kind||'Mangel'))} · ${esc([d.floor,d.room].filter(Boolean).join(' · ')||d.status)}</div></div>
       <span class="mob-chev">${ICON('chevron-right',20)}</span>
     </div>`).join('');
     wrap.querySelectorAll('.mob-card').forEach(c=>c.onclick=()=>openDefectDetail(defects.find(d=>d.id===c.dataset.id)));
@@ -997,7 +997,7 @@ async function openDefectDetail(d){
       <button class="mob-ov-back" id="defOvBack">${ICON('chevron-left',24)}Mängel</button>
     </div>
     <div class="mob-ov-body">
-      <div class="mob-field-ro"><div class="l">#${String(d.num||0).padStart(3,'0')}</div><div class="v" style="font-size:19px;font-weight:600">${esc(d.title||'')}</div></div>
+      <div class="mob-field-ro"><div class="l">#${String(d.num||0).padStart(3,'0')} · ${esc(d.kind||'Mangel')}</div><div class="v" style="font-size:19px;font-weight:600">${esc(d.title||'')}</div></div>
       <div class="mob-field-ro"><div class="l">Status</div>
         <div class="mob-status-row">
           <span class="mob-status-btn active" style="background:${STATUS_COLORS[d.status]||'var(--muted)'};color:#fff;border-color:transparent">${esc(d.status||'Offen')}</span>
@@ -1006,7 +1006,8 @@ async function openDefectDetail(d){
       ${(d.floor||d.room)?`<div class="mob-field-ro"><div class="l">Ort</div><div class="v">${esc([d.floor,d.room].filter(Boolean).join(' · '))}</div></div>`:''}
       ${d.desc?`<div class="mob-field-ro"><div class="l">Beschreibung</div><div class="v">${esc(d.desc)}</div></div>`:''}
       ${d.assignee?`<div class="mob-field-ro"><div class="l">Zugewiesen</div><div class="v">${esc(d.assignee)}</div></div>`:''}
-      ${d.due?`<div class="mob-field-ro"><div class="l">Frist</div><div class="v">${esc(d.due)}</div></div>`:''}
+      ${d.createdAt?`<div class="mob-field-ro"><div class="l">Erfasst am</div><div class="v">${esc(fmtMobDate(d.createdAt.slice(0,10)))}</div></div>`:''}
+      ${d.due?`<div class="mob-field-ro"><div class="l">Zu beheben bis</div><div class="v">${esc(fmtMobDate(d.due))}</div></div>`:''}
       ${(d.photos&&d.photos.length)?`<div class="mob-field-ro"><div class="l">Fotos</div><div class="mob-photo-grid">${d.photos.map(p=>`<img src="${esc(p)}">`).join('')}</div></div>`:''}
     </div>`;
   $('mobBody').appendChild(ov);
@@ -1039,22 +1040,6 @@ async function startNewDefectFlow(){
 /* ============================================================
    PENDENZEN — nur Ansicht, keine Bearbeitung
    ============================================================ */
-async function renderPendenzenView(body){
-  const [defects,notes]=await Promise.all([fetchTable('defects',state.projectId),fetchTable('notes',state.projectId)]);
-  const items=[
-    ...defects.filter(d=>d.status!=='Erledigt'&&(d.assignee||d.due)).map(d=>({title:d.title,sub:[d.assignee,d.due].filter(Boolean).join(' · '),kind:'Mangel'})),
-    ...notes.filter(n=>n.due).map(n=>({title:n.title||n.text?.slice(0,60),sub:[n.assignee,n.due].filter(Boolean).join(' · '),kind:'Notiz'})),
-  ];
-  if(!items.length){
-    body.innerHTML=`<div class="mob-empty">${ICON('inbox')}<p>Keine offenen Pendenzen.</p></div>`;
-    return;
-  }
-  body.innerHTML=`<div class="mob-view"><div class="mob-list" id="pendListWrap"></div></div>`;
-  $('pendListWrap').innerHTML=items.map(it=>`<div class="mob-card" style="cursor:default">
-    <span class="mob-dot" style="background:var(--muted)"></span>
-    <div class="mob-card-main"><div class="mob-card-title">${esc(it.title||'Ohne Titel')}</div><div class="mob-card-sub">${esc(it.kind)}${it.sub?' · '+esc(it.sub):''}</div></div>
-  </div>`).join('');
-}
 
 /* ============================================================
    DOKUMENTE — Sammelbereich (Mängelliste/Pendenzen/Baujournal/Protokoll),
@@ -1062,8 +1047,7 @@ async function renderPendenzenView(body){
    zusammen, damit die Fussleiste nicht überfüllt wirkt.
    ============================================================ */
 const DOCS_CATEGORIES=[
-  {key:'defects',label:'Mängelliste',icon:'alert-triangle'},
-  {key:'pendenzen',label:'Pendenzen',icon:'inbox'},
+  {key:'defects',label:'Mängel & Pendenzen',icon:'alert-triangle'},
   {key:'journal',label:'Baujournal',icon:'notebook'},
   {key:'protocols',label:'Besprechung/Protokoll',icon:'clipboard-text'},
   {key:'contractors',label:'Unternehmer',icon:'building'},
@@ -1094,7 +1078,6 @@ async function openDocsSubView(cat){
   target.innerHTML=`<div class="mob-loading">Lädt…</div>`;
   try{
     if(cat==='defects') await renderDefectsView(target);
-    else if(cat==='pendenzen') await renderPendenzenView(target);
     else if(cat==='journal') await renderJournalReadOnlyView(target);
     else if(cat==='protocols') await renderProtocolsReadOnlyView(target);
     else if(cat==='contractors') await renderContractorsView(target);
