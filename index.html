@@ -4349,7 +4349,17 @@ async function pdfSourceFor(ver,plan){
   if(ver.localFilePath && window.electronAPI && window.electronAPI.isElectron){
     try{
       const b64=await window.electronAPI.readLocalFile(ver.localFilePath);
-      if(b64)return{data:await b64ToU8('data:application/pdf;base64,'+b64)};
+      if(b64){
+        const bytes=await b64ToU8('data:application/pdf;base64,'+b64);
+        if(_looksLikeCompletePdf(bytes))return{data:bytes};
+        // Lokale Datei (z.B. im per OneDrive synchronisierten Plan-Ordner) ist vorhanden, aber
+        // beschaedigt/unvollstaendig - typischerweise weil OneDrive die Datei noch nicht fertig
+        // heruntergeladen hat (Platzhalter/Teildatei) oder die Synchronisierung unterbrochen wurde.
+        // Bisher wurde das NIE geprueft - genau dieser Pfad ist Electron/Desktop-spezifisch und
+        // wurde von keiner der bisherigen PDF-Validierungen erfasst. Auf den Cloud-Fallback
+        // zurueckfallen statt die kaputte lokale Kopie zu verwenden.
+        console.warn('[pdfSourceFor] Lokale Datei im Plan-Ordner ungueltig/unvollständig, falle auf Cloud zurück:',ver.localFilePath);
+      }
     }catch(e){ /* Datei evtl. gelöscht/verschoben/OneDrive noch nicht synchronisiert - auf Cloud-Fallback zurückfallen */ }
   }
   if(ver.pdfData){
