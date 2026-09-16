@@ -4373,7 +4373,9 @@ async function pdfSourceFor(ver,plan){
   if(ver.pdfUrl){
     const cachedBytes=await _cachedFetchBytes(ver.pdfUrl);
     if(cachedBytes)return{data:cachedBytes};
-    return{url:ver.pdfUrl}; // Cache-API nicht verfuegbar/fehlgeschlagen - wie bisher direkt per URL laden
+    // Alle validierten Ladeversuche fehlgeschlagen (z.B. dauerhaft offline) - als letzten Notnagel
+    // direkt an pdf.js uebergeben, statt den Plan komplett zu verweigern.
+    return{url:ver.pdfUrl};
   }
   return null;
 }
@@ -4382,26 +4384,41 @@ async function pdfSourceFor(ver,plan){
 // Plan-PDF-URLs sind pro Version eindeutig (neue Version = neue Storage-URL), daher ist einmal
 // Gecachtes garantiert weiterhin gueltig - keine Ablaufzeit/Invalidierung noetig.
 const _PLAN_CACHE_NAME='bauview-plan-pdfs-v1';
-async function _cachedFetchBytes(url){
-  if(!url || typeof caches==='undefined')return null;
-  try{
-    const cache=await caches.open(_PLAN_CACHE_NAME);
-    let resp=await cache.match(url);
-    let fromCache=!!resp;
-    if(!resp){
-      resp=await fetch(url);
-      if(!resp.ok)return null;
-      await cache.put(url,resp.clone());
+// Laedt UND VALIDIERT eine Plan-PDF - unabhaengig davon, ob die Cache-Storage-API in dieser
+// Browserumgebung ueberhaupt verfuegbar ist (frueher: bei fehlender/fehlschlagender Cache-API
+// wurde ungeprueft direkt an pdf.js weitergereicht - genau DORT trat "invalid pdf structure" auf,
+// weil unsere Validierung diesen Pfad nie erreichte). Versucht bei einer unvollstaendigen Antwort
+// (z.B. wackelige Verbindung) bis zu 3x erneut, bevor aufgegeben wird.
+async function _cachedFetchBytes(url,attempts){
+  if(!url)return null;
+  attempts=attempts||3;
+  let cache=null;
+  try{ if(typeof caches!=='undefined') cache=await caches.open(_PLAN_CACHE_NAME); }catch(e){ cache=null; }
+  if(cache){
+    try{
+      const hit=await cache.match(url);
+      if(hit){
+        const bytes=new Uint8Array(await hit.arrayBuffer());
+        if(_looksLikeCompletePdf(bytes))return bytes;
+        await cache.delete(url); // beschaedigter Cache-Eintrag - verwerfen, frisch laden
+      }
+    }catch(e){}
+  }
+  for(let i=0;i<attempts;i++){
+    try{
+      const resp=await fetch(url,{cache:'no-store'});
+      if(!resp.ok)continue;
+      const bytes=new Uint8Array(await resp.arrayBuffer());
+      if(_looksLikeCompletePdf(bytes)){
+        if(cache){ try{ await cache.put(url,new Response(bytes,{headers:{'Content-Type':'application/pdf'}})); }catch(e){} }
+        return bytes;
+      }
+      console.warn('[_cachedFetchBytes] Unvollständiger Download (Versuch '+(i+1)+'/'+attempts+'):',url);
+    }catch(e){
+      console.warn('[_cachedFetchBytes] Fehler beim Laden (Versuch '+(i+1)+'/'+attempts+'):',url,e.message);
     }
-    const bytes=new Uint8Array(await resp.arrayBuffer());
-    if(!_looksLikeCompletePdf(bytes)){
-      // Beschaedigter/unvollstaendiger Cache-Eintrag (oder fehlerhafte Antwort) - entfernen, damit
-      // der naechste Aufruf frisch von der Cloud laedt statt denselben Fehler zu wiederholen.
-      if(fromCache) await cache.delete(url);
-      return null;
-    }
-    return bytes;
-  }catch(e){ return null; } // z.B. offline & noch nicht im Cache - Aufrufer faellt auf {url:...} zurueck
+  }
+  return null; // alle Versuche fehlgeschlagen - Aufrufer faellt auf {url:...} als letzten Notnagel zurueck
 }
 // Entfernt Zeichen, die in Windows-Dateinamen nicht erlaubt sind (für lokale Plan-Ablage, Etappe 2).
 const _sanitizeFileName=s=>String(s||'').replace(/[<>:"/\\|?*\x00-\x1f]/g,'_').replace(/\.+$/,'').trim()||'Unbenannt';
