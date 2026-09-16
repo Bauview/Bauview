@@ -7,6 +7,14 @@
 <title>BauView – Baumanagement</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231b2a4a'/%3E%3Ctext x='16' y='23' font-size='20' font-family='Arial' font-weight='bold' fill='%23e85d2a' text-anchor='middle'%3EB%3C/text%3E%3C/svg%3E">
 <link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+<!-- Installierbar auf iPhone/iPad: Safari liest weder manifest.json noch theme-color, sondern nur diese Tags -->
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BauView">
+<meta name="mobile-web-app-capable" content="yes">
 
 <script>
 /**
@@ -770,6 +778,7 @@ main.stage{flex:1;display:flex;overflow:hidden;position:relative}
 .plan-del:hover{background:#fbecec;color:#b3261e}
 .plan-thumb{width:38px;height:50px;background:var(--paper);border:1px solid var(--line);border-radius:4px;flex-shrink:0;display:grid;place-items:center;font-size:9px;color:var(--muted);overflow:hidden}
 .plan-thumb canvas{max-width:100%;max-height:100%}
+.plan-thumb img{max-width:100%;max-height:100%;object-fit:contain}
 .plan-meta{flex:1;min-width:0}
 .plan-meta .pn{font-weight:600;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .plan-meta .pv{font-size:10.5px;color:var(--muted);margin-top:2px}
@@ -792,7 +801,7 @@ main.stage{flex:1;display:flex;overflow:hidden;position:relative}
 .legend span{display:flex;align-items:center;gap:5px}
 .legend .pin{width:10px;height:10px;border-radius:50%}
 
-.canvas-scroll{flex:1;overflow:auto;position:relative}
+.canvas-scroll{flex:1;overflow:auto;position:relative;touch-action:pan-x pan-y}
 .canvas-stage{position:relative;margin:24px auto;width:max-content;box-shadow:var(--shadow);background:#fff}
 #pdfCanvas{display:block}
 #drawCanvas{position:absolute;inset:0;pointer-events:none;touch-action:none}
@@ -806,7 +815,7 @@ main.stage{flex:1;display:flex;overflow:hidden;position:relative}
 .takeoff-toolbar .tool-btn.active{background:var(--brand-red);color:#fff;border-color:var(--brand-red)}
 .tt-sep{width:1px;height:20px;background:var(--line)}
 .tt-hint{font-size:11.5px;color:var(--muted);margin-left:auto}
-.takeoff-scroll{flex:1;overflow:auto;background:var(--paper);display:flex}
+.takeoff-scroll{flex:1;overflow:auto;background:var(--paper);display:flex;touch-action:pan-x pan-y}
 .takeoff-stage{position:relative;margin:auto}
 .takeoff-stage canvas{position:absolute;inset:0}
 #ttDraw{cursor:crosshair}
@@ -4135,11 +4144,12 @@ let db, state={
 let _sharpTimer=null;
 
 /* ---------- IndexedDB ---------- */
-const STORES=['projects','plans','defects','contacts','protocols','acceptances','checklists','workorders','journal','notes','users','files','app','honorars','baubeschriebe','takeoffs','bkpOverrides','contactsDirectory','orgSettings','categories','portalTokens'];
-// Welche Stores werden in die Cloud gespiegelt (alle ausser 'app' = nur lokale Einstellungen)
+const STORES=['projects','plans','defects','contacts','protocols','acceptances','checklists','workorders','journal','notes','users','files','app','honorars','baubeschriebe','takeoffs','bkpOverrides','contactsDirectory','orgSettings','categories','portalTokens','syncHistory'];
+// Welche Stores werden in die Cloud gespiegelt (alle ausser 'app' = nur lokale Einstellungen, 'syncHistory' = rein lokales Sync-Protokoll der Desktop-App)
 const SYNC_STORES=['projects','plans','defects','contacts','protocols','acceptances','checklists','workorders','journal','notes','users','files','honorars','baubeschriebe','takeoffs','bkpOverrides','contactsDirectory','orgSettings','categories','portalTokens'];
 function openDB(){return new Promise((res,rej)=>{
-  const r=indexedDB.open('bauview2',11);
+  // Version 12: neuer rein lokaler Store 'syncHistory' (Offline-Synchronisierungs-Verlauf, Desktop-App - Offline-Dokumentenspeicher)
+  const r=indexedDB.open('bauview2',12);
   let settled=false;
   const timeout=setTimeout(()=>{
     if(settled)return;
@@ -4307,10 +4317,358 @@ const esc=s=>(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;
 const money=n=>'CHF '+(Number(n)||0).toLocaleString('de-CH',{minimumFractionDigits:2,maximumFractionDigits:2});
 const statusKey=s=>s==='Offen'?'offen':s==='In Arbeit'?'arbeit':'erledigt';
 const fileToB64=f=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f);});
-const b64ToU8=b64=>{const bin=atob(b64.split(',')[1]);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u;};
-// Liefert die pdf.js-Quelle für eine Planversion: lokale Rohdaten bevorzugt (schnell),
-// sonst Fallback auf die Cloud-URL (falls diese Version nur von einem anderen Gerät synchronisiert wurde).
-const pdfSourceFor=ver=>ver&&ver.pdfData?{data:b64ToU8(ver.pdfData)}:(ver&&ver.pdfUrl?{url:ver.pdfUrl}:null);
+// Wandelt eine data:-URL (Base64) in Rohbytes um. Nutzt den nativen, sehr viel schnelleren
+// fetch()-Decoder statt einer JS-Zeichen-fuer-Zeichen-Schleife - bei grossen Plan-PDFs (mehrere
+// zehn MB) sparte die alte Schleife massiv Zeit auf schwaecheren Geraeten (Tablet/Laptop) und
+// blockierte dabei sogar den Haupt-Thread. Fallback auf die alte Methode, falls fetch() eine
+// data:-URL aus irgendeinem Grund nicht unterstuetzt (z.B. sehr strikte CSP).
+// Prueft, ob Bytes ein vollstaendiges PDF sind: Kopf "%PDF-" UND ein "%%EOF" gegen Ende der
+// Datei. Nur den Kopf zu pruefen reicht nicht - eine mitten in der Uebertragung abgebrochene
+// Datei hat den Kopf noch intakt (der kommt zuerst), aber keinen Abschluss mehr.
+function _looksLikeCompletePdf(bytes){
+  if(!bytes || bytes.length<9)return false;
+  const head=String.fromCharCode(...bytes.slice(0,5));
+  if(head!=='%PDF-')return false;
+  const tailLen=Math.min(2048,bytes.length);
+  const tail=String.fromCharCode(...bytes.slice(bytes.length-tailLen));
+  return tail.includes('%%EOF');
+}
+const b64ToU8=async b64=>{
+  try{ const resp=await fetch(b64); return new Uint8Array(await resp.arrayBuffer()); }
+  catch(e){
+    const bin=atob(b64.split(',')[1]);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u;
+  }
+};
+// Liefert die pdf.js-Quelle für eine Planversion. Reihenfolge: lokale Datei im Plan-Ordner
+// (nur Desktop-App, Etappe 2 - schnellster Zugriff, funktioniert offline), sonst eingebettete
+// Rohdaten (pdfData), sonst Fallback auf die Cloud-URL (falls diese Version nur von einem
+// anderen Gerät synchronisiert wurde). Ist jetzt async wegen des IPC-Aufrufs für die lokale Datei;
+// alle Aufrufstellen verwenden entsprechend "await pdfSourceFor(...)".
+async function pdfSourceFor(ver,plan){
+  if(!ver)return null;
+  if(ver.localFilePath && window.electronAPI && window.electronAPI.isElectron){
+    try{
+      const b64=await window.electronAPI.readLocalFile(ver.localFilePath);
+      if(b64)return{data:await b64ToU8('data:application/pdf;base64,'+b64)};
+    }catch(e){ /* Datei evtl. gelöscht/verschoben/OneDrive noch nicht synchronisiert - auf Cloud-Fallback zurückfallen */ }
+  }
+  if(ver.pdfData){
+    const bytes=await b64ToU8(ver.pdfData);
+    if(_looksLikeCompletePdf(bytes))return{data:bytes};
+    // Lokal gespeicherte Daten sind beschaedigt/unvollstaendig (z.B. durch einen frueheren
+    // Verbindungsabbruch waehrend des Herunterladens) - verwerfen und ueber pdfUrl neu laden,
+    // statt denselben Fehler ("invalid pdf structure") bei jedem Oeffnen zu wiederholen.
+    console.warn('[pdfSourceFor] Lokale PDF-Daten ungueltig, verwerfe und lade neu:',ver.fileName);
+    ver.pdfData=null;
+    if(plan) putLocal('plans',plan).catch(()=>{});
+  }
+  // Zusätzlicher Fallback über den Offline-Dokumentenspeicher (siehe unten): auch OHNE
+  // eingerichteten Plan-Ordner soll ein einmal online betrachteter Plan offline bleiben.
+  if(ver.pdfUrl && window.electronAPI && window.electronAPI.isElectron){
+    try{
+      const cached=await assetSourceFor(ver.pdfUrl);
+      if(cached && cached.startsWith('data:'))return{data:await b64ToU8(cached)};
+    }catch(e){}
+  }
+  if(ver.pdfUrl){
+    const cachedBytes=await _cachedFetchBytes(ver.pdfUrl);
+    if(cachedBytes)return{data:cachedBytes};
+    return{url:ver.pdfUrl}; // Cache-API nicht verfuegbar/fehlgeschlagen - wie bisher direkt per URL laden
+  }
+  return null;
+}
+// Laedt eine Datei ueber die Cache-Storage-API (in JEDEM modernen Browser verfuegbar, nicht nur
+// in der Electron-App) und liefert sie ab dem zweiten Aufruf ohne erneuten Netzwerk-Zugriff.
+// Plan-PDF-URLs sind pro Version eindeutig (neue Version = neue Storage-URL), daher ist einmal
+// Gecachtes garantiert weiterhin gueltig - keine Ablaufzeit/Invalidierung noetig.
+const _PLAN_CACHE_NAME='bauview-plan-pdfs-v1';
+async function _cachedFetchBytes(url){
+  if(!url || typeof caches==='undefined')return null;
+  try{
+    const cache=await caches.open(_PLAN_CACHE_NAME);
+    let resp=await cache.match(url);
+    let fromCache=!!resp;
+    if(!resp){
+      resp=await fetch(url);
+      if(!resp.ok)return null;
+      await cache.put(url,resp.clone());
+    }
+    const bytes=new Uint8Array(await resp.arrayBuffer());
+    if(!_looksLikeCompletePdf(bytes)){
+      // Beschaedigter/unvollstaendiger Cache-Eintrag (oder fehlerhafte Antwort) - entfernen, damit
+      // der naechste Aufruf frisch von der Cloud laedt statt denselben Fehler zu wiederholen.
+      if(fromCache) await cache.delete(url);
+      return null;
+    }
+    return bytes;
+  }catch(e){ return null; } // z.B. offline & noch nicht im Cache - Aufrufer faellt auf {url:...} zurueck
+}
+// Entfernt Zeichen, die in Windows-Dateinamen nicht erlaubt sind (für lokale Plan-Ablage, Etappe 2).
+const _sanitizeFileName=s=>String(s||'').replace(/[<>:"/\\|?*\x00-\x1f]/g,'_').replace(/\.+$/,'').trim()||'Unbenannt';
+// Legt eine Plan-PDF zusätzlich im vom Nutzer gewählten lokalen Ordner ab (nur Desktop-App, nur
+// wenn ein Ordner eingerichtet ist). Gibt den vollen lokalen Pfad zurück (für ver.localFilePath),
+// oder null wenn keine Desktop-App/kein Ordner gewählt/Schreiben fehlgeschlagen ist - in jedem
+// Fall bleibt die Cloud-Kopie (pdfData/pdfUrl) die massgebliche, funktionierende Quelle.
+async function _saveLocalPlanCopy(plan,ver){
+  if(!(window.electronAPI && window.electronAPI.isElectron))return null;
+  try{
+    const root=await getAppVal('planFolderPath');
+    if(!root)return null;
+    const proj=await get('projects',plan.projectId);
+    const relPath=`${_sanitizeFileName(proj?proj.name:'Projekt')}/${_sanitizeFileName(plan.name)}_v${ver.v}.pdf`;
+    return await window.electronAPI.writeLocalFile(root,relPath,ver.pdfData);
+  }catch(e){ console.error('[Lokale Plan-Kopie]',e); return null; }
+}
+
+/* ============================================================
+   OFFLINE-DOKUMENTENSPEICHER (neu)
+   ------------------------------------------------------------
+   Rein lokaler Datei-Cache (Desktop-App) fuer Fotos, Unterschriften, Planausschnitte und
+   weitere aus Supabase Storage geladene Dateien - unabhaengig vom oben gewaehlten Plan-Ordner
+   (der bleibt fuer den SharePoint/OneDrive-Abgleich reserviert). Zweck: Datensaetze, die dieses
+   Geraet nur aus der Cloud uebernommen (nicht selbst erstellt/hochgeladen) hat, sollen trotzdem
+   offline vollstaendig verfuegbar sein - inkl. kurzer Info, WAS synchronisiert wurde.
+   Der Speicher in der Cloud (Supabase) bleibt dabei wie bisher die massgebliche Quelle; dieser
+   Cache ist ein reiner Lese-Zwischenspeicher, kein zweiter Schreibpfad.
+   ============================================================ */
+const _ASSET_URL_MARKER='/storage/v1/object/public/files/';
+function _extToMime(ext){
+  return {jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',gif:'image/gif',webp:'image/webp',svg:'image/svg+xml',pdf:'application/pdf'}[String(ext||'').toLowerCase()]||'application/octet-stream';
+}
+// Leitet aus einer oeffentlichen Supabase-Storage-URL einen stabilen, dateisystemtauglichen
+// relativen Pfad ab (identisch mit dem Speicherpfad im Bucket - bereits projektbezogen benannt).
+function _storageRelPathFromUrl(url){
+  try{
+    const i=String(url||'').indexOf(_ASSET_URL_MARKER);
+    if(i<0)return null;
+    return 'dokumente/'+url.slice(i+_ASSET_URL_MARKER.length).split('?')[0];
+  }catch(e){ return null; }
+}
+function _toDataUrl(relPath,b64){ return 'data:'+_extToMime(relPath.split('.').pop())+';base64,'+b64; }
+// Kernfunktion: liefert eine Datei aus dem lokalen Cache, laedt sie bei Bedarf einmalig
+// herunter und legt sie dort ab. status: 'skip' (Browser/keine Storage-URL - unveraendert),
+// 'cached' (bereits vorhanden), 'downloaded' (gerade neu geholt), 'offline' (kein Netz,
+// nicht im Cache), 'error' (Download fehlgeschlagen).
+async function _ensureAssetCached(url){
+  if(!url || typeof url!=='string' || !/^https?:/.test(url)) return {dataUrl:url,status:'skip'};
+  if(!(window.electronAPI && window.electronAPI.isElectron)) return {dataUrl:url,status:'skip'};
+  const relPath=_storageRelPathFromUrl(url);
+  if(!relPath) return {dataUrl:url,status:'skip'};
+  try{
+    const cachedB64=await window.electronAPI.cacheReadFile(relPath);
+    if(cachedB64) return {dataUrl:_toDataUrl(relPath,cachedB64),status:'cached'};
+  }catch(e){}
+  if(!navigator.onLine) return {dataUrl:null,status:'offline'};
+  try{
+    const resp=await fetch(url);
+    if(!resp.ok) return {dataUrl:null,status:'error'};
+    const blob=await resp.blob();
+    const dataUrl=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(blob);});
+    try{ await window.electronAPI.cacheWriteFile(relPath,dataUrl); }catch(e){}
+    return {dataUrl,status:'downloaded'};
+  }catch(e){ return {dataUrl:null,status:'error'}; }
+}
+// Oeffentlicher Helfer fuer EINE Bild-/Dokument-URL - liefert eine sofort nutzbare Quelle
+// (data:-URL oder unveraendert die Original-URL im Browser), oder null wenn offline und noch
+// nicht im Cache (Aufrufer entscheidet dann, ob ein Platzhalter oder gar nichts angezeigt wird).
+async function assetSourceFor(url){
+  if(!url) return null;
+  if(url.startsWith('data:')) return url;
+  const r=await _ensureAssetCached(url);
+  if(r.dataUrl) return r.dataUrl;
+  return r.status==='skip' ? url : null;
+}
+// Durchsucht ein beliebiges Datenobjekt rekursiv nach eingebetteten Supabase-Storage-URLs
+// (unabhaengig vom Feldnamen/Verschachtelungstiefe - robust gegenueber kuenftigen Feldern).
+function _findStorageUrls(obj,out){
+  out=out||[];
+  if(obj==null) return out;
+  if(typeof obj==='string'){
+    if(obj.indexOf(_ASSET_URL_MARKER)>-1) out.push(obj);
+  }else if(Array.isArray(obj)){
+    obj.forEach(v=>_findStorageUrls(v,out));
+  }else if(typeof obj==='object'){
+    for(const k in obj){ if(Object.prototype.hasOwnProperty.call(obj,k)) _findStorageUrls(obj[k],out); }
+  }
+  return out;
+}
+// Liefert eine KOPIE von obj, in der jede gefundene Storage-URL durch die lokal gecachte
+// (oder frisch heruntergeladene) Version ersetzt ist - fuer PDF-Export (jsPDF.addImage
+// benoetigt echte Bilddaten, keine Netzwerk-URL). Original bleibt unveraendert.
+async function _deepResolveAssets(obj){
+  if(obj==null) return obj;
+  if(typeof obj==='string'){
+    if(obj.indexOf(_ASSET_URL_MARKER)>-1){
+      try{ const r=await assetSourceFor(obj); return r||obj; }catch(e){ return obj; }
+    }
+    return obj;
+  }
+  if(Array.isArray(obj)) return Promise.all(obj.map(v=>_deepResolveAssets(v)));
+  if(typeof obj==='object'){
+    const out={};
+    for(const k of Object.keys(obj)) out[k]=await _deepResolveAssets(obj[k]);
+    return out;
+  }
+  return obj;
+}
+// Bildbeobachtung: hydriert JEDES <img>, dessen src auf eine Cloud-Storage-Datei zeigt, mit der
+// lokal gecachten Version (bzw. stoesst den Download an) - ohne dass die ca. zwei Dutzend
+// Render-Stellen im Code selbst angepasst werden muessen. Nur Desktop-App (siehe Aufrufer).
+let _assetObserverStarted=false;
+function _initAssetCacheObserver(){
+  if(_assetObserverStarted) return; _assetObserverStarted=true;
+  const hydrate=img=>{
+    if(!img || img.dataset.cacheHydrated) return;
+    const src=img.getAttribute('src')||'';
+    if(!src || src.indexOf(_ASSET_URL_MARKER)<0) return;
+    img.dataset.cacheHydrated='1';
+    assetSourceFor(src).then(resolved=>{ if(resolved && resolved!==src) img.src=resolved; }).catch(()=>{});
+  };
+  document.querySelectorAll('img').forEach(hydrate);
+  new MutationObserver(muts=>{
+    for(const m of muts){
+      m.addedNodes && m.addedNodes.forEach(n=>{
+        if(!n || n.nodeType!==1) return;
+        if(n.tagName==='IMG') hydrate(n);
+        else if(n.querySelectorAll) n.querySelectorAll('img').forEach(hydrate);
+      });
+    }
+  }).observe(document.body,{childList:true,subtree:true});
+}
+// Sammelt alle Cloud-Storage-URLs aus dem GESAMTEN lokalen Datenbestand (alle Stores ausser
+// 'app'/'syncHistory' selbst) - Grundlage fuer die Hintergrund-Synchronisierung.
+async function _collectAssetJobs(){
+  const jobs=[]; const tables=STORES.filter(s=>s!=='app'&&s!=='syncHistory');
+  for(const t of tables){
+    let rows=[]; try{ rows=await all(t); }catch(e){ continue; }
+    for(const row of rows){
+      const urls=_findStorageUrls(row,[]);
+      if(urls.length){
+        const label=String(row.name||row.title||row.object||row.fileName||row.text||row.id||'').slice(0,60);
+        urls.forEach(u=>jobs.push({url:u,type:t,label}));
+      }
+    }
+  }
+  const seen=new Set();
+  return jobs.filter(j=>{ if(seen.has(j.url))return false; seen.add(j.url); return true; });
+}
+// Haupteinstieg: laedt alle noch fehlenden Dateien nach, protokolliert JEDE neu geladene Datei
+// im Store 'syncHistory' (Zeitpunkt, Typ, Bezeichnung) und zeigt eine kurze Benachrichtigung.
+// Wird automatisch nach Login/Sync sowie bei Wiederherstellung der Internetverbindung
+// aufgerufen; "manual"=true bei Klick auf "Jetzt synchronisieren" (zusaetzliche Rueckmeldung,
+// auch wenn nichts Neues gefunden wurde bzw. keine Verbindung besteht).
+let _assetSyncRunning=false;
+async function syncOfflineAssets(manual){
+  if(!(window.electronAPI && window.electronAPI.isElectron)) return;
+  if(_assetSyncRunning) return;
+  if(!navigator.onLine){
+    if(manual && typeof toast==='function') toast('Keine Internetverbindung - Synchronisierung nicht möglich',false,true);
+    return;
+  }
+  _assetSyncRunning=true;
+  try{
+    const jobs=await _collectAssetJobs();
+    let neu=0, fehler=0; const logEntries=[];
+    let idx=0; const CONCURRENCY=4;
+    const worker=async()=>{
+      while(idx<jobs.length){
+        const job=jobs[idx++];
+        const r=await _ensureAssetCached(job.url);
+        if(r.status==='downloaded'){
+          neu++;
+          logEntries.push({id:'sh_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),ts:nowISO(),type:job.type,label:job.label,action:'Neu heruntergeladen'});
+        }else if(r.status==='error'){ fehler++; }
+      }
+    };
+    if(jobs.length) await Promise.all(Array.from({length:Math.min(CONCURRENCY,jobs.length)},worker));
+    if(logEntries.length){
+      for(const e of logEntries) await put('syncHistory',e);
+      // Verlauf auf 300 Eintraege begrenzen, damit der Store nicht unbegrenzt waechst
+      const hist=await all('syncHistory');
+      if(hist.length>300){
+        hist.sort((a,b)=>(a.ts||'').localeCompare(b.ts||''));
+        for(const h of hist.slice(0,hist.length-300)) await del('syncHistory',h.id);
+      }
+      const summary=`Offline-Speicher aktualisiert: ${neu} neue Datei${neu===1?'':'en'}${fehler?`, ${fehler} fehlgeschlagen`:''}`;
+      if(typeof toast==='function') toast(summary,!fehler);
+      try{ if(window.electronAPI.notify) await window.electronAPI.notify('BauView – Synchronisiert',summary); }catch(e){}
+    }else if(manual && typeof toast==='function'){
+      toast(fehler?`Synchronisierung abgeschlossen (${fehler} fehlgeschlagen)`:'Bereits aktuell - keine neuen Dateien gefunden',!fehler);
+    }
+  }catch(e){ console.warn('[Offline-Sync]',e.message); }
+  finally{ _assetSyncRunning=false; }
+}
+
+/* ============================================================
+   AUTOMATISCHE UPDATES (Desktop-App)
+   Der Electron-Hauptprozess (main.js) prüft im Hintergrund über Supabase Storage
+   (Ordner "app-updates/") auf neue Versionen, lädt sie automatisch herunter und meldet den
+   Fortschritt über 'bauview:updateStatus' (siehe preload.js: onUpdateStatus). Hier wird dieser
+   Status entgegengenommen, als kleine Karte unten rechts angezeigt und in den Einstellungen
+   (Reiter "Desktop-App") ausführlicher dargestellt.
+   ============================================================ */
+let _updateStatus=null;
+let _updateWatcherActive=false;
+function _initUpdateWatcher(){
+  if(!(window.electronAPI && window.electronAPI.isElectron))return;
+  if(typeof window.electronAPI.onUpdateStatus!=='function')return; // ältere Desktop-Version (vor diesem Feature)
+  if(_updateWatcherActive)return; // nicht doppelt registrieren (z.B. erneuter afterLogin)
+  _updateWatcherActive=true;
+  window.electronAPI.getAppVersion().then(v=>{ window._bvAppVersion=v; _renderUpdateSettingsStatus(); }).catch(()=>{});
+  window.electronAPI.onUpdateStatus(status=>{
+    _updateStatus=status;
+    _renderUpdateBanner();
+    _renderUpdateSettingsStatus();
+  });
+}
+// Kleine, nicht-blockierende Karte unten rechts - erscheint nur, wenn tatsächlich etwas passiert
+// (Download läuft/fertig). Kein Banner bei blossem "geprüft, nichts Neues" oder Netzwerkfehlern,
+// damit sie nicht bei jeder kurzen Verbindungsstörung aufpoppt.
+function _renderUpdateBanner(){
+  let el=document.getElementById('updateBanner');
+  const st=_updateStatus;
+  const show=st && (st.state==='available' || st.state==='downloading' || st.state==='downloaded');
+  if(!show){ if(el)el.remove(); return; }
+  if(!el){
+    el=document.createElement('div');
+    el.id='updateBanner';
+    el.style.cssText='position:fixed;right:16px;bottom:16px;background:#1a1a1a;color:#fff;padding:12px 16px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.25);z-index:99998;font-size:13px;max-width:300px;display:flex;flex-direction:column;gap:8px';
+    document.body.appendChild(el);
+  }
+  if(st.state==='downloaded'){
+    el.innerHTML=`<div>🚀 BauView ${esc(st.version||'')} ist bereit.</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn btn-primary btn-sm" id="updBannerInstallBtn" type="button">Jetzt installieren &amp; neu starten</button>
+        <button class="btn-icon" id="updBannerDismissBtn" title="Später" type="button" style="color:#fff">✕</button>
+      </div>`;
+    const ib=document.getElementById('updBannerInstallBtn'); if(ib)ib.onclick=()=>window.electronAPI.installUpdate();
+    const db=document.getElementById('updBannerDismissBtn'); if(db)db.onclick=()=>el.remove();
+  }else{
+    const pct=st.state==='downloading' && typeof st.percent==='number' ? ` (${st.percent}%)` : '';
+    el.innerHTML=`<div>⬇ Update ${esc(st.version||'')} wird geladen${pct}…</div>`;
+  }
+}
+// Ausführlicherer Status im Einstellungen-Reiter "Desktop-App" (nur wenn dieser Reiter gerade
+// aufgebaut/sichtbar ist - sonst existiert #dtUpdateStatus nicht, dann passiert einfach nichts).
+function _renderUpdateSettingsStatus(){
+  const statusEl=document.getElementById('dtUpdateStatus');
+  if(!statusEl)return;
+  const installBtn=document.getElementById('dtInstallUpdateBtn');
+  const st=_updateStatus;
+  const curVer=window._bvAppVersion?`Version ${window._bvAppVersion}`:'Version wird ermittelt…';
+  let text=curVer;
+  if(st){
+    if(st.state==='checking') text=curVer+' · sucht nach Updates…';
+    else if(st.state==='not-available') text=curVer+' · bereits aktuell';
+    else if(st.state==='available') text=curVer+' · Update '+(st.version||'')+' verfügbar, wird heruntergeladen…';
+    else if(st.state==='downloading') text=curVer+' · Update '+(st.version||'')+' wird heruntergeladen'+(typeof st.percent==='number'?' ('+st.percent+'%)':'')+'…';
+    else if(st.state==='downloaded') text=curVer+' · Update '+(st.version||'')+' bereit zur Installation';
+    else if(st.state==='error') text=curVer+' · Update-Prüfung fehlgeschlagen ('+(st.message||'unbekannter Fehler')+')';
+  }
+  statusEl.textContent=text;
+  if(installBtn) installBtn.classList.toggle('hidden', !(st&&st.state==='downloaded'));
+}
+
 // Repariert beschädigte/unvollständige Plan-Datensätze (z.B. aus einem abgebrochenen
 // früheren Upload), damit die Anzeige nie an einem fehlenden 'versions'-Feld abstürzt.
 function _normalizePlan(p){
@@ -4589,6 +4947,7 @@ document.getElementById('projSelect').onchange=async e=>{
   state.projectId=e.target.value;state.planId=null;state.defectId=null;state.selection.clear();
   state.module='dashboard';
   await navigate('dashboard');await renderRail();
+  if(typeof _autoPrefetchProjectPlans==='function') _autoPrefetchProjectPlans(state.projectId);
 };
 
 /* ---------- Neues Projekt eröffnen ---------- */
@@ -4730,7 +5089,7 @@ function updateNet(){
   p.className='netpill '+(on?'online':'offline');
   document.getElementById('netText').textContent=on?'Online':'Offline · lokal';
 }
-window.addEventListener('online',()=>{updateNet();toast('Wieder online – wird synchronisiert',true);});
+window.addEventListener('online',()=>{updateNet();toast('Wieder online – wird synchronisiert',true);if(typeof syncOfflineAssets==='function')syncOfflineAssets();});
 window.addEventListener('offline',()=>{updateNet();toast('Offline – Änderungen lokal gespeichert');});
 
 /* ---------- Signature pad ---------- */
@@ -5010,6 +5369,7 @@ async function renderPlans(){
   document.getElementById('dDelete').onclick=deleteDefect;
   document.getElementById('markerLayer').onclick=placeMarker;
   setupWheelZoom();
+  setupPinchZoom();
   setupMiddleDragPan(document.getElementById('canvasScroll'));
   setupLupe();
   setupDrawTools();
@@ -5096,6 +5456,55 @@ function setupWheelZoom(){
     state._zoomAnchor={ax,ay,mx,my};
     scheduleSharpRender();
   },{passive:false});
+}
+
+/* ---------- Pinch-Zoom (Zwei-Finger-Geste, Tablet/Touch) ---------- */
+/* Vorher fehlte jede Touch-Zoom-Unterstuetzung im Plan-Betrachter (nur Mausrad + Buttons).
+   Funktioniert analog zum Mausrad-Zoom: sofortige CSS-Vorschau, scharfes Re-Render nach Pause. */
+function setupPinchZoom(){
+  const scroll=document.getElementById('canvasScroll');
+  if(!scroll)return;
+  let pinching=false,startDist=0,startZoom=1;
+  const touchDist=(a,b)=>Math.hypot(b.clientX-a.clientX,b.clientY-a.clientY);
+  const touchMid=(a,b)=>({x:(a.clientX+b.clientX)/2,y:(a.clientY+b.clientY)/2});
+  scroll.addEventListener('touchstart',e=>{
+    if(e.touches.length===2&&state.pdfDoc&&!state.lupe&&state.viewport){
+      pinching=true;
+      startDist=touchDist(e.touches[0],e.touches[1]);
+      startZoom=(state._pendingZoom!=null?state._pendingZoom:state.zoom);
+    }else if(e.touches.length!==2){
+      pinching=false;
+    }
+  },{passive:true});
+  scroll.addEventListener('touchmove',e=>{
+    if(!pinching||e.touches.length!==2||!state.viewport)return;
+    e.preventDefault();
+    const rect=scroll.getBoundingClientRect();
+    const mid=touchMid(e.touches[0],e.touches[1]);
+    const mx=mid.x-rect.left,my=mid.y-rect.top;
+    const curZoom=(state._pendingZoom!=null?state._pendingZoom:state.zoom);
+    const curScale=curZoom/state.zoom;
+    const curW=state.viewport.width*curScale,curH=state.viewport.height*curScale;
+    const ax=(scroll.scrollLeft+mx)/curW;
+    const ay=(scroll.scrollTop+my)/curH;
+    const newDist=touchDist(e.touches[0],e.touches[1]);
+    if(!newDist||!startDist)return;
+    const next=Math.min(Math.max(startZoom*(newDist/startDist),0.4),6);
+    if(next===curZoom)return;
+    state._pendingZoom=next;
+    const factor=next/state.zoom;
+    const stage=document.getElementById('canvasStage');
+    if(stage){stage.style.transformOrigin='0 0';stage.style.transform=`scale(${factor})`;}
+    const zl=document.getElementById('zoomLabel');if(zl)zl.textContent=Math.round(next*100)+'%';
+    const newW=state.viewport.width*factor,newH=state.viewport.height*factor;
+    scroll.scrollLeft=ax*newW-mx;
+    scroll.scrollTop=ay*newH-my;
+    state._zoomAnchor={ax,ay,mx,my};
+    scheduleSharpRender();
+  },{passive:false});
+  const endPinch=e=>{ if(e.touches.length<2)pinching=false; };
+  scroll.addEventListener('touchend',endPinch);
+  scroll.addEventListener('touchcancel',endPinch);
 }
 
 function scheduleSharpRender(){
@@ -5436,12 +5845,23 @@ async function renderThumb(p){
   const el=document.getElementById('thumb-'+p.id);if(!el)return;
   try{
     const cur=p.versions.find(v=>v.v===p.currentVersion);
-    const src=pdfSourceFor(cur); if(!src)return;
+    if(!cur)return;
+    // Vorhandene Miniatur fuer die aktuelle Version wiederverwenden statt das PDF neu zu laden/
+    // zu rendern (siehe Kommentar oben bei der Funktion - das ist der zentrale Performance-Fix).
+    if(p.thumb && p.thumb.v===p.currentVersion && p.thumb.dataUrl){
+      el.innerHTML=`<img src="${p.thumb.dataUrl}" alt="" loading="lazy">`;
+      return;
+    }
+    const src=await pdfSourceFor(cur,p); if(!src)return;
     const doc=await _loadPdfDoc(src);
     const page=await doc.getPage(1);const vp=page.getViewport({scale:.18});
     const cv=document.createElement('canvas');cv.width=vp.width;cv.height=vp.height;
     await page.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;
     el.innerHTML='';el.appendChild(cv);
+    try{
+      p.thumb={v:p.currentVersion,dataUrl:cv.toDataURL('image/jpeg',0.72)};
+      put('plans',p).catch(()=>{}); // bewusst nicht awarten - Anzeige nicht verzoegern
+    }catch(e){}
   }catch(e){}
 }
 
@@ -5558,7 +5978,9 @@ async function _performPlanUpload(files,asVersionOf){
       const plan=await get('plans',asVersionOf[i]);if(!plan)continue;
       _normalizePlan(plan);
       const newV=plan.currentVersion+1;
-      plan.versions.push({v:newV,fileName:f.name,pdfData:b64,uploadedAt:nowISO(),uploadedBy:CURRENT_USER.name});
+      const newVer={v:newV,fileName:f.name,pdfData:b64,uploadedAt:nowISO(),uploadedBy:CURRENT_USER.name};
+      newVer.localFilePath=await _saveLocalPlanCopy(plan,newVer);
+      plan.versions.push(newVer);
       plan.currentVersion=newV;await put('plans',plan);
       const planDefs=(await byProject('defects')).filter(d=>d.planId===plan.id);
       for(const d of planDefs){d.excerpt=await cropPlanAround(plan,d.rx,d.ry,d.num,d.status);await put('defects',d);}
@@ -5568,6 +5990,7 @@ async function _performPlanUpload(files,asVersionOf){
       maxSort+=1;
       const plan={id:uid(),projectId:state.projectId,name:f.name.replace(/\.pdf$/i,''),currentVersion:1,sortIndex:maxSort,
         versions:[{v:1,fileName:f.name,pdfData:b64,uploadedAt:nowISO(),uploadedBy:CURRENT_USER.name}]};
+      plan.versions[0].localFilePath=await _saveLocalPlanCopy(plan,plan.versions[0]);
       await put('plans',plan);
       if(!firstId)firstId=plan.id;
       newCount++;
@@ -5625,7 +6048,9 @@ document.getElementById('updateFileInput').onchange=async e=>{
     _normalizePlan(plan);
     const b64=await fileToB64(f);
     const newV=plan.currentVersion+1;
-    plan.versions.push({v:newV,fileName:f.name,pdfData:b64,uploadedAt:nowISO(),uploadedBy:CURRENT_USER.name});
+    const newVer={v:newV,fileName:f.name,pdfData:b64,uploadedAt:nowISO(),uploadedBy:CURRENT_USER.name};
+    newVer.localFilePath=await _saveLocalPlanCopy(plan,newVer);
+    plan.versions.push(newVer);
     plan.currentVersion=newV;await put('plans',plan);
     const planDefs=(await byProject('defects')).filter(d=>d.planId===plan.id);
     // Planausschnitte für alle Marker auf neuer Version neu erzeugen
@@ -5661,7 +6086,7 @@ async function loadPlanRender(){
   const ver=plan.versions.find(v=>v.v===state.version)||plan.versions.find(v=>v.v===plan.currentVersion);
   const titleEl=document.getElementById('vtTitle');
   if(titleEl)titleEl.innerHTML=`${esc(plan.name)} <span class="ver">v${ver.v} · ${esc(ver.fileName)}</span>`;
-  const src=pdfSourceFor(ver);
+  const src=await pdfSourceFor(ver,plan);
   if(!src){toast('Plan-Datei nicht verfügbar (weder lokal noch in der Cloud gefunden – bitte Plan erneut hochladen)',false,true);return;}
   try{ state.pdfDoc=await _loadPdfDoc(src); }
   catch(e){ toast('Plan konnte nicht geladen werden: '+e.message,false,true); return; }
@@ -5720,7 +6145,7 @@ async function cropPlanAround(plan, rx, ry, num, status){
     if(!plan)return null;
     _normalizePlan(plan);
     const ver=plan.versions.find(v=>v.v===plan.currentVersion);
-    const src=pdfSourceFor(ver); if(!src)return null;
+    const src=await pdfSourceFor(ver,plan); if(!src)return null;
     const doc=await _loadPdfDoc(src);
     const page=await doc.getPage(1);
     // hochauflösend rendern für scharfen Ausschnitt
@@ -6269,7 +6694,7 @@ async function _loadPdfDoc(src,timeoutMs=20000){
   return pdfjsLib.getDocument(src).promise; // Rückfallebene, falls _withTimeout ausnahmsweise fehlt
 }
 async function _getPdfBytes(ver){
-  if(ver.pdfData) return b64ToU8(ver.pdfData);
+  if(ver.pdfData) return await b64ToU8(ver.pdfData);
   if(ver.pdfUrl){
     // Zeitlimit, damit das Öffnen eines Plans bei schlechter/fehlender Verbindung nicht unbegrenzt
     // hängen bleibt, sondern nach spätestens 20s eine klare Fehlermeldung zeigt.
@@ -6585,7 +7010,7 @@ async function renderFullPlanOverview(plan, rx, ry, num, status){
     if(!plan)return null;
     _normalizePlan(plan);
     const ver=plan.versions.find(v=>v.v===plan.currentVersion);
-    const src=pdfSourceFor(ver); if(!src)return null;
+    const src=await pdfSourceFor(ver,plan); if(!src)return null;
     const doc=await _loadPdfDoc(src);
     const page=await doc.getPage(1);
     const base=page.getViewport({scale:1});
@@ -7366,6 +7791,10 @@ function _defectColumnLayout(){
   return layout;
 }
 async function exportDefectPDF(rows,sp,portalInfo){
+  // Offline-Dokumentenspeicher: Bilder/Planausschnitte, die auf diesem Geraet nur als Cloud-URL
+  // vorliegen (z.B. von einem anderen Geraet uebernommene Maengel), vor dem PDF-Aufbau aufloesen -
+  // sonst bleiben sie im Ausdruck leer, wenn dieses Geraet gerade offline ist.
+  try{ rows=await Promise.all(rows.map(r=>_deepResolveAssets(r))); }catch(e){}
   const {jsPDF}=window.jspdf;const doc=new jsPDF();registerEmbeddedFonts(doc,'defects');
   const proj=await get('projects',state.projectId);
   let y=pdfDocHead(doc,(typeof ORG_SETTINGS!=='undefined'&&ORG_SETTINGS.defectListTitle)||'Pendenzen- & Mängelliste',[
@@ -8258,6 +8687,8 @@ function _pdfAttendeesSection(doc,y,persons){
   return Math.max(yEnd1,yEnd2)+2.5;
 }
 async function exportProtocolPDF(p,proj,sp){
+  // Offline-Dokumentenspeicher: siehe exportDefectPDF - gilt hier fuer Traktanden-Fotos.
+  try{ p=await _deepResolveAssets(p); }catch(e){}
   const {jsPDF}=window.jspdf;const doc=new jsPDF();registerEmbeddedFonts(doc,'protocols');
   let y=pdfDocHead(doc,p.title||'Protokoll',[
     {l:proj.name,proj:true},
@@ -8496,6 +8927,8 @@ async function openAcceptanceEditor(a){
   if(!isNew){const ad=document.getElementById('accDelBtn');if(ad)ad.onclick=async()=>{const ok=await confirmDelete('acceptances',a.id,a.object||'Abnahme',renderAcceptance);if(ok){saveDraftDebounced.cancel();_draftClear('acc',draftKeyId);closeModal();}};}
 }
 async function exportAcceptancePDF(a,proj,sp){
+  // Offline-Dokumentenspeicher: siehe exportDefectPDF - gilt hier zusaetzlich fuer Unterschriften.
+  try{ a=await _deepResolveAssets(a); }catch(e){}
   const {jsPDF}=window.jspdf;const doc=new jsPDF();registerEmbeddedFonts(doc,'acceptance');
   pdfHeaderLogo(doc,'acceptance');
   const accTitle=(typeof ORG_SETTINGS!=='undefined'&&ORG_SETTINGS.acceptanceTitle)||'Abnahmeprotokoll';
@@ -9672,6 +10105,8 @@ function pdfBulletHeight(doc,text,w,lh){
   return h;
 }
 async function exportHonorarPDF(h,proj,sp){
+  // Offline-Dokumentenspeicher: siehe exportDefectPDF (betrifft hier vor allem die Unterschrift).
+  try{ h=await _deepResolveAssets(h); }catch(e){}
   const {jsPDF}=window.jspdf;const doc=new jsPDF();registerEmbeddedFonts(doc,'honorar');
   pdfHeaderLogo(doc,'honorar');
   // Empfänger-Adresse
@@ -10157,6 +10592,8 @@ async function openBaubeschriebEditor(bb){
   if(!isNew)document.getElementById('bbDel').onclick=async()=>{const ok=await confirmDelete('baubeschriebe',bb.id,bb.object||'Baubeschrieb',renderBaubeschrieb);if(ok){saveDraftDebounced.cancel();_draftClear('bb',draftKeyId);closeModal();}};
 }
 async function exportBaubeschriebPDF(bb,proj){
+  // Offline-Dokumentenspeicher: siehe exportDefectPDF (betrifft hier das Titelbild).
+  try{ bb=await _deepResolveAssets(bb); }catch(e){}
   const {jsPDF}=window.jspdf;const doc=new jsPDF();registerEmbeddedFonts(doc,'baubeschrieb');
   let y=pdfDocHead(doc,(typeof ORG_SETTINGS!=='undefined'&&ORG_SETTINGS.baubeschriebTitle)||'Baubeschrieb',[
     {l:proj.name,proj:true},
@@ -10508,13 +10945,14 @@ const TAKEOFF_CATEGORIES=['Bodenbelag','Wandbelag','Deckenbelag','Malerarbeiten'
 
 async function _ttLoadPlan(plan){
   const ver=plan.versions.find(v=>v.v===plan.currentVersion);
-  const src=pdfSourceFor(ver);
+  const src=await pdfSourceFor(ver,plan);
   if(!src){toast('Plan-Datei nicht verfügbar',false,true);return;}
   try{ _toState.pdfDoc=await _loadPdfDoc(src); }
   catch(e){ toast('Plan konnte nicht geladen werden: '+e.message,false,true); return; }
   await _ttRenderPdf();
   _ttWireCanvas();
   _ttSetupWheelZoom();
+  _ttSetupPinchZoom();
   setupMiddleDragPan(document.getElementById('ttScroll'));
   _ttExtractVectorPoints(); // Fangpunkte aus der echten Plan-Geometrie (Wandecken etc.), läuft im Hintergrund
 }
@@ -10604,6 +11042,53 @@ function _ttSetupWheelZoom(){
       scroll.scrollTop=ay*newH-my;
     });
   },{passive:false});
+}
+
+/* Pinch-Zoom fuers Ausmass (fehlte bisher komplett, analog zum Plan-Betrachter in "Plaene & Maengel"). */
+function _ttSetupPinchZoom(){
+  const scroll=document.getElementById('ttScroll');
+  if(!scroll||scroll._pinchBound)return; scroll._pinchBound=true;
+  let pinching=false,startDist=0,startZoom=1,pendingAnchor=null,rafScheduled=false;
+  const dist=(a,b)=>Math.hypot(b.clientX-a.clientX,b.clientY-a.clientY);
+  const mid=(a,b)=>({x:(a.clientX+b.clientX)/2,y:(a.clientY+b.clientY)/2});
+  const applyPinch=()=>{
+    rafScheduled=false;
+    if(!pendingAnchor)return;
+    const{ax,ay,mx,my}=pendingAnchor;
+    _ttRenderPdf().then(()=>{
+      const stage=document.getElementById('ttStage');
+      if(!stage)return;
+      scroll.scrollLeft=ax*stage.offsetWidth-mx;
+      scroll.scrollTop=ay*stage.offsetHeight-my;
+    });
+  };
+  scroll.addEventListener('touchstart',e=>{
+    if(e.touches.length===2&&_toState.pdfDoc){
+      pinching=true;
+      startDist=dist(e.touches[0],e.touches[1]);
+      startZoom=_toState.zoom;
+    }else if(e.touches.length!==2){
+      pinching=false;
+    }
+  },{passive:true});
+  scroll.addEventListener('touchmove',e=>{
+    if(!pinching||e.touches.length!==2||!_toState.pdfDoc)return;
+    e.preventDefault();
+    const rect=scroll.getBoundingClientRect();
+    const m=mid(e.touches[0],e.touches[1]);
+    const mx=m.x-rect.left,my=m.y-rect.top;
+    const stage=document.getElementById('ttStage');
+    const curW=stage?stage.offsetWidth:1,curH=stage?stage.offsetHeight:1;
+    const ax=(scroll.scrollLeft+mx)/curW,ay=(scroll.scrollTop+my)/curH;
+    const newDist=dist(e.touches[0],e.touches[1]);
+    if(!newDist||!startDist)return;
+    _toState.zoom=Math.max(0.4,Math.min(6,startZoom*(newDist/startDist)));
+    pendingAnchor={ax,ay,mx,my};
+    if(!rafScheduled){rafScheduled=true;requestAnimationFrame(applyPinch);}
+  },{passive:false});
+  const endPinch=e=>{ if(e.touches.length<2)pinching=false; };
+  scroll.addEventListener('touchend',endPinch);
+  scroll.addEventListener('touchcancel',endPinch);
 }
 
 function _ttCanvasPt(ev){
@@ -11397,6 +11882,8 @@ async function renderSettings(){
   const stage=document.getElementById('stage');
   const s=ORG_SETTINGS;
   const isAdmin=typeof cloudIsAdmin==='function'&&CURRENT_AUTH&&cloudIsAdmin(CURRENT_AUTH.email);
+  const isElectronApp=!!(window.electronAPI && window.electronAPI.isElectron);
+  const planFolderPath=isElectronApp?await getAppVal('planFolderPath'):null;
   stage.innerHTML=`
     <div class="module">
       <div class="mod-head"><div><h1>Einstellungen</h1><div class="sub">Gilt einheitlich für die ganze Firma und alle Projekte · BauView Baumanagement · v${typeof BUILD_VERSION!=='undefined'?BUILD_VERSION:''}</div></div></div>
@@ -11407,6 +11894,7 @@ async function renderSettings(){
           <button class="settings-tab" data-tab="allgemein">Allgemeines Layout</button>
           <button class="settings-tab" data-tab="dokumente">Dokument-Layouts</button>
           ${isAdmin?'<button class="settings-tab" data-tab="admin">Benutzerverwaltung</button>':''}
+          ${isElectronApp?'<button class="settings-tab" data-tab="desktop">Desktop-App</button>':''}
         </div>
         <div class="settings-cols">
         <div class="settings-col-left">
@@ -11564,6 +12052,34 @@ async function renderSettings(){
         <p style="color:var(--muted);font-size:12.5px;margin-top:-6px">Konten zusammenführen, Zugänge verwalten oder entfernen.</p>
         <button class="btn btn-steel btn-sm" id="stAdminBtn">🛡 Admin-Bereich öffnen</button>
         </div>`:''}
+        ${isElectronApp?`<div class="settings-panel hidden" data-panel="desktop">
+        <div class="field-group-title">Plan-Ordner</div>
+        <p style="color:var(--muted);font-size:12.5px;margin-top:-6px">Pläne werden beim Hochladen zusätzlich zur Cloud-Kopie als echte PDF-Datei in diesem Ordner abgelegt (z.B. dein lokal über OneDrive synchronisierter SharePoint-Ordner). Diese Einstellung gilt nur für dieses Gerät, nicht für die Browser-/Handy-Version.</p>
+        <div style="display:flex;align-items:center;gap:10px;margin:14px 0">
+          <div id="dtFolderPath" style="flex:1;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--paper-2);font-size:12.5px;font-family:monospace;word-break:break-all">${planFolderPath?esc(planFolderPath):'Kein Ordner gewählt'}</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-primary btn-sm" id="dtChooseFolderBtn" type="button">Ordner wählen…</button>
+          ${planFolderPath?'<button class="btn btn-ghost btn-sm" id="dtClearFolderBtn" type="button">Entfernen</button>':''}
+        </div>
+
+        <div class="field-group-title" style="margin-top:26px">Offline-Dokumentenspeicher</div>
+        <p style="color:var(--muted);font-size:12.5px;margin-top:-6px">Fotos, Unterschriften, Planausschnitte und weitere aus der Cloud übernommene Dateien werden zusätzlich in einem separaten, rein lokalen Ordner auf diesem Rechner zwischengespeichert (unabhängig vom Plan-Ordner oben) – damit auch ohne Internetverbindung alles verfügbar ist. Läuft automatisch im Hintergrund, sobald die Verbindung besteht; bei neuen Dateien erscheint kurz eine Benachrichtigung.</p>
+        <div style="display:flex;align-items:center;gap:10px;margin:10px 0">
+          <button class="btn btn-ghost btn-sm" id="dtSyncNowBtn" type="button">Jetzt synchronisieren</button>
+          <span id="dtSyncStatus" style="font-size:12.5px;color:var(--muted)"></span>
+        </div>
+        <div class="field-group-title" style="margin-top:18px;font-size:13px">Synchronisations-Verlauf</div>
+        <div id="dtSyncHistory" style="max-height:240px;overflow:auto;border:1px solid var(--line);border-radius:6px;font-size:12px"></div>
+
+        <div class="field-group-title" style="margin-top:26px">App-Version &amp; Updates</div>
+        <p style="color:var(--muted);font-size:12.5px;margin-top:-6px">Neue Versionen werden automatisch im Hintergrund gesucht und heruntergeladen; eine Installation läuft ohne erneuten Download des kompletten Installers ab. Sobald ein Update bereit ist, erscheint unten rechts eine Meldung - oder hier auf "Jetzt installieren" klicken.</p>
+        <p id="dtUpdateStatus" style="font-size:12.5px;margin:10px 0">Version wird ermittelt…</p>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button class="btn btn-ghost btn-sm" id="dtCheckUpdateBtn" type="button">Nach Updates suchen</button>
+          <button class="btn btn-primary btn-sm hidden" id="dtInstallUpdateBtn" type="button">Jetzt installieren &amp; neu starten</button>
+        </div>
+        </div>`:''}
         </div>
 
         <div class="settings-col-right">
@@ -11612,6 +12128,66 @@ async function renderSettings(){
     document.querySelectorAll('.settings-tab').forEach(t=>t.classList.toggle('active',t===tab));
     document.querySelectorAll('.settings-panel').forEach(p=>p.classList.toggle('hidden',p.dataset.panel!==tab.dataset.tab));
   });
+  // --- Desktop-App: Plan-Ordner wählen/entfernen (Etappe 2, nur Electron) ---
+  const dtChooseBtn=document.getElementById('dtChooseFolderBtn');
+  if(dtChooseBtn)dtChooseBtn.onclick=async()=>{
+    try{
+      const folder=await window.electronAPI.chooseFolder();
+      if(!folder)return; // Dialog abgebrochen
+      await setAppVal('planFolderPath',folder);
+      toast('Plan-Ordner gespeichert',true);
+      await renderSettings();
+      const t=document.querySelector('.settings-tab[data-tab="desktop"]'); if(t)t.click();
+    }catch(e){ console.error('[Plan-Ordner]',e); toast('Ordner konnte nicht gewählt werden',false,true); }
+  };
+  const dtClearBtn=document.getElementById('dtClearFolderBtn');
+  if(dtClearBtn)dtClearBtn.onclick=async()=>{
+    await setAppVal('planFolderPath',null);
+    toast('Plan-Ordner entfernt',true);
+    await renderSettings();
+    const t=document.querySelector('.settings-tab[data-tab="desktop"]'); if(t)t.click();
+  };
+  // --- Offline-Dokumentenspeicher: Verlauf anzeigen + manuelles Synchronisieren ---
+  const dtSyncHistoryBox=document.getElementById('dtSyncHistory');
+  if(dtSyncHistoryBox){
+    (async()=>{
+      const hist=(await all('syncHistory')).sort((a,b)=>(b.ts||'').localeCompare(a.ts||'')).slice(0,80);
+      dtSyncHistoryBox.innerHTML=hist.length?hist.map(h=>`
+        <div style="display:flex;gap:10px;padding:6px 10px;border-bottom:1px solid var(--line-2)">
+          <span style="color:var(--muted);white-space:nowrap">${fmtDateTime(h.ts)}</span>
+          <span style="flex:1">${esc(h.type||'')} · ${esc(h.label||'')}</span>
+          <span style="color:var(--muted)">${esc(h.action||'')}</span>
+        </div>`).join(''):'<div style="padding:10px;color:var(--muted)">Noch keine Synchronisierung protokolliert.</div>';
+    })();
+  }
+  const dtSyncNowBtn=document.getElementById('dtSyncNowBtn');
+  if(dtSyncNowBtn)dtSyncNowBtn.onclick=async()=>{
+    const statusEl=document.getElementById('dtSyncStatus');
+    dtSyncNowBtn.disabled=true; if(statusEl)statusEl.textContent='Synchronisiert…';
+    try{
+      if(typeof syncOfflineAssets==='function') await syncOfflineAssets(true);
+      if(statusEl)statusEl.textContent='Zuletzt synchronisiert: '+new Date().toLocaleTimeString('de-CH');
+    }catch(e){ if(statusEl)statusEl.textContent='Fehlgeschlagen: '+e.message; }
+    dtSyncNowBtn.disabled=false;
+    await renderSettings();
+    const t=document.querySelector('.settings-tab[data-tab="desktop"]'); if(t)t.click();
+  };
+  // --- App-Version & Updates: Status anzeigen, manuelle Prüfung, Installation anstossen ---
+  if(isElectronApp && window.electronAPI && document.getElementById('dtUpdateStatus')){
+    if(typeof _renderUpdateSettingsStatus==='function') _renderUpdateSettingsStatus();
+    const checkUpdateBtn=document.getElementById('dtCheckUpdateBtn');
+    if(checkUpdateBtn)checkUpdateBtn.onclick=async()=>{
+      if(typeof window.electronAPI.checkForUpdates!=='function'){
+        toast('Diese Desktop-Version unterstützt noch keine automatischen Updates - bitte neu installieren',false,true);
+        return;
+      }
+      checkUpdateBtn.disabled=true;
+      try{ await window.electronAPI.checkForUpdates(); }catch(e){}
+      setTimeout(()=>{ checkUpdateBtn.disabled=false; },3000);
+    };
+    const installUpdateBtn=document.getElementById('dtInstallUpdateBtn');
+    if(installUpdateBtn)installUpdateBtn.onclick=()=>window.electronAPI.installUpdate();
+  }
   // --- Dokument-Layouts: pro Dokument Titel/Ränder/Schriftgrösse/Position, Wechsel behält
   // unsuchgespeicherte Eingaben des vorherigen Dokuments (lokaler Entwurf, erst beim Speichern
   // wird alles gemeinsam in ORG_SETTINGS.docLayouts übernommen). ---
@@ -13401,6 +13977,14 @@ async function afterLogin(sessionUser){
   }
   renderSyncPill(_lastCloudError?'error':'synced');
   await startApp();
+  if(typeof _autoPrefetchProjectPlans==='function') _autoPrefetchProjectPlans(state.projectId);
+  // Offline-Dokumentenspeicher (Desktop-App): Bildbeobachtung starten + erste Synchronisierung
+  // im Hintergrund anstossen (siehe Definition weiter oben, Abschnitt "OFFLINE-DOKUMENTENSPEICHER").
+  if(window.electronAPI && window.electronAPI.isElectron){
+    if(typeof _initAssetCacheObserver==='function') _initAssetCacheObserver();
+    if(typeof syncOfflineAssets==='function') syncOfflineAssets();
+    if(typeof _initUpdateWatcher==='function') _initUpdateWatcher();
+  }
 }
 // Wird bei Live-Änderung aus der Cloud aufgerufen
 let _remoteTimer=null;
@@ -13413,6 +13997,9 @@ function _onRemoteChange(table){
       await renderProjectSelect();
       const m=MODULES.find(x=>x.id===state.module);
       if(m && state.module!=='plans'){ await navigate(state.module); }
+      // Neue/geänderte Planversion von einem anderen Gerät synchronisiert -> aktives Projekt
+      // automatisch nachladen, damit sie beim Öffnen sofort lokal bereitliegt.
+      if(table==='plans' && typeof _autoPrefetchProjectPlans==='function') _autoPrefetchProjectPlans(state.projectId);
     }catch(e){}
   },400);
 }
@@ -13498,6 +14085,58 @@ async function _updateOfflineToggleState(){
   track.classList.toggle('on',allLocal);
   document.getElementById('offlineSwitchWrap').title=allLocal?'Offline verfügbar – zum Entfernen klicken':'Pläne dieses Projekts offline verfügbar machen';
 }
+// Läuft automatisch im Hintergrund (nicht angefordert, kein Toast/Fortschrittsbalken) nach
+// Login, Projektwechsel und eingehender Fremd-Synchronisierung: lädt fehlende Plan-PDFs des
+// übergebenen Projekts lokal nach, damit Pläne beim ersten Öffnen bereits vorliegen - genau das,
+// was der manuelle "Offline verfügbar"-Schalter auch tut, nur automatisch für das gerade aktive
+// Projekt. Andere (nicht aktive) Projekte werden NICHT automatisch vorgehalten - dafür bleibt der
+// manuelle Schalter da. Speicherbedarf: wie beim manuellen Schalter (ganze PDFs lokal in
+// IndexedDB) - betrifft bewusst nur ein Projekt gleichzeitig, um das nicht ausufern zu lassen.
+const _autoPrefetchInFlight=new Set();
+async function _autoPrefetchProjectPlans(projectId){
+  if(!projectId || !navigator.onLine || _autoPrefetchInFlight.has(projectId))return;
+  _autoPrefetchInFlight.add(projectId);
+  try{
+    const plans=(await all('plans')).filter(p=>p.projectId===projectId);
+    const jobs=[];
+    for(const p of plans){
+      if(!Array.isArray(p.versions))continue;
+      for(const v of p.versions){
+        if(!v.pdfUrl || v.pdfData) continue; // schon lokal vorhanden oder kein Dokument hinterlegt
+        jobs.push({p,v});
+      }
+    }
+    if(!jobs.length)return;
+    const CONCURRENCY=4, TIMEOUT_MS=20000;
+    let idx=0;
+    const worker=async()=>{
+      while(idx<jobs.length){
+        const job=jobs[idx++];
+        // Projektwechsel währenddessen -> nicht mehr aktives Projekt still abbrechen
+        if(state.projectId!==projectId)return;
+        try{
+          const ctrl=new AbortController();
+          const timer=setTimeout(()=>ctrl.abort(),TIMEOUT_MS);
+          let blob;
+          try{
+            const resp=await fetch(job.v.pdfUrl,{signal:ctrl.signal});
+            if(!resp.ok) throw new Error('HTTP '+resp.status);
+            blob=await resp.blob();
+          }finally{ clearTimeout(timer); }
+          const bytes=new Uint8Array(await blob.arrayBuffer());
+          if(!_looksLikeCompletePdf(bytes)) throw new Error('Download unvollständig oder ungültig (kein vollständiges PDF)');
+          blob=new Blob([bytes],{type:'application/pdf'});
+          job.v.pdfData=await new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(blob); });
+        }catch(e){ console.warn('[Automatisches Vorhalten]',job.v.fileName,e.message); }
+      }
+    };
+    await Promise.all(Array.from({length:Math.min(CONCURRENCY,jobs.length)},worker));
+    const touched=new Set(jobs.map(j=>j.p.id));
+    for(const p of plans){ if(touched.has(p.id)) await putLocal('plans',p); }
+    if(state.projectId===projectId && typeof _updateOfflineToggleState==='function') _updateOfflineToggleState();
+  }catch(e){ console.warn('[Automatisches Vorhalten fehlgeschlagen]',e.message); }
+  finally{ _autoPrefetchInFlight.delete(projectId); }
+}
 async function _toggleProjectOffline(){
   const track=document.getElementById('offlineSwitchTrack');
   if(!track||!state.projectId)return;
@@ -13544,10 +14183,15 @@ async function _toggleProjectOffline(){
           try{
             const ctrl=new AbortController();
             const timer=setTimeout(()=>ctrl.abort(),TIMEOUT_MS);
-            const resp=await fetch(job.v.pdfUrl,{signal:ctrl.signal});
-            clearTimeout(timer);
-            if(!resp.ok) throw new Error('HTTP '+resp.status);
-            const blob=await resp.blob();
+            let blob;
+            try{
+              const resp=await fetch(job.v.pdfUrl,{signal:ctrl.signal});
+              if(!resp.ok) throw new Error('HTTP '+resp.status);
+              blob=await resp.blob();
+            }finally{ clearTimeout(timer); }
+            const bytes=new Uint8Array(await blob.arrayBuffer());
+            if(!_looksLikeCompletePdf(bytes)) throw new Error('Download unvollständig oder ungültig (kein vollständiges PDF)');
+            blob=new Blob([bytes],{type:'application/pdf'});
             job.v.pdfData=await new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(blob); });
             done++;
           }catch(e){ failed++; console.warn('[Offline-Download]',job.v.fileName,e.message); }
