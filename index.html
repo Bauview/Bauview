@@ -3796,16 +3796,44 @@ function _b64ToBlob(dataURL){
     return new Blob([u],{type:mime});
   }catch(e){ return null; }
 }
+// Liest eine gerade hochgeladene Plan-PDF direkt aus dem Storage zurueck und prueft, ob wirklich
+// die vollstaendigen Bytes angekommen sind (Byte-Anzahl UND Kopf+echtes Dateiende) - ohne diese
+// Rueckpruefung koennte ein Upload, den die Supabase-Bibliothek selbst NICHT als Fehler erkennt
+// (z.B. Verbindungsabbruch kurz nach dem Senden, bevor der Server die vollstaendige Antwort schickt),
+// unbemerkt eine unvollstaendige Datei im Storage hinterlassen - und der Aufrufer loescht direkt
+// danach die einzige gute lokale Kopie (pdfData). Das war bisher eine echte, ungeschlossene Luecke.
+async function _verifyUploadedPdf(url, expectedBytes){
+  try{
+    const resp=await fetch(url+(url.includes('?')?'&':'?')+'verify='+Date.now(), {cache:'no-store'});
+    if(!resp.ok) return false;
+    const buf=await resp.arrayBuffer();
+    if(typeof expectedBytes==='number' && buf.byteLength!==expectedBytes) return false;
+    const bytes=new Uint8Array(buf);
+    return typeof _looksLikeCompletePdf==='function' ? _looksLikeCompletePdf(bytes) : true;
+  }catch(e){ return false; }
+}
 // Lädt einen Base64-String in den Storage und gibt die öffentliche URL zurück
 async function cloudUploadImage(projectId, dataURL, tag){
   if(!cloudEnabled()||!dataURL||!dataURL.startsWith('data:')) return dataURL; // schon URL oder leer
   const blob=_b64ToBlob(dataURL); if(!blob) return dataURL;
   const ext=(blob.type.split('/')[1]||'jpg').replace('jpeg','jpg');
   const path=`${projectId||'allg'}/img_${tag||''}${Date.now()}_${Math.random().toString(36).slice(2,7)}.${ext}`;
+  const isPlanPdf = tag==='plan_';
   try{
     const {error}=await _withTimeout(_sb.storage.from('files').upload(path, blob, {upsert:true,contentType:blob.type}),45000,'Datei-Upload');
     if(error) throw error;
     const {data}=_sb.storage.from('files').getPublicUrl(path);
+    // Bei Plan-PDFs: erst zurueckpruefen, dann der Aufrufer-Seite (die danach die lokale Kopie
+    // loescht) grünes Licht geben. Schlaegt die Rueckpruefung fehl, das unvollstaendige Objekt
+    // wieder entfernen und einen Fehler werfen, statt eine kaputte URL zurueckzugeben - so bleibt
+    // die lokale pdfData erhalten und der naechste Sync-Durchlauf versucht es erneut.
+    if(isPlanPdf){
+      const ok=await _verifyUploadedPdf(data.publicUrl, blob.size);
+      if(!ok){
+        try{ await _sb.storage.from('files').remove([path]); }catch(e2){}
+        throw new Error('Plan-PDF-Upload unvollständig (Rückprüfung fehlgeschlagen)');
+      }
+    }
     return data.publicUrl;
   }catch(e){ console.warn('[Cloud] Bild-Upload fehlgeschlagen:',e.message); return dataURL; }
 }
@@ -4329,9 +4357,35 @@ function _looksLikeCompletePdf(bytes){
   if(!bytes || bytes.length<9)return false;
   const head=String.fromCharCode(...bytes.slice(0,5));
   if(head!=='%PDF-')return false;
-  const tailLen=Math.min(2048,bytes.length);
-  const tail=String.fromCharCode(...bytes.slice(bytes.length-tailLen));
-  return tail.includes('%%EOF');
+  // Von hinten alle Leerzeichen/Zeilenumbrueche/Nullbytes ueberspringen (manche PDF-Schreiber/
+  // Plotter/Scanner haengen Padding an das Dateiende an), dann pruefen, ob DIREKT davor "%%EOF"
+  // steht - nicht nur irgendwo in einem festen Fenster vor dem Dateiende. Ein reiner
+  // "kommt %%EOF in den letzten N Bytes vor"-Test hat zwei Luecken: (1) falsch-negativ bei
+  // legitimen, vollstaendigen PDFs mit mehr als N Bytes Padding nach dem echten %%EOF, und
+  // (2) falsch-positiv, wenn eine mitten im Datenstrom abgebrochene Datei zufaellig die
+  // Zeichenfolge "%%EOF" als Rauschen in binaeren Objektdaten enthaelt, ohne dass es sich
+  // wirklich um den Dateiabschluss handelt.
+  let end=bytes.length;
+  while(end>0){
+    const c=bytes[end-1];
+    if(c===0x20||c===0x09||c===0x0d||c===0x0a||c===0x00||c===0x0c)end--;
+    else break;
+  }
+  if(end<5)return false;
+  const lastBytes=String.fromCharCode(...bytes.slice(Math.max(0,end-5),end));
+  return lastBytes==='%%EOF';
+}
+// Prueft eine gerade vom Nutzer ausgewaehlte PDF-Datei (data:-URL aus fileToB64) auf Vollstaendigkeit,
+// BEVOR sie ueberhaupt lokal gespeichert oder in die Cloud hochgeladen wird - schliesst die Luecke,
+// dass eine bereits beim Auswaehlen beschaedigte/unvollstaendige Quelldatei (z.B. noch nicht fertig
+// von OneDrive heruntergeladen, oder aus einer fehlerhaften Vorlagen-Software) ungeprueft ins System
+// gelangt. Wirft einen klaren, auf Deutsch verstaendlichen Fehler statt eines kryptischen pdf.js-Fehlers
+// erst spaeter beim Anzeigen.
+async function _validatePlanFileOrThrow(f,b64){
+  const bytes=await b64ToU8(b64);
+  if(!_looksLikeCompletePdf(bytes)){
+    throw new Error('Die ausgewaehlte Datei "'+f.name+'" ist keine vollstaendige PDF-Datei (beschaedigt oder abgebrochen uebertragen). Bitte Datei pruefen/neu exportieren und erneut versuchen.');
+  }
 }
 const b64ToU8=async b64=>{
   try{ const resp=await fetch(b64); return new Uint8Array(await resp.arrayBuffer()); }
@@ -6000,6 +6054,7 @@ async function _performPlanUpload(files,asVersionOf){
     const f=files[i];
     if(!f)continue; // per Duplikat-Dialog übersprungene Datei
     const b64=await fileToB64(f);
+    await _validatePlanFileOrThrow(f,b64);
     if(asVersionOf[i]){
       // Als neue Version eines bestehenden Plans anhängen (Marker bleiben erhalten)
       const plan=await get('plans',asVersionOf[i]);if(!plan)continue;
@@ -6074,6 +6129,7 @@ document.getElementById('updateFileInput').onchange=async e=>{
     const plan=await get('plans',state.planId);if(!plan)throw new Error('Plan nicht gefunden');
     _normalizePlan(plan);
     const b64=await fileToB64(f);
+    await _validatePlanFileOrThrow(f,b64);
     const newV=plan.currentVersion+1;
     const newVer={v:newV,fileName:f.name,pdfData:b64,uploadedAt:nowISO(),uploadedBy:CURRENT_USER.name};
     newVer.localFilePath=await _saveLocalPlanCopy(plan,newVer);
