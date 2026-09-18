@@ -4517,6 +4517,182 @@ async function _saveLocalPlanCopy(plan,ver){
 }
 
 /* ============================================================
+   SERVER-ORDNER-BEOBACHTUNG (neu)
+   ------------------------------------------------------------
+   Gegenstueck zu Etappe 2 oben: WAEHREND Etappe 2 Plan-PDFs beim Hochladen ZUSAETZLICH in den
+   gewaehlten lokalen Plan-Ordner schreibt, beobachtet dieser Abschnitt denselben Ordner in die
+   ANDERE Richtung - erkennt, wenn dort (z.B. direkt vom Server/SharePoint durch einen Kollegen,
+   oder per CAD-Export) eine neue oder geaenderte PDF-Datei abgelegt wird, deren Dateiname exakt
+   (ohne Gross-/Kleinschreibung) zu einem bestehenden Plan passt - und schlaegt vor, sie als neue
+   Version zu uebernehmen. Die eigentliche Dateisystem-Beobachtung + Stabilitaetspruefung
+   (Vollstaendigkeit gegen OneDrive-Teildownloads) passiert in main.js; hier kommt nur ein
+   Ereignis pro erkannter, bereits stabiler Datei an. Nur Desktop-App (Electron), nur wenn ein
+   Plan-Ordner eingerichtet ist. Laeuft laufend im Hintergrund, solange die App offen ist -
+   Uebernahme erfolgt NICHT automatisch, sondern erst nach ausdruecklicher Bestaetigung
+   (Einstellungen -> Desktop-App), analog zum bestehenden Duplikat-Dialog beim manuellen Upload.
+   ============================================================ */
+let _planFolderWatchListenerActive=false;
+const _relPathBasename=p=>String(p||'').split(/[\/]+/).pop();
+
+// Merkt/liest bereits behandelte Dateien (Groesse+Aenderungszeit), damit dieselbe unveraendert
+// gebliebene Datei nicht bei jedem weiteren, harmlosen OneDrive-Ereignis erneut vorgeschlagen wird.
+async function _getServerWatchSeen(){ return (await getAppVal('serverPlanWatchSeen'))||{}; }
+async function _setServerWatchSeen(v){ await setAppVal('serverPlanWatchSeen',v); }
+async function _getServerWatchPending(){ return (await getAppVal('serverPlanWatchPending'))||[]; }
+async function _setServerWatchPending(v){ await setAppVal('serverPlanWatchPending',v); }
+
+// Richtet den Ordner-Watcher im Hauptprozess passend zum aktuell gespeicherten Plan-Ordner ein
+// (oder stoppt ihn, falls keiner gewaehlt ist). Wird nach Login sowie jedesmal aufgerufen, wenn
+// der Plan-Ordner in den Einstellungen gewaehlt/entfernt wird.
+async function _syncPlanFolderWatchState(){
+  if(!(window.electronAPI && window.electronAPI.isElectron))return;
+  if(typeof window.electronAPI.watchPlanFolder!=='function')return; // aeltere Desktop-Version (vor diesem Feature)
+  try{
+    const root=await getAppVal('planFolderPath');
+    if(root) await window.electronAPI.watchPlanFolder(root);
+    else await window.electronAPI.unwatchPlanFolder();
+  }catch(e){ console.warn('[Server-Ordner-Beobachtung]',e.message); }
+}
+
+// Einmalig registrierter Empfaenger fuer vom Hauptprozess gemeldete, bereits stabile Dateien.
+function _initPlanFolderWatch(){
+  if(!(window.electronAPI && window.electronAPI.isElectron))return;
+  if(typeof window.electronAPI.onPlanFileDetected!=='function')return; // aeltere Desktop-Version
+  if(_planFolderWatchListenerActive)return; // nicht doppelt registrieren (z.B. erneuter afterLogin)
+  _planFolderWatchListenerActive=true;
+  window.electronAPI.onPlanFileDetected(payload=>{ _onPlanFileDetected(payload).catch(e=>console.error('[Server-Ordner-Beobachtung]',e)); });
+  _syncPlanFolderWatchState();
+}
+
+// Wird pro erkannter, stabiler PDF-Datei aufgerufen. Ordnet sie ueber den exakten Dateinamen
+// (ohne Gross-/Kleinschreibung, wie beim bestehenden manuellen Duplikat-Dialog) EINEM bestehenden
+// Plan zu, ueber ALLE Projekte hinweg (nicht nur das gerade geoeffnete) - reine Namensuebereinstimmung,
+// unabhaengig von der Ordnerstruktur/Projektzuordnung im Dateisystem. Kein Treffer -> keine Aktion
+// (kein automatisches Anlegen neuer Plaene aus unbekannten Dateien).
+async function _onPlanFileDetected(payload){
+  if(!payload || !payload.fullPath)return;
+  const key=payload.fullPath.toLowerCase();
+  const seen=await _getServerWatchSeen();
+  const prevSeen=seen[key];
+  if(prevSeen && prevSeen.status==='done' && prevSeen.size===payload.size && prevSeen.mtimeMs===payload.mtimeMs){
+    return; // exakt dieselbe, bereits bearbeitete (uebernommene oder ignorierte) Datei - nichts Neues
+  }
+  const name=_relPathBasename(payload.relPath).replace(/\.pdf$/i,'');
+  const allPlans=await all('plans');
+  const match=allPlans.find(p=>String(p.name||'').trim().toLowerCase()===name.trim().toLowerCase());
+  if(!match){
+    console.log('[Server-Ordner-Beobachtung] Keine Namensuebereinstimmung fuer',payload.relPath);
+    return;
+  }
+  const proj=await get('projects',match.projectId);
+  const projectName=proj?proj.name:'(unbekanntes Projekt)';
+  const entry={key,fullPath:payload.fullPath,relPath:payload.relPath,planId:match.id,projectId:match.projectId,
+    planName:match.name,projectName,size:payload.size,mtimeMs:payload.mtimeMs,detectedAt:nowISO()};
+  const pending=await _getServerWatchPending();
+  const idx=pending.findIndex(p=>p.key===key);
+  if(idx>=0)pending[idx]=entry; else pending.push(entry);
+  await _setServerWatchPending(pending);
+  seen[key]={size:payload.size,mtimeMs:payload.mtimeMs,status:'pending'};
+  await _setServerWatchSeen(seen);
+  toast(`Serverordner: neue Version von "${match.name}" erkannt – Einstellungen → Desktop-App zum Bestätigen`,true);
+  if(window.electronAPI.notify){
+    try{ await window.electronAPI.notify('BauView – Serverordner',`Neue Version von "${match.name}" (${projectName}) erkannt. Zur Bestätigung öffnen.`); }catch(e){}
+  }
+  if(typeof renderRail==='function')renderRail().catch(()=>{});
+}
+
+// Uebernimmt eine bestaetigte Erkennung als neue Planversion (Marker/Planausschnitte bleiben
+// erhalten, wie beim bestehenden manuellen "Plan aktualisieren"). Nutzt bewusst NICHT byProject()
+// fuer die betroffenen Maengel, da der Nutzer beim Bestaetigen ein ANDERES Projekt geoeffnet haben
+// kann als jenes, zu dem der erkannte Plan gehoert.
+async function _applyServerPlanUpdate(entry){
+  const plan=await get('plans',entry.planId);
+  if(!plan){ toast('Plan wurde inzwischen gelöscht',false,true); return false; }
+  _normalizePlan(plan);
+  const b64raw=await window.electronAPI.readLocalFile(entry.fullPath);
+  if(!b64raw){ toast('Datei ist nicht mehr lesbar (verschoben/gelöscht?)',false,true); return false; }
+  const pdfData='data:application/pdf;base64,'+b64raw;
+  const bytes=await b64ToU8(pdfData);
+  if(!_looksLikeCompletePdf(bytes)){
+    toast(`Datei "${_relPathBasename(entry.relPath)}" ist unvollständig/beschädigt - wird NICHT übernommen`,false,true);
+    return false;
+  }
+  const newV=plan.currentVersion+1;
+  const newVer={v:newV,fileName:_relPathBasename(entry.relPath),pdfData,uploadedAt:nowISO(),
+    uploadedBy:`Server-Erkennung (${CURRENT_USER&&CURRENT_USER.name||'?'})`,localFilePath:entry.fullPath};
+  plan.versions.push(newVer);
+  plan.currentVersion=newV;
+  await put('plans',plan);
+  // Maengel-Marker/Planausschnitte fuer ALLE Projekte durchsuchen (siehe Kommentar oben), dann nach planId filtern
+  const planDefs=(await all('defects')).filter(d=>d.planId===plan.id);
+  for(const d of planDefs){ d.excerpt=await cropPlanAround(plan,d.rx,d.ry,d.num,d.status,d.page); await put('defects',d); }
+  await put('syncHistory',{id:'sh_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),ts:nowISO(),
+    type:'plans',label:`${plan.name} (${entry.projectName})`,action:`Serverordner: neue Version übernommen (v${newV})`});
+  const seen=await _getServerWatchSeen();
+  seen[entry.key]={size:entry.size,mtimeMs:entry.mtimeMs,status:'done'};
+  await _setServerWatchSeen(seen);
+  const pending=(await _getServerWatchPending()).filter(p=>p.key!==entry.key);
+  await _setServerWatchPending(pending);
+  toast(`Plan "${plan.name}" auf v${newV} aktualisiert · ${planDefs.length} Marker erhalten`,true);
+  if(state.projectId===plan.projectId && state.module==='plans' && typeof renderPlanList==='function'){
+    await renderPlanList();
+    if(state.planId===plan.id && typeof loadPlanRender==='function') await loadPlanRender();
+  }
+  if(typeof renderRail==='function')renderRail().catch(()=>{});
+  return true;
+}
+
+// Verwirft eine erkannte Datei OHNE sie zu uebernehmen. Dieselbe Datei (gleiche Groesse+Zeitstempel)
+// wird danach nicht mehr erneut gemeldet - erst eine tatsaechliche weitere Aenderung der Datei
+// loest wieder eine neue Meldung aus.
+async function _ignoreServerPlanUpdate(entry){
+  const seen=await _getServerWatchSeen();
+  seen[entry.key]={size:entry.size,mtimeMs:entry.mtimeMs,status:'done'};
+  await _setServerWatchSeen(seen);
+  const pending=(await _getServerWatchPending()).filter(p=>p.key!==entry.key);
+  await _setServerWatchPending(pending);
+  if(typeof renderRail==='function')renderRail().catch(()=>{});
+}
+
+// Bestaetigungs-Dialog: zeigt alle ausstehenden, vom Serverordner erkannten Planaenderungen mit
+// je einem "Übernehmen"/"Ignorieren"-Knopf - analog zum bestehenden Duplikat-Dialog beim manuellen
+// Upload (_openDuplicatePlanDialog), aber ausgeloest durch die Ordner-Beobachtung statt durch einen
+// manuellen Datei-Dialog.
+async function _reviewServerPlanUpdates(){
+  const pending=(await _getServerWatchPending()).sort((a,b)=>(b.detectedAt||'').localeCompare(a.detectedAt||''));
+  if(!pending.length){ toast('Keine ausstehenden Server-Erkennungen',true); return; }
+  const render=async()=>{
+    const items=(await _getServerWatchPending()).sort((a,b)=>(b.detectedAt||'').localeCompare(a.detectedAt||''));
+    if(!items.length){ closeModal(); toast('Alle Server-Erkennungen bearbeitet',true); return; }
+    modal(`<div class="modal-head"><h3>📥 Vom Serverordner erkannt</h3>
+        <p>${items.length===1?'Diese Datei wurde':'Diese Dateien wurden'} im Plan-Ordner neu/geändert erkannt und passen dem Namen nach zu einem bestehenden Plan. Bitte prüfen und bestätigen.</p></div>
+      <div class="modal-body">
+        ${items.map(it=>`<div class="card" style="padding:12px 14px;margin-bottom:8px">
+          <div style="font-weight:700;font-size:13.5px;margin-bottom:4px">${esc(it.planName)}</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Projekt: ${esc(it.projectName)} · erkannt ${fmtDateTime(it.detectedAt)}<br>Datei: ${esc(it.relPath)}</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-primary btn-sm" data-swaccept="${esc(it.key)}">Als neue Version übernehmen</button>
+            <button class="btn btn-ghost btn-sm" data-swignore="${esc(it.key)}">Ignorieren</button>
+          </div>
+        </div>`).join('')}
+      </div>
+      <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal()">Schliessen</button></div>`,{wide:true});
+    document.querySelectorAll('[data-swaccept]').forEach(b=>b.onclick=async()=>{
+      b.disabled=true; b.textContent='Wird übernommen…';
+      const it=items.find(x=>x.key===b.dataset.swaccept);
+      if(it) await _applyServerPlanUpdate(it);
+      await render();
+    });
+    document.querySelectorAll('[data-swignore]').forEach(b=>b.onclick=async()=>{
+      const it=items.find(x=>x.key===b.dataset.swignore);
+      if(it) await _ignoreServerPlanUpdate(it);
+      await render();
+    });
+  };
+  await render();
+}
+
+/* ============================================================
    OFFLINE-DOKUMENTENSPEICHER (neu)
    ------------------------------------------------------------
    Rein lokaler Datei-Cache (Desktop-App) fuer Fotos, Unterschriften, Planausschnitte und
@@ -4827,7 +5003,10 @@ async function seedIfEmpty(){
 /* ---------- Modules registry ---------- */
 const MODULES=[
   {id:'dashboard', label:'Übersicht', ic:'▦', tic:'ti-layout-dashboard', render:renderDashboard},
-  {id:'plans',     label:'Projektpläne', ic:'📐', tic:'ti-ruler-2', render:renderPlans},
+  {id:'plans',     label:'Projektpläne', ic:'📐', tic:'ti-ruler-2', render:renderPlans, badge:async()=>{
+    if(!(window.electronAPI && window.electronAPI.isElectron))return 0;
+    try{ return (await _getServerWatchPending()).length; }catch(e){ return 0; }
+  }},
   {id:'defects',   label:'Mängelliste', ic:'⚠', tic:'ti-alert-triangle', render:renderDefectList, badge:async()=>(await byProject('defects')).filter(d=>d.status!=='Erledigt').length},
   {id:'acceptance',label:'Abnahme SIA 118', ic:'✓', tic:'ti-square-check', render:renderAcceptance},
   {id:'checklists',label:'Prüfpläne', ic:'☑', tic:'ti-checklist', render:renderChecklists},
@@ -12124,6 +12303,7 @@ async function renderSettings(){
   const isAdmin=typeof cloudIsAdmin==='function'&&CURRENT_AUTH&&cloudIsAdmin(CURRENT_AUTH.email);
   const isElectronApp=!!(window.electronAPI && window.electronAPI.isElectron);
   const planFolderPath=isElectronApp?await getAppVal('planFolderPath'):null;
+  const pendingServerCount=(isElectronApp && typeof _getServerWatchPending==='function')?(await _getServerWatchPending()).length:0;
   stage.innerHTML=`
     <div class="module">
       <div class="mod-head"><div><h1>Einstellungen</h1><div class="sub">Gilt einheitlich für die ganze Firma und alle Projekte · BauView Baumanagement · v${typeof BUILD_VERSION!=='undefined'?BUILD_VERSION:''}</div></div></div>
@@ -12303,6 +12483,13 @@ async function renderSettings(){
           ${planFolderPath?'<button class="btn btn-ghost btn-sm" id="dtClearFolderBtn" type="button">Entfernen</button>':''}
         </div>
 
+        ${planFolderPath?`<div class="field-group-title" style="margin-top:26px">Server-Erkennung neuer Planversionen</div>
+        <p style="color:var(--muted);font-size:12.5px;margin-top:-6px">BauView beobachtet den Plan-Ordner oben laufend im Hintergrund (solange die App offen ist). Wird dort direkt eine PDF-Datei neu abgelegt oder ersetzt, deren Name exakt zu einem bestehenden Plan passt (z.B. ein Kollege legt einen aktualisierten Plan direkt im SharePoint-Ordner ab), erscheint sie hier zur Bestätigung – übernommen wird nichts automatisch.</p>
+        <div style="display:flex;align-items:center;gap:10px;margin:10px 0">
+          <button class="btn btn-primary btn-sm" id="dtReviewServerBtn" type="button">Erkannte Änderungen prüfen${pendingServerCount?` (${pendingServerCount})`:''}</button>
+          ${!pendingServerCount?'<span style="font-size:12.5px;color:var(--muted)">Aktuell nichts Neues erkannt</span>':''}
+        </div>`:''}
+
         <div class="field-group-title" style="margin-top:26px">Offline-Dokumentenspeicher</div>
         <p style="color:var(--muted);font-size:12.5px;margin-top:-6px">Fotos, Unterschriften, Planausschnitte und weitere aus der Cloud übernommene Dateien werden zusätzlich in einem separaten, rein lokalen Ordner auf diesem Rechner zwischengespeichert (unabhängig vom Plan-Ordner oben) – damit auch ohne Internetverbindung alles verfügbar ist. Läuft automatisch im Hintergrund, sobald die Verbindung besteht; bei neuen Dateien erscheint kurz eine Benachrichtigung.</p>
         <div style="display:flex;align-items:center;gap:10px;margin:10px 0">
@@ -12375,6 +12562,7 @@ async function renderSettings(){
       const folder=await window.electronAPI.chooseFolder();
       if(!folder)return; // Dialog abgebrochen
       await setAppVal('planFolderPath',folder);
+      if(typeof _syncPlanFolderWatchState==='function') await _syncPlanFolderWatchState();
       toast('Plan-Ordner gespeichert',true);
       await renderSettings();
       const t=document.querySelector('.settings-tab[data-tab="desktop"]'); if(t)t.click();
@@ -12383,10 +12571,13 @@ async function renderSettings(){
   const dtClearBtn=document.getElementById('dtClearFolderBtn');
   if(dtClearBtn)dtClearBtn.onclick=async()=>{
     await setAppVal('planFolderPath',null);
+    if(typeof _syncPlanFolderWatchState==='function') await _syncPlanFolderWatchState();
     toast('Plan-Ordner entfernt',true);
     await renderSettings();
     const t=document.querySelector('.settings-tab[data-tab="desktop"]'); if(t)t.click();
   };
+  const dtReviewServerBtn=document.getElementById('dtReviewServerBtn');
+  if(dtReviewServerBtn)dtReviewServerBtn.onclick=()=>{ if(typeof _reviewServerPlanUpdates==='function') _reviewServerPlanUpdates(); };
   // --- Offline-Dokumentenspeicher: Verlauf anzeigen + manuelles Synchronisieren ---
   const dtSyncHistoryBox=document.getElementById('dtSyncHistory');
   if(dtSyncHistoryBox){
@@ -14224,6 +14415,7 @@ async function afterLogin(sessionUser){
     if(typeof _initAssetCacheObserver==='function') _initAssetCacheObserver();
     if(typeof syncOfflineAssets==='function') syncOfflineAssets();
     if(typeof _initUpdateWatcher==='function') _initUpdateWatcher();
+    if(typeof _initPlanFolderWatch==='function') _initPlanFolderWatch();
   }
 }
 // Wird bei Live-Änderung aus der Cloud aufgerufen
