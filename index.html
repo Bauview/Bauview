@@ -4166,6 +4166,7 @@ const BKP=BKP_CRB2017.filter(([,,lvl])=>lvl==='P').map(([nr,name])=>`${nr} ${nam
 let db, state={
   module:'dashboard', projectId:null,
   planId:null, version:null, defectId:null, zoom:1, armed:false, lupe:false, drawMode:false, measureMode:false, pdfDoc:null, viewport:null,
+  pageNum:1, pageCount:1,
   filter:{q:'',status:'',assignee:'',kind:''}, selection:new Set(), _photoTarget:null, _sign:null,
   _pendingZoom:null, _zoomAnchor:null
 };
@@ -5351,6 +5352,7 @@ async function renderPlans(){
           <button class="tool-btn" id="drawBtn" title="Freihand zeichnen, markieren, Formen">✏ Zeichnen</button>
           <button class="tool-btn" id="measureBtn" title="Distanzen anhand des Planmassstabs messen">📏 Massstab</button>
           <button class="tool-btn" id="exportPlanBtn" title="Plan mit Markern &amp; Zeichnungen in Originalgrösse als PDF exportieren">⬇ Plan-PDF</button>
+          <div class="zoom-group hidden" id="pageNavGroup"><button id="pagePrevBtn" title="Vorherige Seite">‹</button><span id="pageLabel">Seite 1/1</span><button id="pageNextBtn" title="Nächste Seite">›</button></div>
           <div class="zoom-group"><button id="zoomOut" title="Verkleinern">−</button><span id="zoomLabel">100%</span><button id="zoomIn" title="Vergrössern">＋</button></div>
           <button class="tool-btn" id="lupeBtn" title="Lupe: Rechteck im Plan aufziehen, um in den Ausschnitt zu zoomen">🔍 Lupe</button>
           <button class="tool-btn" id="zoomResetBtn" title="Zoom zurücksetzen">⤢ Ansicht</button>
@@ -5443,6 +5445,8 @@ async function renderPlans(){
   document.getElementById('zoomIn').onclick=()=>zoomBy(1.25);
   document.getElementById('zoomOut').onclick=()=>zoomBy(0.8);
   document.getElementById('zoomResetBtn').onclick=()=>{state.zoom=1;renderPage();};
+  document.getElementById('pagePrevBtn').onclick=()=>gotoPage((state.pageNum||1)-1);
+  document.getElementById('pageNextBtn').onclick=()=>gotoPage((state.pageNum||1)+1);
   document.getElementById('lupeBtn').onclick=toggleLupe;
   document.getElementById('drawerClose').onclick=async()=>{if(state.defectId)await saveDefect(true);closeDrawer();state.defectId=null;renderMarkers();};
   document.getElementById('dSave').onclick=()=>saveDefect(false);
@@ -6065,7 +6069,7 @@ async function _performPlanUpload(files,asVersionOf){
       plan.versions.push(newVer);
       plan.currentVersion=newV;await put('plans',plan);
       const planDefs=(await byProject('defects')).filter(d=>d.planId===plan.id);
-      for(const d of planDefs){d.excerpt=await cropPlanAround(plan,d.rx,d.ry,d.num,d.status);await put('defects',d);}
+      for(const d of planDefs){d.excerpt=await cropPlanAround(plan,d.rx,d.ry,d.num,d.status,d.page);await put('defects',d);}
       if(!firstId)firstId=plan.id;
       updatedCount++;
     }else{
@@ -6137,7 +6141,7 @@ document.getElementById('updateFileInput').onchange=async e=>{
     plan.currentVersion=newV;await put('plans',plan);
     const planDefs=(await byProject('defects')).filter(d=>d.planId===plan.id);
     // Planausschnitte für alle Marker auf neuer Version neu erzeugen
-    for(const d of planDefs){d.excerpt=await cropPlanAround(plan,d.rx,d.ry,d.num,d.status);await put('defects',d);}
+    for(const d of planDefs){d.excerpt=await cropPlanAround(plan,d.rx,d.ry,d.num,d.status,d.page);await put('defects',d);}
     toast(`Plan auf v${newV} aktualisiert · ${planDefs.length} Marker erhalten`,true);
     state.version=newV;await renderPlanList();await loadPlanRender();
   }catch(err){
@@ -6149,7 +6153,7 @@ document.getElementById('updateFileInput').onchange=async e=>{
 };
 
 async function openPlan(id){
-  state.planId=id;state.defectId=null;state.zoom=1;state._pendingZoom=null;closeDrawer();
+  state.planId=id;state.defectId=null;state.zoom=1;state.pageNum=1;state._pendingZoom=null;closeDrawer();
   if(_sharpTimer){clearTimeout(_sharpTimer);_sharpTimer=null;}
   const _st=document.getElementById('canvasStage');if(_st)_st.style.transform='';
   if(state.lupe)toggleLupe();
@@ -6173,7 +6177,9 @@ async function loadPlanRender(){
   if(!src){toast('Plan-Datei nicht verfügbar (weder lokal noch in der Cloud gefunden – bitte Plan erneut hochladen)',false,true);return;}
   try{ state.pdfDoc=await _loadPdfDoc(src); }
   catch(e){ toast('Plan konnte nicht geladen werden: '+e.message,false,true); return; }
-  await renderPage();buildVerMenu(plan);
+  state.pageCount=state.pdfDoc.numPages||1;
+  state.pageNum=Math.min(Math.max(state.pageNum||1,1),state.pageCount);
+  await renderPage();buildVerMenu(plan);updatePageNav();
 }
 let _rendering=false, _renderQueued=false;
 async function renderPage(){
@@ -6190,7 +6196,7 @@ async function renderPage(){
 async function _computePlanRender(){
   const scroll=document.getElementById('canvasScroll');
   if(!scroll||!state.pdfDoc)return null;
-  const page=await state.pdfDoc.getPage(1);
+  const page=await state.pdfDoc.getPage(state.pageNum||1);
   const baseVp=page.getViewport({scale:1});
   state.baseVpWidth=baseVp.width;state.baseVpHeight=baseVp.height; // PDF-Punkte bei scale=1 = reale Papiergrösse (für Massstabsmessung, zoom-unabhängig)
   const cw=(scroll.clientWidth||900)-60;
@@ -6223,20 +6229,20 @@ async function _renderPageInner(){
   const zl=document.getElementById('zoomLabel');if(zl)zl.textContent=Math.round(state.zoom*100)+'%';
 }
 /* ---------- Planausschnitt rund um einen Marker erzeugen (für Listen-Übersicht) ---------- */
-async function cropPlanAround(plan, rx, ry, num, status){
+async function cropPlanAround(plan, rx, ry, num, status, page){
   try{
     if(!plan)return null;
     _normalizePlan(plan);
     const ver=plan.versions.find(v=>v.v===plan.currentVersion);
     const src=await pdfSourceFor(ver,plan); if(!src)return null;
     const doc=await _loadPdfDoc(src);
-    const page=await doc.getPage(1);
+    const pdfPage=await doc.getPage(page||1);
     // hochauflösend rendern für scharfen Ausschnitt
-    const base=page.getViewport({scale:1});
+    const base=pdfPage.getViewport({scale:1});
     const scale=Math.min(2200/base.width,3); // genug Auflösung, gedeckelt
-    const vp=page.getViewport({scale});
+    const vp=pdfPage.getViewport({scale});
     const full=document.createElement('canvas');full.width=vp.width;full.height=vp.height;
-    await page.render({canvasContext:full.getContext('2d'),viewport:vp}).promise;
+    await pdfPage.render({canvasContext:full.getContext('2d'),viewport:vp}).promise;
     // Ausschnittgrösse: Anteil der Planbreite rund um den Marker – einstellbar (kleiner = enger gezoomt,
     // Mangel dominiert das Bild; grösser = mehr Umgebung/Kontext sichtbar).
     const zoomKey=(typeof ORG_SETTINGS!=='undefined'&&ORG_SETTINGS.excerptZoom)||'normal';
@@ -6272,7 +6278,7 @@ async function cropPlanAround(plan, rx, ry, num, status){
 
 async function renderMarkers(){
   const layer=document.getElementById('markerLayer');if(!layer||!state.viewport)return;
-  const defs=(await byProject('defects')).filter(d=>d.planId===state.planId);
+  const defs=(await byProject('defects')).filter(d=>d.planId===state.planId&&(d.page||1)===(state.pageNum||1));
   const w=state.viewport.width,h=state.viewport.height;
   layer.innerHTML=defs.map(d=>{
     const color=d.status==='Offen'?'#c8481c':d.status==='In Arbeit'?'#b8860b':'#2f7d54';
@@ -6561,7 +6567,7 @@ function drawPointerDown(ev){
     const hit=_drawCache.slice().reverse().find(s=>s.type==='text'&&shapeHit(s,p));
     openTextInput(hit?null:p,hit||null);return;
   }
-  _drawing={id:uid(),type:_drawTool,color:_drawColor,width:_drawWidth,opacity:_drawOpacity,points:[p]};
+  _drawing={id:uid(),type:_drawTool,color:_drawColor,width:_drawWidth,opacity:_drawOpacity,points:[p],page:state.pageNum||1};
   if(_drawTool==='pen'||_drawTool==='highlight')dc_capture(ev);
 }
 function dc_capture(ev){try{document.getElementById('drawCanvas').setPointerCapture(ev.pointerId);}catch(e){}}
@@ -6603,7 +6609,9 @@ function moveSelected(dx,dy){
 function hitTestSelect(p){
   if(!_drawCache)return;
   for(let i=_drawCache.length-1;i>=0;i--){ // von oben (zuletzt gezeichnet) nach unten testen
-    if(shapeHit(_drawCache[i],p)){_drawSelected=_drawCache[i].id;renderDrawings();return;}
+    const sh=_drawCache[i];
+    if((sh.page||1)!==(state.pageNum||1))continue; // nur auf der aktuell sichtbaren Seite auswählbar
+    if(shapeHit(sh,p)){_drawSelected=sh.id;renderDrawings();return;}
   }
   _drawSelected=null;renderDrawings();
 }
@@ -6633,7 +6641,7 @@ function openTextInput(p,existingShape){
     if(existingShape){
       existingShape.text=text;existingShape.color=_drawColor;existingShape.width=_drawWidth;existingShape.opacity=_drawOpacity;
     }else{
-      _drawCache.push({id:uid(),type:'text',points:[p],text,color:_drawColor,width:_drawWidth,opacity:_drawOpacity});
+      _drawCache.push({id:uid(),type:'text',points:[p],text,color:_drawColor,width:_drawWidth,opacity:_drawOpacity,page:state.pageNum||1});
     }
     _scheduleDrawSave(true);renderDrawings();
   };
@@ -6675,7 +6683,7 @@ function distToSeg(p,a,b){
 }
 function eraseAt(p){
   if(!_drawCache||!_drawCache.length)return;
-  const idx=[...(_drawCache)].reverse().findIndex(s=>shapeHit(s,p));
+  const idx=[...(_drawCache)].reverse().findIndex(s=>(s.page||1)===(state.pageNum||1)&&shapeHit(s,p));
   if(idx===-1)return;
   const realIdx=_drawCache.length-1-idx;
   pushUndoSnapshot();
@@ -6715,7 +6723,8 @@ function renderDrawings(){
   if(dc.width!==w||dc.height!==h){dc.width=w;dc.height=h;}
   const ctx=dc.getContext('2d');
   ctx.clearRect(0,0,w,h);
-  const shapes=(_drawCachePlanId===state.planId&&_drawCache)?_drawCache:[];
+  const allShapes=(_drawCachePlanId===state.planId&&_drawCache)?_drawCache:[];
+  const shapes=allShapes.filter(sh=>(sh.page||1)===(state.pageNum||1));
   shapes.forEach(sh=>drawShape(ctx,sh,w,h,sh.id===_drawSelected));
   if(_drawing)drawShape(ctx,_drawing,w,h,false);
 }
@@ -6856,24 +6865,36 @@ async function exportPlanAnnotatedPDF(planId,opts){
     const bytes=await _getPdfBytes(ver);
     const {PDFDocument,rgb,StandardFonts,degrees}=PDFLib;
     const pdfDoc=await PDFDocument.load(bytes);
-    const page=pdfDoc.getPages()[0];
-    const {width:PW,height:PH}=page.getSize();
+    const pdfPages=pdfDoc.getPages();
+    // Marker/Zeichnungen können auf unterschiedlichen Seiten eines mehrseitigen Plan-PDFs liegen
+    // (Feld "page", 1-basiert wie im Viewer/state.pageNum) - pro Seite Grösse/Referenz auflösen.
+    const pageInfo=n=>{
+      const idx=Math.min(Math.max((n||1)-1,0),pdfPages.length-1);
+      const pg=pdfPages[idx];const {width,height}=pg.getSize();
+      return {page:pg,PW:width,PH:height};
+    };
     const fontBold=await pdfDoc.embedFont(StandardFonts.HelveticaBold);
     const fontReg=await pdfDoc.embedFont(StandardFonts.Helvetica);
     // Normalisierte (0..1) Plankoordinaten -> PDF-Punkte (PDF: Ursprung unten links, Y invertiert)
-    const toPt=p=>({x:p.x*PW, y:PH-p.y*PH});
+    const toPt=(p,PW,PH)=>({x:p.x*PW, y:PH-p.y*PH});
     // Strichstärke: Zeichnungen wurden auf dem Bildschirm bei state.viewport.width Pixel breit erzeugt;
     // auf die tatsächliche PDF-Punktgrösse umrechnen, damit Linien weder zu dünn noch zu dick wirken.
-    const editWidth=(state.planId===planId&&state.viewport)?state.viewport.width:PW;
-    const widthScale=PW/editWidth;
+    // state.viewport ist nur für die im Viewer GERADE angezeigte Seite bekannt - für Marker/
+    // Zeichnungen auf anderen Seiten wird 1:1 (keine Skalierung) angenommen.
+    const widthScaleFor=(itemPage,PW)=>{
+      const editWidth=(state.planId===planId&&state.viewport&&(itemPage||1)===(state.pageNum||1))?state.viewport.width:PW;
+      return PW/editWidth;
+    };
 
     // --- Zeichnungen (Vektor: Linien, Formen, Pfeile, Textmarker, Text-Vermerke) ---
     const drawings=opts.includeDrawings?(plan.drawings||[]):[];
     drawings.forEach(sh=>{
-      const P=sh.points.map(toPt);
+      const {page,PW,PH}=pageInfo(sh.page);
+      const P=sh.points.map(p=>toPt(p,PW,PH));
       const {r,g,b}=_hexToRgb01(sh.color);
       const color=rgb(r,g,b);
       const opacity=sh.opacity!=null?sh.opacity:1;
+      const widthScale=widthScaleFor(sh.page,PW);
       const thickness=Math.max(0.5,sh.width*widthScale);
       if(sh.type==='pen'||sh.type==='highlight'){
         for(let i=0;i<P.length-1;i++) page.drawLine({start:P[i],end:P[i+1],thickness,color,lineCap:1,opacity});
@@ -6913,11 +6934,12 @@ async function exportPlanAnnotatedPDF(planId,opts){
 
     // --- Mängel-Marker (Pin + Nummer, als Vektorpfad + Text) ---
     const defs=opts.includeDefects?(await byProject('defects')).filter(d=>d.planId===planId):[];
-    const s=(PW/900); // Pin-Grösse proportional zur Plangrösse
     defs.forEach(d=>{
+      const {page,PW,PH}=pageInfo(d.page);
+      const s=(PW/900); // Pin-Grösse proportional zur Plangrösse (jeweilige Seite)
       const colorHex=d.status==='Offen'?'#c8481c':d.status==='In Arbeit'?'#b8860b':'#2f7d54';
       const {r,g,b}=_hexToRgb01(colorHex);const color=rgb(r,g,b);
-      const c=toPt({x:d.rx,y:d.ry});
+      const c=toPt({x:d.rx,y:d.ry},PW,PH);
       const pinW=30*s, pinH=38*s;
       // Tropfenform als SVG-Pfad. WICHTIG: drawSvgPath dreht die Y-Achse intern automatisch
       // (SVG-Konvention Y nach unten) – deshalb hier mit "cf" (Y negiert) arbeiten, sonst landet
@@ -6953,12 +6975,12 @@ async function placeMarker(e){
   const defs=await byProject('defects');
   const num=defs.reduce((m,d)=>Math.max(m,d.num),0)+1;
   const def={id:uid(),projectId:state.projectId,planId:state.planId,num,title:'',desc:'',status:'Offen',kind:'Mangel',
-    assignee:'',assigneeId:'',due:'',dueOriginal:'',checkedAt:'',floor:'',room:'',trade:'',rx,ry,page:1,photos:[],docs:[],createdAt:nowISO(),createdBy:CURRENT_USER.name,
+    assignee:'',assigneeId:'',due:'',dueOriginal:'',checkedAt:'',floor:'',room:'',trade:'',rx,ry,page:state.pageNum||1,photos:[],docs:[],createdAt:nowISO(),createdBy:CURRENT_USER.name,
     history:[{at:nowISO(),by:CURRENT_USER.name,action:'Mangel erstellt'}]};
   await put('defects',def);toggleArm();
   // Planausschnitt direkt erzeugen
   const plan=await get('plans',state.planId);
-  if(plan){def.excerpt=await cropPlanAround(plan,rx,ry,num,'Offen');await put('defects',def);}
+  if(plan){def.excerpt=await cropPlanAround(plan,rx,ry,num,'Offen',def.page);await put('defects',def);}
   await renderMarkers();await renderPlanList();await renderRail();
   selectDefect(def.id);
 }
@@ -7071,7 +7093,7 @@ async function saveDefect(silent){
   if(aid){const c=await get('contacts',aid);d.assignee=c?c.company:'';}else d.assignee='';
   d.trade=document.getElementById('f-trade').value.trim();
   // Planausschnitt rund um den Marker aktualisieren (für Listenübersicht)
-  if(d.planId){const plan=await get('plans',d.planId);if(plan){d.excerpt=await cropPlanAround(plan,d.rx,d.ry,d.num,d.status);}}
+  if(d.planId){const plan=await get('plans',d.planId);if(plan){d.excerpt=await cropPlanAround(plan,d.rx,d.ry,d.num,d.status,d.page);}}
   await put('defects',d);
   await renderMarkers();await renderPlanList();await renderRail();
   document.getElementById('dHeadTitle').textContent=d.title||'Mangel';
@@ -7235,8 +7257,28 @@ function buildVerMenu(plan){
     m=document.createElement('div');m.className='ver-list';m.id='verPop';
     m.innerHTML=plan.versions.slice().reverse().map(v=>`<button class="${v.v===state.version?'cur':''}" data-v="${v.v}">Version v${v.v}${v.v===plan.currentVersion?' (aktuell)':''}<small>${esc(v.fileName)} · ${fmtDate(v.uploadedAt)} · ${esc(v.uploadedBy)}</small></button>`).join('');
     btn.parentElement.appendChild(m);
-    m.querySelectorAll('button').forEach(b=>b.onclick=async()=>{state.version=+b.dataset.v;m.remove();await loadPlanRender();});
+    m.querySelectorAll('button').forEach(b=>b.onclick=async()=>{state.version=+b.dataset.v;m.remove();state.pageNum=1;await loadPlanRender();});
   };
+}
+// Seiten-Navigation für mehrseitige PDF-Pläne. Mängel-Marker und Zeichnungen sind pro Seite
+// gespeichert (Feld "page", 1-basiert) und werden beim Seitenwechsel entsprechend gefiltert
+// neu gerendert (siehe renderMarkers/renderDrawings).
+function updatePageNav(){
+  const grp=document.getElementById('pageNavGroup');if(!grp)return;
+  const count=state.pageCount||1;
+  grp.classList.toggle('hidden',count<=1);
+  const lbl=document.getElementById('pageLabel');if(lbl)lbl.textContent=`Seite ${state.pageNum||1}/${count}`;
+  const prev=document.getElementById('pagePrevBtn');if(prev)prev.disabled=(state.pageNum||1)<=1;
+  const next=document.getElementById('pageNextBtn');if(next)next.disabled=(state.pageNum||1)>=count;
+}
+async function gotoPage(n){
+  const count=state.pageCount||1;
+  n=Math.min(Math.max(n,1),count);
+  if(n===state.pageNum)return;
+  state.pageNum=n;
+  closeMarkerPopup();
+  await renderPage();
+  updatePageNav();
 }
 
 /* ============================================================
@@ -7468,7 +7510,7 @@ async function openDefectEditModal(id){
     dd.trade=document.getElementById('fe-trade').value.trim();
     const finishSave=async()=>{
       // Planausschnitt bei Statusänderung mit aktualisieren (Pin-Farbe im Ausschnitt)
-      if(dd.planId){const plan=await get('plans',dd.planId);if(plan){dd.excerpt=await cropPlanAround(plan,dd.rx,dd.ry,dd.num,dd.status);}}
+      if(dd.planId){const plan=await get('plans',dd.planId);if(plan){dd.excerpt=await cropPlanAround(plan,dd.rx,dd.ry,dd.num,dd.status,dd.page);}}
       await put('defects',dd);
       closeModal();
       await renderDefectList();await renderRail();
@@ -13493,7 +13535,7 @@ async function openPortalReportsReview(){
       if(photos.length>1) dd.completionPhotos=photos; // alle Fotos zusätzlich, falls mehrere gemeldet wurden
       dd.history=dd.history||[];
       dd.history.push({at:nowISO(),by:CURRENT_USER.name,action:`Erledigung bestätigt (gemeldet von ${item.token.contactName})`});
-      if(dd.planId){const plan=await get('plans',dd.planId);if(plan){dd.excerpt=await cropPlanAround(plan,dd.rx,dd.ry,dd.num,dd.status);}}
+      if(dd.planId){const plan=await get('plans',dd.planId);if(plan){dd.excerpt=await cropPlanAround(plan,dd.rx,dd.ry,dd.num,dd.status,dd.page);}}
       await put('defects',dd);
       await markProcessed();
       await writeReportStatus('confirmed');
