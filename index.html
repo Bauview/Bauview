@@ -950,6 +950,16 @@ main.stage{flex:1;display:flex;overflow:hidden;position:relative}
 .pill-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
 .pill{font-size:11px;padding:3px 9px;border-radius:12px;background:var(--steel-light);color:var(--steel);font-weight:600}
 
+/* Baujournal: Unternehmer-Zeile mit Mitarbeiter-Stepper (analog .checkrow/.pill) */
+.crew-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line-2);border-radius:8px;margin-bottom:6px;background:var(--paper-2)}
+.crew-name{flex:1;font-size:13.5px;overflow-wrap:anywhere}
+.stepper{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.stepper-btn{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:var(--paper);color:var(--ink);font-size:15px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.stepper-btn:hover{border-color:var(--signal);color:var(--signal)}
+.stepper-val{min-width:18px;text-align:center;font-size:13.5px;font-weight:700}
+.crew-remove{width:22px;height:22px;border-radius:50%;border:none;background:transparent;color:var(--muted);font-size:16px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.crew-remove:hover{background:var(--brand-red);color:#fff}
+
 @media (max-width:980px){
   nav.rail{width:200px}
   .plan-side{width:200px}
@@ -3633,7 +3643,7 @@ function _cloudOk(){
 }
 
 // Lagert eingebettete Base64-Bilder eines Datensatzes in den Storage aus.
-// Bildfelder je Tabelle: defects/protocol-items haben excerpt + photos[], notes/journal photos[], acceptances sigBuilder/sigContractor
+// Bildfelder je Tabelle: defects/protocol-items haben excerpt + photos[], notes/journal photos[], journal zusätzlich sketches[] (Handzeichnungen), acceptances sigBuilder/sigContractor
 async function _offloadImages(table,row){
   if(!cloudEnabled()||!row) return row;
   const pid=row.projectId;
@@ -3644,6 +3654,10 @@ async function _offloadImages(table,row){
     // photos-Array
     if(Array.isArray(row.photos)){
       for(let i=0;i<row.photos.length;i++) if(isData(row.photos[i])) row.photos[i]=await cloudUploadImage(pid,row.photos[i],'ph_');
+    }
+    // sketches-Array (Handzeichnungen, z.B. Baujournal)
+    if(Array.isArray(row.sketches)){
+      for(let i=0;i<row.sketches.length;i++) if(isData(row.sketches[i])) row.sketches[i]=await cloudUploadImage(pid,row.sketches[i],'sk_');
     }
     // Unterschriften (Abnahme)
     if(isData(row.sigBuilder)) row.sigBuilder=await cloudUploadImage(pid,row.sigBuilder,'sb_');
@@ -5185,6 +5199,32 @@ function attachSignPad(canvas){
   canvas.onmousedown=start;canvas.onmousemove=move;window.addEventListener('mouseup',end);
   canvas.ontouchstart=start;canvas.ontouchmove=move;canvas.ontouchend=end;
   return{clear:()=>ctx.clearRect(0,0,canvas.width,canvas.height),data:()=>canvas.toDataURL('image/png')};
+}
+
+// ---------- Handzeichnung (freie Skizze, z.B. für Baujournal-Notizen) ----------
+// Nutzt dieselbe Zeichenlogik wie attachSignPad(), aber mit weissem Hintergrund (statt
+// transparent), damit die gespeicherte Skizze überall sauber als Bild angezeigt werden kann.
+// onSave(dataUrl) wird nur aufgerufen, wenn tatsächlich etwas gezeichnet wurde.
+function openSketchPad(onSave){
+  const maxW=Math.min(700,window.innerWidth-80), maxH=Math.min(440,window.innerHeight-280);
+  const wrap=subModal(`
+    <div class="modal-head"><h3>Handzeichnung</h3><p>Mit Finger, Stift oder Maus skizzieren.</p></div>
+    <div class="modal-body" style="text-align:center">
+      <canvas class="sign-pad" id="skCanvas" width="${maxW}" height="${maxH}" style="touch-action:none;cursor:crosshair;max-width:100%"></canvas>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" id="skClear" type="button">Löschen</button><button class="btn btn-ghost" id="skCancel" type="button">Abbrechen</button><button class="btn btn-primary" id="skDone" type="button">✓ Übernehmen</button></div>`,{wide:true});
+  const canvas=wrap.querySelector('#skCanvas');
+  const pad=attachSignPad(canvas);
+  const ctx=canvas.getContext('2d');
+  const fillWhite=()=>{ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);};
+  fillWhite();
+  const blankData=canvas.toDataURL('image/png');
+  wrap.querySelector('#skClear').onclick=fillWhite;
+  wrap.querySelector('#skCancel').onclick=()=>closeSubModal(wrap);
+  wrap.querySelector('#skDone').onclick=()=>{
+    if(canvas.toDataURL('image/png')===blankData){toast('Bitte zuerst etwas zeichnen');return;}
+    const out=pad.data();closeSubModal(wrap);onSave(out);
+  };
 }
 
 /* ============================================================
@@ -9331,7 +9371,8 @@ async function renderJournal(){
           <button class="card-del" data-del="${j.id}" title="Eintrag löschen">×</button>
           <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-right:30px;padding-left:26px"><b style="font-size:15px">${fmtDate(j.date)}</b><span class="pill">${esc(j.weather||'')}</span><span class="pill">${esc(j.temp||'')}°C</span><span style="margin-left:auto;font-size:12px;color:var(--muted)">${esc(j.author)}</span></div>
           <div style="margin-top:8px;font-size:13.5px;line-height:1.6;overflow-wrap:anywhere">${esc((j.text||'').slice(0,180))}${(j.text||'').length>180?'…':''}</div>
-          ${j.workers?`<div style="margin-top:6px;font-size:12px;color:var(--muted)">👷 ${esc(j.workers)}</div>`:''}</div>`).join('')
+          ${j.workers?`<div style="margin-top:6px;font-size:12px;color:var(--muted)">👷 ${esc(j.workers)}</div>`:''}
+          ${((j.photos&&j.photos.length)||(j.sketches&&j.sketches.length))?`<div style="margin-top:4px;font-size:12px;color:var(--muted)">${j.photos&&j.photos.length?'📷 '+j.photos.length+' ':''}${j.sketches&&j.sketches.length?'✏ '+j.sketches.length:''}</div>`:''}</div>`).join('')
         :`<div class="empty"><div class="big">📕</div><h3>Kein Journal</h3><p>Dokumentiere täglich Wetter, Personal und Geschehen auf der Baustelle.</p></div>`}
       </div>
     </div>`;
@@ -9372,19 +9413,93 @@ async function exportJournalPDF(entries,sp){
 }
 async function openJournalEditor(j){
   const isNew=!j;
-  j=j||{id:uid(),projectId:state.projectId,date:todayISO(),weather:'☀ Sonnig',temp:'18',workers:'',text:'',author:CURRENT_USER.name,photos:[],createdAt:nowISO()};
+  j=j||{id:uid(),projectId:state.projectId,date:todayISO(),weather:'☀ Sonnig',temp:'18',workers:'',workersNote:'',crews:[],text:'',author:CURRENT_USER.name,photos:[],sketches:[],createdAt:nowISO()};
+  // Rückwärtskompatibilität: ältere Einträge kennen crews/workersNote/sketches noch nicht - bestehender
+  // Freitext (j.workers) geht dabei nicht verloren, sondern wird als "weiteres Personal" übernommen.
+  if(!Array.isArray(j.crews))j.crews=[];
+  if(j.workersNote===undefined||j.workersNote===null)j.workersNote=(!j.crews.length&&j.workers)?j.workers:'';
+  if(!Array.isArray(j.photos))j.photos=[];
+  if(!Array.isArray(j.sketches))j.sketches=[];
+  const contacts=await byProject('contacts');
+  let crews=j.crews.map(c=>({...c}));
+  const computeWorkers=()=>{
+    const parts=crews.map(c=>`${c.company} (${c.count})`);
+    const note=document.getElementById('j-workers-note')?document.getElementById('j-workers-note').value:j.workersNote;
+    if(note&&note.trim())parts.push(note.trim());
+    return parts.join(', ');
+  };
+  const photosHtml=(j.photos||[]).map((p,i)=>`<div class="photo-thumb"><img src="${p}" data-i="${i}"><button class="photo-edit-btn" data-pmedit="${i}" title="Markieren (Stift/Text)" type="button">✎</button></div>`).join('');
+  const sketchesHtml=(j.sketches||[]).map((s,i)=>`<div class="photo-thumb"><img src="${s}" data-sk="${i}"></div>`).join('');
   modal(`<div class="modal-head"><h3>${isNew?'Neuer Journaleintrag':'Eintrag '+fmtDate(j.date)}</h3></div>
     <div class="modal-body">
       <div class="field-row"><div class="field"><label>Datum</label><input type="date" id="j-date" value="${j.date}"></div>
         <div class="field"><label>Wetter</label><select id="j-weather">${WEATHER.map(w=>`<option ${j.weather===w?'selected':''}>${w}</option>`).join('')}</select></div>
         <div class="field" style="max-width:100px"><label>Temp °C</label><input id="j-temp" value="${esc(j.temp)}"></div></div>
-      <div class="field"><label>Anwesendes Personal / Firmen</label><input id="j-workers" value="${esc(j.workers)}" placeholder="z.B. 4 Maurer, Elektriker (2)"></div>
+      <div class="field"><label>Anwesende Unternehmer</label>
+        <div id="jCrewList"></div>
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+          <select id="jCrewSelect" style="flex:1;min-width:200px"><option value="">— Unternehmer wählen —</option>${contacts.map(c=>`<option value="${c.id}">${esc(c.company)}${c.trade?' ('+esc(c.trade)+')':''}</option>`).join('')}</select>
+          <button class="btn btn-ghost btn-sm" id="jCrewAddBtn" type="button">＋ Hinzufügen</button>
+        </div>
+      </div>
+      <div class="field"><label>Weiteres Personal / Bemerkung <span style="font-weight:400;color:var(--muted);font-size:11.5px">(optional, z.B. eigene Mitarbeiter, Lernende)</span></label><input id="j-workers-note" value="${esc(j.workersNote)}" placeholder="z.B. 2 Lernende"></div>
       <div class="field"><label id="j-text-label">Geschehen / Bemerkungen</label><textarea id="j-text" style="min-height:120px" placeholder="Was geschah heute auf der Baustelle…">${esc(j.text)}</textarea></div>
+      <div class="field"><label>Bilder</label><div class="photo-grid" id="jPhotoGrid">${photosHtml}<button class="photo-add" id="jPhotoAddBtn" type="button">＋</button></div></div>
+      <div class="field"><label>Handschriftliche Notizen <span style="font-weight:400;color:var(--muted);font-size:11.5px">(Skizzen/Handzeichnungen)</span></label><div class="photo-grid" id="jSketchGrid">${sketchesHtml}<button class="photo-add" id="jSketchAddBtn" type="button" title="Handzeichnung hinzufügen">✏</button></div></div>
     </div>
-    <div class="modal-foot">${isNew?'':'<button class="btn btn-danger" id="jDel">Löschen</button>'}<button class="btn btn-ghost" onclick="closeModal()">Abbrechen</button>${isNew?'':'<button class="btn btn-steel" id="jPdf">⬇ Als PDF</button>'}<button class="btn btn-primary" id="jSave">Speichern</button></div>`);
-  const jp=document.getElementById('jPdf');if(jp)jp.onclick=()=>exportJournalPDF(j);
+    <div class="modal-foot">${isNew?'':'<button class="btn btn-danger" id="jDel">Löschen</button>'}<button class="btn btn-ghost" onclick="closeModal()">Abbrechen</button>${isNew?'':'<button class="btn btn-steel" id="jPdf">⬇ Als PDF</button>'}<button class="btn btn-primary" id="jSave">Speichern</button></div>`,{wide:true});
+
+  function drawCrews(){
+    const list=document.getElementById('jCrewList');
+    list.innerHTML=crews.length?crews.map((c,i)=>`
+      <div class="crew-row" data-i="${i}">
+        <span class="crew-name">${esc(c.company)}</span>
+        <div class="stepper">
+          <button type="button" class="stepper-btn" data-dec="${i}" title="Weniger Mitarbeiter">−</button>
+          <span class="stepper-val">${c.count}</span>
+          <button type="button" class="stepper-btn" data-inc="${i}" title="Mehr Mitarbeiter">＋</button>
+        </div>
+        <button type="button" class="crew-remove" data-rm="${i}" title="Unternehmer entfernen">×</button>
+      </div>`).join(''):'<div style="font-size:12px;color:var(--muted)">Keine Unternehmer erfasst</div>';
+    list.querySelectorAll('[data-dec]').forEach(b=>b.onclick=()=>{const i=+b.dataset.dec;if(crews[i].count>1)crews[i].count--;drawCrews();});
+    list.querySelectorAll('[data-inc]').forEach(b=>b.onclick=()=>{const i=+b.dataset.inc;crews[i].count++;drawCrews();});
+    list.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{crews.splice(+b.dataset.rm,1);drawCrews();});
+  }
+  drawCrews();
+  document.getElementById('jCrewAddBtn').onclick=()=>{
+    const sel=document.getElementById('jCrewSelect');const cid=sel.value;if(!cid)return;
+    if(crews.some(c=>c.contactId===cid)){toast('Unternehmer bereits erfasst');return;}
+    const c=contacts.find(x=>x.id===cid);if(!c)return;
+    crews.push({contactId:cid,company:c.company,count:1});
+    sel.value='';drawCrews();
+  };
+
+  const collectJournal=()=>{
+    j.date=document.getElementById('j-date').value;
+    j.weather=document.getElementById('j-weather').value;
+    j.temp=document.getElementById('j-temp').value;
+    j.workersNote=document.getElementById('j-workers-note').value;
+    j.text=document.getElementById('j-text').value;
+    j.crews=crews.map(c=>({...c}));
+    j.workers=computeWorkers();
+    return j;
+  };
+
+  const jp=document.getElementById('jPdf');if(jp)jp.onclick=()=>exportJournalPDF(collectJournal());
   attachDictateButton(document.getElementById('j-text-label'),document.getElementById('j-text'));
-  document.getElementById('jSave').onclick=async(ev)=>{if(guardBusy(ev.currentTarget))return;j.date=document.getElementById('j-date').value;j.weather=document.getElementById('j-weather').value;j.temp=document.getElementById('j-temp').value;j.workers=document.getElementById('j-workers').value;j.text=document.getElementById('j-text').value;await put('journal',j);closeModal();toast('Journaleintrag gespeichert',true);renderJournal();};
+
+  document.getElementById('jPhotoAddBtn').onclick=()=>{collectJournal();openPhotoSource(async(b64)=>{j.photos.push(b64);await put('journal',j);openJournalEditor(await get('journal',j.id));});};
+  document.querySelectorAll('#jPhotoGrid img').forEach(img=>img.onclick=()=>window.open(img.src,'_blank'));
+  document.querySelectorAll('#jPhotoGrid [data-pmedit]').forEach(b=>b.onclick=e=>{
+    e.stopPropagation();
+    const idx=+b.dataset.pmedit;
+    openPhotoMarkup(j.photos[idx],async(newSrc)=>{collectJournal();j.photos[idx]=newSrc;await put('journal',j);openJournalEditor(await get('journal',j.id));});
+  });
+
+  document.getElementById('jSketchAddBtn').onclick=()=>{collectJournal();openSketchPad(async(dataUrl)=>{j.sketches.push(dataUrl);await put('journal',j);openJournalEditor(await get('journal',j.id));});};
+  document.querySelectorAll('#jSketchGrid img').forEach(img=>img.onclick=()=>window.open(img.src,'_blank'));
+
+  document.getElementById('jSave').onclick=async(ev)=>{if(guardBusy(ev.currentTarget))return;collectJournal();await put('journal',j);closeModal();toast('Journaleintrag gespeichert',true);renderJournal();};
   if(!isNew){const jd=document.getElementById('jDel');if(jd)jd.onclick=async()=>{const ok=await confirmDelete('journal',j.id,'Eintrag '+fmtDate(j.date),renderJournal);if(ok)closeModal();};}
 }
 
