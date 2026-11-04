@@ -4323,8 +4323,8 @@ let CURRENT_USER={name:'', initials:'?', email:'', role:''};
 // Sichtbare Build-Version – bei jeder Auslieferung hochzählen. Zeigt sich in der Kopfzeile und
 // auf dem Anmeldebildschirm, damit sich auf jedem Gerät sofort prüfen lässt, ob wirklich der
 // aktuelle Stand geladen wurde (statt bei "unterschiedlichem Stand"-Problemen zu raten).
-const BUILD_VERSION='2026-11-04.6';
-const APP_VERSION='1.8.2'; // Versionsnummer wie Installer/Mobile (unauffällig unten in der Seitenleiste angezeigt)
+const BUILD_VERSION='2026-11-04.7';
+const APP_VERSION='1.8.3'; // Versionsnummer wie Installer/Mobile (unauffällig unten in der Seitenleiste angezeigt)
 let CURRENT_AUTH=null; // aktueller Cloud-Login (Auth-User), null = nicht eingeloggt
 const BKP_CRB2017=[['0','Grundstück','H'],['00','Vorstudien','G'],['000','Übergangsposition','P'],['001','Grundstücksbeurteilung, Machbarkeitsstudien','P'],['002','Vermessung, Vermarkung','P'],['003','Geotechnische und weitere Gutachten','P'],['003.1','Baugrund','S'],['003.2','Grundwasser','S'],['003.3','Altlasten','S'],['003.4','Weitere Gutachten','S'],['004','Quartierplankosten, Richtplankosten','P'],['006','Umweltverträglichkeitsprüfung','P'],['009','Übriges','P'],['01','Grundstücks- bzw. Baurechtserwerb','G'],['010','Übergangsposition','P'],['011','Grundstückserwerb','P'],['012','Baurechtserwerb','P'],['013','Brandmauereinkauf','P'],['018','Sanierung Altlasten','P'],['019','Übriges','P'],['02','Nebenkosten zu Grundstücks- bzw. Baurechtserwerb','G'],['020','Übergangsposition','P'],['021','Handänderungssteuer','P'],['022','Notariatskosten','P'],['023','Grundbuchgebühren','P'],['024','Anwaltskosten, Gerichtskosten','P'],['025','Vermittlungsprovisionen','P'],['029','Übriges','P'],['03','Abfindungen, Servitute, Beiträge','G'],['030','Übergangsposition','P'],['031','Abfindungen an Mieter und Pächter','P'],['032','Inkonvenienzentschädigungen','P'],['033','Errichtung von Servituten','P'],['034','Ablösung von Servituten','P'],['035','Wirtschaftspatente','P'],['036','Beiträge Melioration','P'],['037','Beiträge Güterzusammenlegung','P'],['038','Perimeterbeiträge','P'],['039','Übriges','P'],['04','Finanzierung vor Baubeginn','G'],['040','Übergangsposition','P'],['041','Errichten von Hypotheken auf Grundstück','P'],['042','Hypothekarzinsen','P'],['043','Baurechtszinsen','P'],['044','Darlehenszinsen','P'],['045','Eigenkapitalzinsen','P'],['046','Grundstücksteuern','P'],['048','Versicherungen bis Baubeginn','P'],['049','Übriges','P'],['05','Leitungen ausserhalb Grundstück','G'],['050','Übergangsposition','P'],['051','Erdarbeiten','P'],['052','Kanalisationsleitungen','P'],['053','Elektroleitungen, Gebäudeautomation','P'],['054','Leitungen für HLK-Anlagen','P'],['055','Sanitärleitungen','P'],['056','Nebenarbeiten','P'],['059','Übriges','P'],['06','Verkehrsanlagen ausserhalb Grundstück','G'],['060','Übergangsposition','P'],['061','Strassen','P'],['062','Bahnen','P'],['063','Wasserwege','P'],['069','Übriges','P'],['09','Honorare','G'],['090','Übergangsposition','P'],['091','Architekt','P'],['092','Bauingenieur','P'],['093','Elektroingenieur','P'],['094','HLK-Ingenieur','P'],['095','Sanitäringenieur','P'],['096','Landschaftsarchitekt','P'],['097','Spezialisten 1','P'],['097.0','Geometer','S'],['097.1','Geologe, Geotechniker','S'],['098','Spezialisten 2','P'],['098.2','Bauökonom','S'],['098.6','Verkaufsaufwendungen','S'],['099','Übriges','P'],['1','Vorbereitungsarbeiten','H'],['10','Bestandsaufnahmen, Baugrunduntersuchungen','G'],['100','Übergangsposition','P'],['101','Bestandsaufnahmen','P'],['101.1','Planaufnahmen','S'],['101.2','Schadstoffuntersuchungen','S'],['101.3','Erschütterungsmessungen','S'],['101.4','Rissprotokolle','S'],['101.5','Bestandsaufnahmen Bausubstanz','S'],['101.6','Bestandsaufnahmen Gebäudetechnik','S'],['101.7','Weitere Aufnahmen','S'],['102','Baugrunduntersuchungen','P'],['103','Grundwasseruntersuchungen','P'],['104','Baugespann','P'],['109','Übriges','P'],['11','Räumungen, Terrainvorbereitungen','G'],['110','Übergangsposition','P'],['111','Rodungen','P'],['112','Rückbau','P'],['112.0','Demontagen','S'],['112.1','Abbrüche','S'],['112.2','Entsorgung spezieller Bauteile','S'],['113','Sanierung Altlasten','P'],['114','Erdbewegungen','P'],['114.0','Baustelleneinrichtung','S'],['114.1','Erdarbeiten','S'],['119','Übriges','P'],['12','Sicherungen, Provisorien','G'],['120','Übergangsposition','P'],['121','Sicherung vorhandener Anlagen','P'],['122','Provisorien','P'],['123','Unterfangungen','P'],['123.0','Baustelleneinrichtungen','S'],['123.1','Gerüste','S'],['123.2','Spezielle Unterfangungsarbeiten','S'],['123.3','Erdarbeiten','S'],['123.4','Kanalisationen','S'],['123.5','Beton- und Stahlbetonarbeiten','S'],['123.6','Mauerarbeiten','S'],['129','Übriges','P'],['13','Gemeinsame Baustelleneinrichtung','G'],['130','Übergangsposition','P'],['131','Abschrankungen','P'],['132','Zufahrten, Plätze','P'],['133','Büro Bauleitung','P'],['134','Unterkünfte, Verpflegungseinrichtungen','P'],['135','Provisorische Installationen','P'],['135.0','Kanalisationen','S'],['135.1','Elektro','S'],['135.2','HLK-Anlagen, Gebäudeautomation','S'],['135.3','Wasser','S'],['135.4','Telekommunikation','S'],['136','Kosten für Energie, Wasser und dgl.','P'],['137','Provisorische Abschlüsse und Abdeckungen','P'],['138','Sortierung Bauabfälle','P'],['139','Übriges','P'],['14','Anpassungen an bestehenden Bauten','G'],['140','Übergangsposition','P'],['141','Terraingestaltung, Rohbau 1','P'],['141.0','Erdarbeiten','S'],['141.1','Baumeisterarbeiten','S'],['141.2','Montagebau in Beton, vorgefertigtem Mauerwerk','S'],['141.3','Montagebau in Stahl','S'],['141.4','Montagebau in Holz','S'],['141.5','Montagebau als Leichtkonstruktion','S'],['141.6','Natur- und Kunststeinarbeiten','S'],['142','Rohbau 2','P'],['142.1','Fenster, Aussentüren, Tore','S'],['142.2','Spenglerarbeiten','S'],['142.3','Blitzschutzinstallationen','S'],['142.4','Bedachungsarbeiten','S'],['142.5','Spezielle Dichtungen und Dämmungen','S'],['142.6','Fassadenputze','S'],['142.7','Äussere Oberflächenbehandlungen','S'],['142.8','Äussere Abschlüsse, Sonnenschutzanlagen','S'],['143','Elektroanlagen','P'],['144','HLK-Anlagen, Gebäudeautomation','P'],['145','Sanitäranlagen','P'],['146','Transportanlagen, Lageranlagen','P'],['147','Ausbau 1','P'],['147.1','Gipserarbeiten','S'],['147.2','Metallbauarbeiten','S'],['147.3','Schreinerarbeiten','S'],['147.4','Innere Spezialverglasungen','S'],['147.5','Schliessanlagen','S'],['147.6','Innere Abschlüsse','S'],['147.7','Elementwände','S'],['148','Ausbau 2','P'],['148.1','Bodenbeläge','S'],['148.2','Wandbeläge, Wandbekleidungen','S'],['148.3','Deckenbekleidungen','S'],['148.4','Hafnerarbeiten','S'],['148.5','Innere Oberflächenbehandlungen','S'],['148.6','Bautrocknung','S'],['148.7','Baureinigung','S'],['148.8','Gärtnerarbeiten','S'],['149','Übriges','P'],['15','Anpassungen an bestehenden Erschliessungsanlagen','G'],['150','Übergangsposition','P'],['151','Erdarbeiten','P'],['152','Kanalisationsleitungen','P'],['153','Elektroleitungen, Gebäudeautomation','P'],['154','Leitungen für HLK-Anlagen','P'],['155','Sanitärleitungen','P'],['156','Nebenarbeiten','P'],['159','Übriges','P'],['16','Anpassungen an bestehenden Verkehrsanlagen','G'],['160','Übergangsposition','P'],['161','Strassen','P'],['162','Bahnen','P'],['163','Wasserwege','P'],['169','Übriges','P'],['17','Spezialtiefbau','G'],['170','Übergangsposition','P'],['171','Pfähle','P'],['172','Baugrubenabschlüsse','P'],['173','Aussteifungen','P'],['174','Anker','P'],['175','Grundwasserabdichtungen','P'],['176','Wasserhaltung','P'],['176.0','Offene Wasserhaltung','S'],['176.1','Grundwasserabsenkungen','S'],['177','Baugrundverbesserungen','P'],['178','Nebenarbeiten','P'],['179','Übriges','P'],['19','Honorare','G'],['190','Übergangsposition','P'],['191','Architekt','P'],['192','Bauingenieur','P'],['193','Elektroingenieur','P'],['194','HLK-Ingenieur','P'],['195','Sanitäringenieur','P'],['196','Landschaftsarchitekt','P'],['197','Spezialisten 1','P'],['197.0','Geometer','S'],['197.1','Geologe, Geotechniker','S'],['197.2','Fachkoordinator','S'],['197.6','Gebäudeautomationsingenieur','S'],['198','Spezialisten 2','P'],['198.2','Bauökonom','S'],['198.5','Brandschutzingenieur','S'],['199','Übriges','P'],['2','Gebäude','H'],['20','Baugrube','G'],['200','Übergangsposition','P'],['201','Baugrubenaushub','P'],['201.0','Baustelleneinrichtung','S'],['201.1','Erdarbeiten','S'],['201.2','Kontaminiertes Material','S'],['209','Übriges','P'],['21','Rohbau 1','G'],['210','Übergangsposition','P'],['211','Baumeisterarbeiten','P'],['211.0','Baustelleneinrichtung','S'],['211.1','Gerüste','S'],['211.3','Baumeisteraushub','S'],['211.4','Kanalisationen im Gebäude','S'],['211.5','Beton- und Stahlbetonarbeiten','S'],['211.6','Mauerarbeiten','S'],['211.7','Instandsetzungsarbeiten','S'],['211.8','Witterungsbedingte Massnahmen','S'],['212','Montagebau in Beton, vorgefertigtem Mauerwerk','P'],['212.0','Baustelleneinrichtung','S'],['212.1','Gerüste','S'],['212.2','Elemente aus Beton','S'],['212.3','Elemente aus vorgefertigtem Mauerwerk','S'],['212.4','Elemente aus Porenbeton','S'],['213','Montagebau in Stahl','P'],['213.0','Baustelleneinrichtung','S'],['213.1','Gerüste','S'],['213.2','Stahlkonstruktionen','S'],['213.5','Äussere Bekleidungen','S'],['214','Montagebau in Holz','P'],['214.0','Baustelleneinrichtung','S'],['214.1','Zimmerarbeiten','S'],['214.2','Ingenieurholzbau','S'],['214.3','Holzelementbau','S'],['214.4','Äussere Bekleidungen, Gesimse, Treppen','S'],['214.5','Gerüste','S'],['214.6','Geneigte Dächer, Unterkonstruktionen','S'],['215','Montagebau als Leichtkonstruktion','P'],['215.0','Baustelleneinrichtung','S'],['215.1','Gerüste','S'],['215.2','Fassadenbau','S'],['215.4','Traggerippe','S'],['215.5','Äussere Bekleidungen','S'],['216','Natur- und Kunststeinarbeiten','P'],['216.0','Natursteinarbeiten','S'],['216.1','Kunststeinarbeiten','S'],['217','Schutzraumabschlüsse','P'],['219','Übriges','P'],['22','Rohbau 2','G'],['220','Übergangsposition','P'],['221','Fenster, Aussentüren, Tore','P'],['221.0','Fenster aus Holz-Metall','S'],['221.1','Fenster aus Holz','S'],['221.2','Fenster aus Kunststoff','S'],['221.3','Fenster aus Stahl','S'],['221.4','Fenster aus Aluminium','S'],['221.5','Aussentüren, Tore aus Holz','S'],['221.6','Aussentüren, Tore aus Metall','S'],['221.7','Schaufensteranlagen','S'],['221.8','Spezielle äussere lichtdurchlässige Bauteile','S'],['221.9','Metallbaufertigteile','S'],['222','Spenglerarbeiten','P'],['223','Bedachungsarbeiten','P'],['224','Deckungen','P'],['224.0','Deckungen geneigte Dächer','S'],['224.1','Dichtungsbeläge Flachdächer','S'],['224.2','Glaseinbauten in geneigten Dächern','S'],['224.3','Gerüste','S'],['224.4','Spezielle Dichtungen und Dämmungen','S'],['225','Fugendichtungen','P'],['225.0','Fugendichtungen','S'],['225.1','Spezielle Dämmungen','S'],['225.2','Spezielle Feuchtigkeitsabdichtungen','S'],['225.3','Brandschutzbekleidungen und dgl.','S'],['225.4','Fassadenputze','S'],['226','Gerüste','P'],['226.0','Aussenputze','S'],['226.1','Verputzte Aussenwärmedämmungen','S'],['226.2','Äussere Oberflächenbehandlungen','S'],['227','Äussere Oberflächenbehandlungen','P'],['227.0','Gerüste','S'],['227.1','Äussere Malerarbeiten','S'],['227.2','Äussere Holzschutzarbeiten','S'],['227.3','Äussere Holzbehandlungsarbeiten','S'],['228','Äussere Abschlüsse, Sonnenschutzanlagen','P'],['228.0','Fenster- und Fenstertürläden','S'],['228.1','Rollläden','S'],['228.2','Lamellenstoren (Raffstoren)','S'],['228.3','Markisen','S'],['228.4','Blendschutzanlagen','S'],['228.5','Insektenschutz','S'],['228.6','Äussere bewegliche Gitterabschlüsse','S'],['229','Übriges','P'],['23','Elektroanlagen','G'],['230','Übergangsposition','P'],['231','Starkstromanlagen','P'],['231.0','Netzersatzanlagen','S'],['231.1','Hoch- und Mittelspannungsanlagen','S'],['231.2','Schaltgerätekombinationen','S'],['231.3','Blindstromkompensations-Anlagen','S'],['231.4','Sicherheitsanlagen','S'],['231.5','Energieerzeugungsanlagen','S'],['231.9','Übriges','S'],['232','Starkstrominstallationen','P'],['232.0','Erschliessungen','S'],['232.1','Erdungen und Schutzpotenzialausgleich','S'],['232.2','Rohranlagen','S'],['232.3','Installationssysteme','S'],['232.4','Haupt- und Steigleitungen','S'],['232.5','Lichtinstallationen','S'],['232.6','Kraftinstallationen','S'],['232.7','HLKS-Installationen','S'],['232.9','Übriges','S'],['233','Leuchten und Lampen','P'],['233.0','Lieferung','S'],['233.1','Montage','S'],['234','Elektrogeräte','P'],['235','Schwachstromanlagen','P'],['235.0','Telekommunikationsanlagen','S'],['235.1','Radio- und Fernsehanlagen','S'],['235.2','Multimediaanlagen','S'],['235.3','Informatikanlagen','S'],['235.4','Kommunikationsanlagen','S'],['235.8','Sicherheitsanlagen','S'],['235.9','Übriges','S'],['236','Schwachstrominstallationen','P'],['236.1','Installationen zu Telekommunikationsanlagen','S'],['236.2','Radio- und Fernsehanlagen','S'],['236.3','Multimedia-Installationen','S'],['236.4','UKV-Installationen','S'],['236.5','Installationen zu Kommunikationsanlagen','S'],['236.6','Audio-, Video- und Uhreninstallationen','S'],['236.7','Sicherheitsinstallationen','S'],['236.8','Brandschutzinstallationen','S'],['236.9','Übriges','S'],['237','Gebäudeautomations-Installationen','P'],['238','Provisorische Installationen','P'],['239','Übriges','P'],['24','HLK-Anlagen, Gebäudeautomation','G'],['240','Übergangsposition','P'],['242','Heizungsanlagen','P'],['242.0','Apparate','S'],['242.1','Leitungen','S'],['242.2','Armaturen, Instrumente','S'],['242.3','Regelung','S'],['242.4','Schaltgerätekombinationen','S'],['242.5','Transport, Montage','S'],['242.6','Dämmungen','S'],['242.7','Unternehmerdienstleistungen','S'],['244','Lufttechnische Anlagen','P'],['244.0','Apparate','S'],['244.1','Leitungen','S'],['244.2','Armaturen, Instrumente','S'],['244.3','Regelung','S'],['244.4','Schaltgerätekombinationen','S'],['244.5','Transport, Montage','S'],['244.6','Dämmungen','S'],['244.7','Unternehmerdienstleistungen','S'],['245','Rauch- und Wärmeabzugsanlagen','P'],['245.0','Apparate','S'],['245.1','Leitungen','S'],['245.2','Armaturen, Instrumente','S'],['245.3','Regelung','S'],['245.4','Schaltgerätekombinationen','S'],['245.5','Transport, Montage','S'],['245.6','Dämmungen','S'],['245.7','Unternehmerdienstleistungen','S'],['246','Kälteanlagen','P'],['246.0','Apparate','S'],['246.1','Leitungen','S'],['246.2','Armaturen, Instrumente','S'],['246.3','Regelung','S'],['246.4','Schaltgerätekombinationen','S'],['246.5','Transport, Montage','S'],['246.6','Dämmungen','S'],['246.7','Unternehmerdienstleistungen','S'],['247','Spezialanlagen','P'],['247.4','Schutzraumbelüftungen','S'],['247.5','Thermische Solaranlagen','S'],['247.6','Spezielle Energieerzeugung','S'],['247.7','Staubsaugeranlagen','S'],['248','Gebäudeautomation','P'],['248.1','Managementebene','S'],['248.2','Automationsebene','S'],['248.3','Feldebene','S'],['248.4','Raumautomation','S'],['248.5','Automationsnetzwerk','S'],['248.6','Schaltgerätekombinationen','S'],['248.7','Integration','S'],['249','Übriges','P'],['25','Sanitäranlagen','G'],['250','Übergangsposition','P'],['251','Allgemeine Sanitärapparate','P'],['251.0','Lieferung','S'],['251.1','Montage','S'],['252','Spezielle Sanitärapparate','P'],['252.0','Lieferung','S'],['252.1','Montage','S'],['253','Versorgungs- und Entsorgungsapparate','P'],['253.0','Wassernachbehandlung','S'],['253.1','Wassererwärmer','S'],['253.2','Abwasserhebeanlagen','S'],['253.3','Druckluftzeuger','S'],['253.6','Thermische Solaranlagen','S'],['254','Sanitärleitungen','P'],['254.1','Kaltwasserleitungen','S'],['254.2','Warmwasserleitungen','S'],['254.3','Drucklufttleitungen','S'],['254.4','Gasleitungen','S'],['254.5','Löschleitungen','S'],['254.6','Leitungen für thermische Solaranlagen','S'],['254.7','Schmutzwasserleitungen','S'],['254.8','Regenwasserleitungen','S'],['254.9','Grundleitungen','S'],['255','Dämmungen','P'],['256','Sanitärinstallationselemente','P'],['256.0','Lieferung','S'],['256.1','Montage','S'],['257','Löschanlagen','P'],['257.1','Sprinkleranlagen','S'],['257.2','Feuerlöschposten','S'],['258','Kücheneinrichtungen','P'],['259','Übriges','P'],['26','Transportanlagen, Lageranlagen','G'],['260','Übergangsposition','P'],['261','Aufzüge','P'],['262','Fahrtreppen, Fahrstei ge','P'],['263','Fassadenreinigungsanlagen','P'],['264','Sonstige Förderanlagen','P'],['265','Hebeeinrichtungen','P'],['266','Parkieranlagen','P'],['269','Übriges','P'],['27','Ausbau 1','G'],['270','Übergangsposition','P'],['271','Gipserarbeiten','P'],['271.0','Innenputze','S'],['271.1','Trockenbauarbeiten','S'],['271.2','Gerüste','S'],['272','Metallbauarbeiten','P'],['272.0','Innentüren aus Metall','S'],['272.1','Metallbaufertigteile','S'],['272.2','Allgemeine Metallbauarbeiten','S'],['272.3','Innere Verglasungen','S'],['272.4','Schutzraumteile','S'],['273','Schreinerarbeiten','P'],['273.0','Innentüren','S'],['273.1','Wandschränke, Gestelle und dgl.','S'],['273.2','Innere Verglasungen','S'],['273.3','Allgemeine Schreinerarbeiten','S'],['274','Innere Spezialverglasungen','P'],['275','Schliessanlagen','P'],['276','Innere Abschlüsse','P'],['276.0','Verdunkelungseinrichtungen','S'],['276.1','Innere bewegliche Gitterabschlüsse','S'],['276.2','Vorhangsysteme','S'],['277','Elementwände','P'],['277.0','Versetzbare Elementwände','S'],['277.1','Schiebe- und Faltwände','S'],['277.2','Fest stehende Elementwände','S'],['278','Beschriftungen, Markierungen, Signaletik','P'],['279','Übriges','P'],['28','Ausbau 2','G'],['280','Übergangsposition','P'],['281','Bodenbeläge','P'],['281.0','Estriche (Unterlagsböden)','S'],['281.1','Fugenlose Bodenbeläge','S'],['281.2','Bodenbeläge aus Kunststoffen, Textilien und dgl.','S'],['281.4','Bodenbeläge aus Naturstein','S'],['281.5','Bodenbeläge aus Kunststein','S'],['281.6','Bodenbeläge aus Holz','S'],['281.7','Bodenbeläge aus Platten','S'],['281.8','Doppelböden','S'],['281.9','Sockel','S'],['282','Wandbeläge, Wandbekleidungen','P'],['282.0','Fugenlose Wandbeläge','S'],['282.1','Tapeziererarbeiten','S'],['282.2','Wandbekleidungen aus Naturstein','S'],['282.3','Wandbekleidungen aus Kunststein','S'],['282.4','Wandbeläge aus Platten','S'],['282.5','Wandbekleidungen aus Holz und Holzwerkstoffen','S'],['282.6','Wandbekleidungen aus Kunststoffen, Textilien und dgl.','S'],['282.7','Gerüste','S'],['283','Deckenbekleidungen','P'],['283.0','Gerüste','S'],['283.1','Deckenbekleidungen aus Metall','S'],['283.2','Deckenbekleidungen aus Gips','S'],['283.3','Deckenbekleidungen aus Mineralfasern','S'],['283.4','Deckenbekleidungen aus Holz und Holzwerkstoffen','S'],['283.5','Deckenbekleidungen aus Kunststoffen, Textilien und dgl.','S'],['284','Hafnerarbeiten','P'],['285','Innere Oberflächenbehandlungen','P'],['285.0','Gerüste','S'],['285.1','Innere Malerarbeiten','S'],['285.2','Innere Holzschutzarbeiten','S'],['285.3','Innere Holzbehandlungsarbeiten','S'],['286','Bautrocknung','P'],['287','Baureinigung','P'],['288','Gärtnerarbeiten (Gebäude)','P'],['289','Übriges','P'],['29','Honorare','G'],['290','Übergangsposition','P'],['291','Architekt','P'],['292','Bauingenieur','P'],['293','Elektroingenieur','P'],['294','HLK-Ingenieur','P'],['295','Sanitäringenieur','P'],['296','Landschaftsarchitekt','P'],['297','Spezialisten 1','P'],['297.0','Geometer','S'],['297.1','Geologe, Geotechniker','S'],['297.2','Innenarchitekt','S'],['297.3','Bauphysiker','S'],['297.4','Akustiker','S'],['297.5','Fachkoordinator','S'],['297.6','Gebäudeautomationsingenieur','S'],['297.7','Fassadeningenieur','S'],['298','Spezialisten 2','P'],['298.2','Bauökonom','S'],['298.3','Prüfingenieur','S'],['298.4','Umweltingenieur','S'],['298.5','Brandschutzingenieur','S'],['299','Übriges','P'],['3','Betriebseinrichtungen','H'],['30','Baugrube','G'],['300','Übergangsposition','P'],['301','Baugruben aushub','P'],['309','Übriges','P'],['31','Rohbau 1','G'],['311','Baumeisterarbeiten','P'],['312','Montagebau in Beton, vorgefertigtem Mauerwerk','P'],['313','Montagebau in Stahl','P'],['314','Montagebau in Holz','P'],['315','Montagebau als Leichtkonstruktion','P'],['316','Natur- und Kunststeinarbeiten','P'],['317','Schutzraumabschlüsse','P'],['319','Übriges','P'],['32','Rohbau 2','G'],['320','Übergangsposition','P'],['321','Fenster, Aussentüren, Tore','P'],['322','Spenglerarbeiten','P'],['323','Blitzschutzanlagen','P'],['324','Bedachungsarbeiten','P'],['325','Spezielle Dichtungen und Dämmungen','P'],['326','Fassadenputze','P'],['327','Äussere Oberflächenbehandlungen','P'],['328','Äussere Abschlüsse, Sonnenschutzanlagen','P'],['329','Übriges','P'],['33','Elektroanlagen','G'],['330','Übergangsposition','P'],['331','Starkstromapparate','P'],['332','Starkstrominstallationen','P'],['333','Leuchten und Lampen','P'],['334','Elektrogeräte','P'],['335','Schwachstromapparate','P'],['336','Schwachstrominstallationen','P'],['337','Gebäudeautomations-Installationen','P'],['338','Provisorische Installationen','P'],['339','Übriges','P'],['34','HLK-Anlagen, Gebäudeautomation','G'],['340','Übergangsposition','P'],['342','Heizungsanlagen','P'],['344','Lufttechnische Anlagen','P'],['345','Rauch- und Wärmeabzugsanlagen','P'],['346','Kälteanlagen','P'],['347','Spezialanlagen','P'],['348','Gebäudeautomation','P'],['349','Übriges','P'],['35','Sanitäranlagen','G'],['350','Übergangsposition','P'],['351','Allgemeine Sanitärapparate','P'],['351.0','Lieferung','S'],['351.1','Montage','S'],['352','Spezielle Sanitärapparate','P'],['352.0','Lieferung','S'],['352.1','Montage','S'],['353','Versorgungs- und Entsorgungsapparate','P'],['353.0','Wassernachbehandlung','S'],['353.1','Wassererwärmer','S'],['353.2','Abwasserhebeanlagen','S'],['353.3','Druckluftzeuger','S'],['353.6','Thermische Solaranlagen','S'],['354','Sanitärleitungen','P'],['354.1','Kaltwasserleitungen','S'],['354.2','Warmwasserleitungen','S'],['354.3','Drucklufttleitungen','S'],['354.4','Gasleitungen','S'],['354.5','Löschleitungen','S'],['354.6','Leitungen für thermische Solaranlagen','S'],['354.7','Schmutzwasserleitungen','S'],['354.8','Regenwasserleitungen','S'],['354.9','Grundleitungen','S'],['355','Dämmungen','P'],['356','Sanitärinstallationselemente','P'],['356.0','Lieferung','S'],['356.1','Montage','S'],['357','Löschanlagen','P'],['357.1','Sprinkleranlagen','S'],['357.2','Feuerlöschposten','S'],['358','Kücheneinrichtungen','P'],['359','Übriges','P'],['36','Transportanlagen, Lageranlagen','G'],['360','Übergangsposition','P'],['361','Aufzüge','P'],['362','Fahrtreppen, Fahrstei ge','P'],['364','Sonstige Förderanlagen','P'],['365','Hebeeinrichtungen','P'],['366','Parkieranlagen','P'],['369','Übriges','P'],['37','Ausbau 1','G'],['370','Übergangsposition','P'],['371','Gipserarbeiten','P'],['372','Metallbauarbeiten','P'],['373','Schreinerarbeiten','P'],['374','Innere Spezialverglasungen','P'],['375','Schliessanlagen','P'],['376','Innere Abschlüsse','P'],['377','Elementwände','P'],['378','Beschriftungen, Markierungen, Signaletik','P'],['379','Übriges','P'],['38','Ausbau 2','G'],['380','Übergangsposition','P'],['381','Bodenbeläge','P'],['382','Wandbeläge, Wandbekleidungen','P'],['383','Deckenbekleidungen','P'],['384','Hafnerarbeiten','P'],['385','Innere Oberflächenbehandlungen','P'],['386','Bautrocknung','P'],['387','Baureinigung','P'],['39','Honorare','G'],['390','Übergangsposition','P'],['391','Architekt','P'],['392','Bauingenieur','P'],['393','Elektroingenieur','P'],['394','HLK-Ingenieur','P'],['395','Sanitäringenieur','P'],['396','Landschaftsarchitekt','P'],['397','Spezialisten 1','P'],['397.0','Geometer','S'],['397.1','Geologe, Geotechniker','S'],['397.2','Innenarchitekt','S'],['397.3','Bauphysiker','S'],['397.4','Akustiker','S'],['397.5','Fachkoordinator','S'],['397.6','Gebäudeautomationsingenieur','S'],['397.7','Fassadeningenieur','S'],['398','Spezialisten 2','P'],['398.2','Bauökonom','S'],['398.3','Prüfingenieur','S'],['398.4','Umweltingenieur','S'],['398.5','Brandschutzingenieur','S'],['399','Übriges','P'],['4','Umgebung','H'],['40','Terraingestaltung','G'],['400','Übergangsposition','P'],['401','Erdbewegungen','P'],['401.0','Baustelleneinrichtung','S'],['401.1','Erdarbeiten','S'],['409','Übriges','P'],['41','Rohbau- und Ausbauarbeiten','G'],['410','Übergangsposition','P'],['411','Baumeisterarbeiten','P'],['411.0','Baustelleneinrichtung','S'],['411.1','Gerüste','S'],['411.2','Böschungs- und Uferverbaungen','S'],['411.3','Baumeisteraushub','S'],['411.4','Kanalisationen ausserhalb Gebäude','S'],['411.5','Beton- und Stahlbetonarbeiten','S'],['411.6','Maurerarbeiten','S'],['411.7','Instandsetzungsarbeiten','S'],['411.8','Witterungsbedingte Massnahmen','S'],['413','Übriger Rohbau 1','P'],['413.2','Montagebau in Beton, vorgefertigtem Mauerwerk','S'],['413.3','Montagebau in Stahl','S'],['413.4','Montagebau in Holz','S'],['413.5','Montagebau als Leichtkonstruktion','S'],['413.6','Natur- und Kunststeinarbeiten','S'],['414','Rohbau 2','P'],['414.1','Fenster, Aussentüren, Tore','S'],['414.2','Spenglerarbeiten','S'],['414.3','Blitzschutzanlagen','S'],['414.4','Bedachungsarbeiten','S'],['414.5','Spezielle Dichtungen und Dämmungen','S'],['414.6','Fassadenputze','S'],['414.7','Äussere Oberflächenbehandlungen','S'],['414.8','Äussere Abschlüsse, Sonnenschutzanlagen','S'],['414.9','Arealabschlüsse','S'],['415','Ausbau 1','P'],['416','Ausbau 2','P'],['419','Übriges','P'],['42','Gartenanlagen','G'],['420','Übergangsposition','P'],['421','Gärtnerarbeiten','P'],['422','Einfriedungen','P'],['423','Ausstattungen, Geräte','P'],['424','Spiel- und Sportplätze','P'],['425','Stützmauern','P'],['429','Übriges','P'],['44','Installationen','G'],['440','Übergangsposition','P'],['442','Elektroanlagen','P'],['443','HLK-Anlagen, Gebäudeautomation','P'],['444','Sanitäranlagen','P'],['446','Transportanlagen','P'],['449','Übriges','P'],['45','Leitungen innerhalb Grundstück','G'],['450','Übergangsposition','P'],['452','Kanalisationsleitungen','P'],['453','Elektroleitungen, Gebäudeautomation','P'],['454','Leitungen für HLK-Anlagen','P'],['455','Sanitärleitungen','P'],['456','Nebenarbeiten','P'],['459','Übriges','P'],['46','Trassenbauten','G'],['460','Übergangsposition','P'],['461','Erd- und Unterbau','P'],['463','Oberbau','P'],['464','Entwässerung','P'],['465','Werkleitungen und Kanalisationen','P'],['468','Ausbau','P'],['47','Kunstbauten','G'],['470','Übergangsposition','P'],['471','Baugrube','P'],['472','Tragkonstruktionen','P'],['473','Oberbau','P'],['474','Entwässerung','P'],['475','Werkleitungen und Kanalisationen','P'],['477','Transportanlagen','P'],['478','Ausbau','P'],['48','Untertagbauten','G'],['480','Übergangsposition','P'],['481','Vortrieb','P'],['482','Auskleidungen, Gewölbe','P'],['483','Oberbau','P'],['484','Entwässerung und Wasserversorgung','P'],['485','Werkleitungen und Kanalisationen','P'],['487','Transportanlagen','P'],['488','Ausbau','P'],['49','Honorare','G'],['490','Übergangsposition','P'],['491','Architekt','P'],['492','Bauingenieur','P'],['493','Elektroingenieur','P'],['494','HLK-Ingenieur','P'],['495','Sanitäringenieur','P'],['496','Landschaftsarchitekt','P'],['497','Spezialisten 1','P'],['497.1','Geologie, Geotechniker','S'],['497.2','Innenarchitekt','S'],['497.3','Bauphysiker','S'],['497.4','Akustiker','S'],['497.5','Fachkoordinator','S'],['498','Spezialisten 2','P'],['498.2','Bauökonom','S'],['498.4','Umweltingenieur','S'],['499','Übriges','P'],['5','Baunebenkosten','H'],['50','Wettbewerbskosten','G'],['500','Übergangsposition','P'],['501','Wettbewerbe','P'],['509','Übriges','P'],['51','Bewilligungen, Gebühren','G'],['510','Übergangsposition','P'],['511','Bewilligungen, Gebühren','P'],['512','Anschlussgebühren','P'],['512.0','Kanalisation','S'],['512.1','Elektrizität','S'],['512.2','Kommunikation','S'],['512.3','Gas','S'],['512.4','Wasser','S'],['512.5','Fernheizung','S'],['512.6','Radio, Fernsehen','S'],['519','Übriges','P'],['52','Dokumentation und Präsentation','G'],['520','Übergangsposition','P'],['521','Muster, Materialprüfungen','P'],['521.0','Muster','S'],['521.1','Materialprüfungen','S'],['522','Modelle','P'],['523','Fotos','P'],['524','Vervielfältigungen, Plandokumente','P'],['525','Dokumentation','P'],['529','Übriges','P'],['53','Versicherungen','G'],['530','Übergangsposition','P'],['531','Bauzeitversicherungen','P'],['532','Spezialversicherungen','P'],['533','Selbstbehalt in Schadenfällen während der Bauzeit','P'],['539','Übriges','P'],['54','Finanzierung ab Baubeginn','G'],['540','Übergangsposition','P'],['541','Errichten von Hypotheken auf','P'],['543','Baukreditzinsen, Bankspesen','P'],['544','Baurechtszinsen','P'],['545','Eigenkapitalzinsen','P'],['546','Liegenschaftssteuer während der Bauzeit','P'],['548','Rückvergütungen','P'],['549','Übriges','P'],['55','Bauherrenleistungen','G'],['550','Übergangsposition','P'],['557','Betriebsplanung','P'],['558','Projektleitung, Projektbegleitung','P'],['559','Übriges','P'],['56','Übrige Baunebenkosten','G'],['560','Übergangsposition','P'],['561','Bewachung durch Dritte','P'],['562','Entschädigungen, Nutzerkosten, Ersatzabgaben','P'],['562.1','Nachbar- und Mieterentschädigungen','S'],['562.2','Einkauf Schutzraum','S'],['562.3','Ersatzabgabe Parkplätze','S'],['562.9','Übriges','S'],['563','Miete von fremdem Grund','P'],['564','Gutachten','P'],['565','Reisespesen','P'],['566','Grundsteinlegung, Aufrichte, Einweihung','P'],['567','Anwaltskosten, Gerichtskosten','P'],['568','Baureklame','P'],['569','Übriges','P'],['57','Mehrwertsteuer (MWST)','G'],['570','Übergangsposition (MWST)','P'],['571','Grundstück (MWST)','P'],['572','Vorbereitungsarbeiten (MWST)','P'],['573','Gebäude (MWST)','P'],['574','Betriebseinrichtungen (MWST)','P'],['575','Umgebung (MWST)','P'],['576','Baunebenkosten (MWST)','P'],['579','Ausstattung (MWST)','P'],['58','Rückstellungen und Reserven','G'],['580','Übergangsposition','P'],['581','Rückstellungen für zu erwartende Kosten','P'],['582','Rückstellungen für Teuerung','P'],['583','Reserven für Unvorhergesehenes','P'],['589','Übriges','P'],['59','Übergangskonten für Honorare','G'],['590','Übergangsposition','P'],['598','Spezialisten','P'],['598.0','Bauherrenberater','S'],['598.1','FM-Berater','S'],['598.6','Verkaufsaufwendungen','S'],['599','Übriges','P'],['6','Reserve','H'],['7','Reserve','H'],['8','Reserve','H'],['9','Ausstattung','H'],['90','Möbel','G'],['900','Übergangsposition','P'],['902','Garderobeneinrichtungen, Gestelle und dgl.','P'],['908','Sporteinrichtungen','P'],['909','Übriges','P'],['91','Beleuchtungskörper','G'],['910','Übergangsposition','P'],['919','Übriges','P'],['92','Textilien','G'],['920','Übergangsposition','P'],['921','Vorhänge und Innendekorationsarbeiten','P'],['929','Übriges','P'],['93','Geräte, Apparate','G'],['930','Übergangsposition','P'],['939','Übriges','P'],['94','Kleininventar','G'],['940','Übergangsposition','P'],['949','Übriges','P'],['96','Transportmittel','G'],['960','Übergangsposition','P'],['969','Übriges','P'],['97','Verbrauchsmaterial','G'],['970','Übergangsposition','P'],['979','Übriges','P'],['98','Kunst am Bau','G'],['980','Übergangsposition','P'],['989','Übriges','P'],['99','Honorare','G'],['990','Übergangsposition','P'],['991','Architekt','P'],['992','Bauingenieur','P'],['993','Elektroingenieur','P'],['994','HLK-Ingenieur','P'],['995','Sanitäringenieur','P'],['996','Landschaftsarchitekt','P'],['997','Spezialisten 1','P'],['997.0','Geometer','S'],['997.2','Innenarchitekt','S'],['997.3','Bauphysiker','S'],['997.4','Akustiker','S'],['998','Spezialisten 2','P'],['998.2','Bauökonom','S'],['999','Übriges','P']];
 // BKP_CRB2017: [Nummer, Bezeichnung, Ebene] – Ebene: H=Hauptgruppe, G=Gruppe, P=Position, S=Sub-Position.
@@ -5286,6 +5286,7 @@ const TP_COLS=[
 ];
 const TP_COLSETS={voll:['nr','bkp','name','company','start','end','dur','deps','prog','act'],kompakt:['nr','name','start','end','dur','act'],vorgang:['nr','name'],mobil:['nr','name','act']};
 const TP_INFO={
+  level:['Genauigkeit','Fein: alle Vorgänge, geschossweise, mit Ausmassen und Lieferfristen (Bearbeiten nur hier).<br>Normal: BKP 3-stellig – Rohbau geschossweise, Hülle, Haustechnik und Ausbau je Gewerk zusammengefasst.<br>Grob: BKP-Hauptgruppen und wichtigste Meilensteine (z.B. für die Bauherrschaft).<br>Die Termine sind in allen Stufen gleich; die Genauigkeit lässt sich beim PDF-Export separat wählen.'],
   zoom:['Zoom','Mit dem Regler, mit − / + oder mit <b>Ctrl + Mausrad</b> über dem Diagramm stufenlos zoomen. Die Zeitachse passt sich automatisch an: nah = Tage, mittel = Wochen, weit = Monate bzw. Quartale. Die Knöpfe Tage/Wochen/Monate/Quartale springen direkt auf die jeweilige Stufe.'],
   today:['Heute-Linie','Die <b>rote Linie</b> markiert den heutigen Tag – im Kopf mit „Heute" beschriftet. Sobald der Bau läuft, ist der vergangene Zeitraum leicht grau hinterlegt und oben steht, der wievielte Arbeitstag der Bauzeit heute ist. „Heute" springt in der Zeitachse zum aktuellen Datum.'],
   crit:['Kritischer Weg','Die Kette von Vorgängen <b>ohne Puffer</b>: verzögert sich einer davon, verschiebt sich das Bauende um dieselbe Zeit. Kritische Vorgänge sind <b>rot umrandet</b>, ihre Verknüpfungen rot. Vorgänge mit Puffer können sich um die im Tooltip angegebene Anzahl Arbeitstage verschieben, ohne das Ende zu gefährden.'],
@@ -5304,7 +5305,7 @@ const TP_COLORS={'1':'#8d6e63','20':'#a1887f','21':'#5b7ea6','22':'#4a958f','23'
 const TP_PALETTE=['#5b7ea6','#4a958f','#c99a12','#d4732a','#3a86c4','#7e57c2','#6a9a4c','#b1652a','#ad3a6a','#8d6e63','#607d8b','#1a1a1a'];
 // ===== BAUABLAUF-MODELL v2 =====================================================================
 // Baukörper mit Nutzung je Geschoss (Industrie/Gewerbe/Wohnen exakt getrennt), Rohbau geschossweise,
-// Ausbau geschoss- oder gewerkweise (Linienplanung), Lieferfristen-Ketten (Vergabe/Naturmass →
+// Ausbau geschoss- oder gewerkweise (Linienplanung), Lieferfristen-Ketten (Vergabe/Ausmass →
 // Fabrikation → Montage), Mehrfacheinsätze (Spengler, Gipser, Maler, Elektro, Sanitär), Zargenart,
 // Gerüst/Kran/Provisorien als Zeitspannen, Überbauungen mit Etappierung. Alle Werte = Richtwerte.
 const TP_NUTZ={
@@ -5354,14 +5355,14 @@ const TP_MIX={
   gewerbe:{l:'Gewerbe / Laden / Praxis',k:'Gewerbe',fp:200,fa:0.8},
   lager:{l:'Lager / Werkstatt',k:'Lager',fp:300,fa:0.45}
 };
-// Lieferfristen in Wochen (Richtwerte CH, frei anpassbar) – ab Vergabe/Freigabe bzw. ab Naturmass
+// Lieferfristen in Wochen (Richtwerte CH, frei anpassbar) – ab Vergabe/Freigabe bzw. ab Ausmass
 const TP_LEADS={
-  fenster:{l:'Fenster (ab Naturmass / Freigabe Werkpläne)',w:10},
-  fassade:{l:'Fassadenbekleidung hinterlüftet (ab Naturmass)',w:6},
-  storen:{l:'Storen / Rollläden (ab Naturmass)',w:7},
-  metallbau:{l:'Geländer / Metallbau (ab Naturmass)',w:6},
+  fenster:{l:'Fenster (ab Ausmass / Freigabe Werkpläne)',w:10},
+  fassade:{l:'Fassadenbekleidung hinterlüftet (ab Ausmass)',w:6},
+  storen:{l:'Storen / Rollläden (ab Ausmass)',w:7},
+  metallbau:{l:'Geländer / Metallbau (ab Ausmass)',w:6},
   balkone:{l:'Vorgestellte Balkonelemente (ab Vergabe)',w:10},
-  hauseingang:{l:'Hauseingang / Aussentüren (ab Naturmass)',w:6},
+  hauseingang:{l:'Hauseingang / Aussentüren (ab Ausmass)',w:6},
   tore:{l:'Garagen- / Industrietore (ab Vergabe)',w:8},
   aufzug:{l:'Aufzug (ab Bestellung)',w:20},
   waermepumpe:{l:'Wärmepumpe / Heizzentrale (ab Vergabe)',w:8},
@@ -5370,14 +5371,15 @@ const TP_LEADS={
   stahlbau:{l:'Stahlbau: Werkstattplanung + Fabrikation (ab Vergabe)',w:8},
   holzbau:{l:'Holzbau: Werkplanung + Vorfertigung (ab Vergabe)',w:8},
   zargen:{l:'Metallzargen (ab Bestellung)',w:5},
-  tueren:{l:'Innentüren / Schränke (ab Naturmass)',w:7},
-  kueche:{l:'Küchen (ab Naturmass)',w:7}
+  tueren:{l:'Innentüren / Schränke (ab Ausmass)',w:7},
+  kueche:{l:'Küchen (ab Ausmass)',w:7},
+  fertigteile:{l:'Betonfertigteile: Treppen, Lichtschächte (ab Vergabe)',w:6}
 };
 const TP_PARAM_DEFAULTS={art:'neubau',typ:'MFH',gv:'',gf:'',einheiten:'',bauweise:'massiv',dach:'flach',pv:false,fassade:'awd',fassade2:'',fassade2Anteil:30,
   heizung:'wp_luft',lueftung:'kwl',estrich:'zement',estrichCm:6,zargen:'holz',storen:'lamellen',balkone:'keine',fenster:'holzmetall',fensterMass:'naturmass',tore:'keine',toreAnz:'',
   baugrube:'normal',hang:false,tg:false,rueckbau:false,schadstoff:false,grundwasser:false,pfaehlung:false,unterfangung:false,kanal:'neu',platz:'normal',kran:'turm',
   aufzug:'auto',ausbau:'mittel',detail:'geschoss',takt:'auto',reserve:10,ansatz:'realistisch',ferienWinter:'ja',ferienSommer:'0',vergabeVorlauf:0,etappen:'versatz',versatz:6,
-  winter:'1512',bauheizung:'ja',kolonnen:1,folge:'auf',fensterAnz:'',tuerenAnz:'',kuechenAnz:'',baederAnz:'',liftAnz:'',umgebungM2:'',aushubM3:'',abschlussM2:''};
+  winter:'1512',bauheizung:'ja',kolonnen:1,folge:'auf',fensterAnz:'',tuerenAnz:'',kuechenAnz:'',baederAnz:'',liftAnz:'',umgebungM2:'',aushubM3:'',abschlussM2:'',hinterM3:'',rueckbauM2:'',kranMonate:'',wasserhaltung:false,markisen:false};
 function _tpFmtN(n){ return Math.round(+n||0).toLocaleString('de-CH'); }
 function _tpSf(fp){ return Math.max(0.5,Math.min(2.4,Math.sqrt((+fp||350)/350))); }
 // Baukörper aus Vorlage/Altparametern (ohne eigene Baukörperliste) ableiten
@@ -5470,7 +5472,7 @@ function _tpDerive(inp){
     grundwasser:!!raw.grundwasser,pfaehlung:!!raw.pfaehlung,unterfangung:!!raw.unterfangung,ausbau:raw.ausbau,detail:raw.detail==='gewerk'?'gewerk':'geschoss',
     takt:raw.takt,reserve:Math.max(0,Math.round(+raw.reserve||0)),ansatz:raw.ansatz==='sportlich'?'sportlich':'realistisch',zF:raw.ansatz==='sportlich'?1:1.15,
     lead:zus.lieferengpass?Object.fromEntries(Object.entries(raw.lead).map(([k,v])=>[k,Math.round(v*1.25)])):raw.lead,vergabeVorlauf:+raw.vergabeVorlauf||0,etappen:raw.etappen,versatz:Math.max(0,+raw.versatz||0),small:!!T.small,
-    einheiten:bks.reduce((s,b)=>s+b.units,0),mix:null,qty,folge:raw.folge==='ab'?'ab':'auf',umgebungM2:qn('umgebungM2'),aushubM3:qn('aushubM3'),abschlussM2:qn('abschlussM2'),kolonnen:Math.max(1,qn('kolonnen')||1),
+    einheiten:bks.reduce((s,b)=>s+b.units,0),mix:null,qty,folge:raw.folge==='ab'?'ab':'auf',umgebungM2:qn('umgebungM2'),aushubM3:qn('aushubM3'),abschlussM2:qn('abschlussM2'),hinterM3:qn('hinterM3'),rueckbauM2:qn('rueckbauM2'),kranMonate:qn('kranMonate'),wasserhaltung:!!raw.wasserhaltung,markisen:!!raw.markisen,kolonnen:Math.max(1,qn('kolonnen')||1),
     winter:raw.winter||'1512',bauheizung:raw.bauheizung!=='nein'};
 }
 // Erfahrungswert Gesamtbauzeit Baubeginn → Übergabe in Monaten (Hochbau CH, nur zur Plausibilisierung, ±15 %)
@@ -5534,8 +5536,11 @@ function _tpBuildTemplate(P){
   add('m','','Baubeginn',0,[],'bb');
   add('t','211.0','Baustelleninstallation (Container, Baustrom, Bauwasser, Abschrankung)',P.raw.platz==='eng'?8:5,[['bb','EA',0]],'bi',{fixDur:true,cat:'prov',note:'Baustrom/Bauwasser-Anschluss bei den Werken frühzeitig beantragen'});
   if(P.kran==='turm') add('t','211.0','Turmdrehkran stellen',2,[['bi','AA',2]],'kr',{fixDur:true,cat:'prov',note:'Kranfundament, Bewilligung, Überschwenkrechte vorgängig klären'});
-  if(P.schadstoff) add('t','112.2','Schadstoffsanierung (Asbest, PCB …)',r(5+(umbau?P.gf:P.fp)/200),[['bi','EA',0]],'ss',{note:'5 AT + Fläche / 200 m²/AT, inkl. Freimessung – vor Rückbau'});
-  if(P.rueckbau||umbau) add('t','112',umbau?'Rückbau / Demontagen im Bestand':'Rückbau / Abbrüche',r(umbau?8+P.gf/120:8+P.fp/60),[[last('ss','bi'),'EA',0]],'rb',{note:umbau?`8 AT + GF ${_tpFmtN(P.gf)} m² / 120`:`8 AT + Grundfläche / 60`});
+  if(P.zus.riss) add('t','101','Rissprotokolle / Bestandsaufnahme Nachbarliegenschaften',3,[['bb','AA',0]],'rp',{fixDur:true,note:'vor Abbruch und Baugrube; Schlussaufnahme nach dem Rohbau'});
+  const fpAlt=P.rueckbauM2||(umbau?P.gf:P.fp);
+  if(P.schadstoff){ add('t','112.2','Schadstoffsanierung (Asbest, PCB …)',r(5+fpAlt/200),[['bi','EA',0],['rp','EA',0]],'ss',{note:'5 AT + Fläche / 200 m²/AT – gemäss Schadstoffgutachten'});
+    add('m','','Freimessung / Freigabe Rückbau',0,[['ss','EA',0]],'fm'); }
+  if(P.rueckbau||umbau) add('t','112',umbau?'Rückbau / Demontagen im Bestand':'Rückbau / Abbrüche',r(umbau?8+P.gf/120:8+fpAlt/60),[[last('fm','ss','bi'),'EA',0],['rp','EA',0]],'rb',{note:umbau?`8 AT + GF ${_tpFmtN(P.gf)} m² / 120`:`8 AT + Grundfläche ${P.rueckbauM2?'Altbau '+_tpFmtN(P.rueckbauM2)+' m²':'(Neubau – Grundfläche Altbau eintragen)'} / 60`});
 
   // ---------- Tiefbau (gemeinsam für alle Baukörper) ----------
   const fpSum=P.bks.reduce((s,b)=>s+b.fpMax,0);
@@ -5592,6 +5597,11 @@ function _tpBuildTemplate(P){
       rk[f.id]=k;
     });
     const egK=rk['EG'], topK=prevK;
+    if(P.zus.fertigteile&&B.above.length){ vergabe('Betonfertigteile'+(N?' '+N:''),pre+'vft'); leadT(NN+'Betonfertigteile (Treppen, Lichtschächte): Fabrikation',L.fertigteile,[[pre+'vft','EA',0]],pre+'lft');
+      add('t','212','Betonfertigteile versetzen (Treppen, Lichtschächte)',r(1+B.above.length*1),[[egK||topK,'AA',3],[pre+'lft','EA',0]],pre+'ft',{cat:'rohbau',note:'geschossweise mit dem Rohbau, mit Kran'}); }
+    // Hinterfüllung UG (nach Wänden/Abdichtung UG, vor dem Fassadengerüst)
+    const lastUGk=neu?B.fl.filter(f=>f.lvl<0).map(f=>rk[f.id]).filter(Boolean).pop():null;
+    if(lastUGk) add('t','201','Hinterfüllung UG'+(N?' '+N:''),r(2+(P.hinterM3?P.hinterM3/120:B.fpMax*0.35/120)),[[lastUGk,'EA',0]],pre+'hf',{cat:'rohbau',note:P.hinterM3?`${_tpFmtN(P.hinterM3)} m³ gemäss Baugrubenplan, ≈ 120 m³/AT`:'nach Wänden und Abdichtung UG, ≈ 120 m³/AT'});
     if(steil&&!(bw==='holz'||bw==='hybrid')) add('t','214','Zimmerei: Dachstuhl / Dachkonstruktion',r(8+B.fpTop/150),[[topK,'EA',0]],pre+'hb',{cat:'rohbau',note:'8 AT + Dachgrundfläche / 150'});
     if(P.balkone==='vorgestellt'&&B.above.length>1){ vergabe('Balkonelemente'+(N?' '+N:''),pre+'vbk'); leadT(NN+'Balkonelemente: Fabrikation',L.balkone,[[pre+'vbk','EA',0]],pre+'lbk');
       add('t','211','Vorgestellte Balkone versetzen (mit Kran, geschossweise)',r(2+B.above.length*1.5),[[rk[B.above[1].id]||egK,'AA',0],[pre+'lbk','EA',0],[topK,'EE',3]],pre+'bkv',{cat:'rohbau'}); }
@@ -5603,7 +5613,7 @@ function _tpBuildTemplate(P){
     grp(NN+'Gerüst & Provisorien',3,{bk:B.key});
     const needGer=B.above.length>1||B.above.some(isInd)||P.fassade!=='bestand';
     if(needGer&&!P.small){
-      add('t','211.1','Fassadengerüst stellen (mitlaufend mit Rohbau)',3,[[egK||topK,'EA',0]],pre+'gs',{fixDur:true,cat:'prov',note:'geschossweise mit dem Rohbau erhöht'});
+      add('t','211.1','Fassadengerüst stellen (ab OK Terrain, mitlaufend)',3,egK?[[egK,'AA',3],[pre+'hf','EA',0]]:[[topK,'EA',0]],pre+'gs',{fixDur:true,cat:'prov',note:'sobald über Terrain gebaut wird (EG-Wände), geschossweise mit dem Rohbau erhöht'});
       add('t','211.1','Gerüst ergänzen: Dachfang / Spenglergang',1,[[topK,'EA',-2]],pre+'gd',{fixDur:true,cat:'prov'});
       span('Fassadengerüst (Vorhaltung)',pre+'gs',pre+'ga',pre+'gsp',{bkp:'211.1'});
     }
@@ -5616,10 +5626,10 @@ function _tpBuildTemplate(P){
     const roofFp=B.fpTop, hullBase=last(pre+'hb',topK);
     if(P.dach!=='bestand'){
       if(steil){
-        add('t','222','Spengler 1: Dachrinnen, Dachrand-/Traufbleche',r(3+roofFp/200),[[pre+'hb','EA',0],[pre+'gd','EA',0]],pre+'sp1',{cat:'huelle',note:'1. Einsatz Spengler (Naturmass Dachrand vor Ort)'});
+        add('t','222','Spengler 1: Dachrinnen, Dachrand-/Traufbleche',r(3+roofFp/200),[[pre+'hb','EA',0],[pre+'gd','EA',0]],pre+'sp1',{cat:'huelle',note:'1. Einsatz Spengler (Ausmass Dachrand vor Ort)'});
         add('t','224.0','Bedachung: Unterdach, Lattung, Deckung',r(8+roofFp/60),[[pre+'hb','EA',0],[pre+'sp1','AA',1]],pre+'da',{cat:'huelle'});
       }else{
-        add('t','222','Spengler 1: Dachrandabschlüsse, Anschlussbleche (Naturmass Dachrand)',r(3+roofFp/250),[[topK,'EA',0],[pre+'gd','EA',0]],pre+'sp1',{cat:'huelle',note:'1. Einsatz Spengler: Dachrand ausmessen und Anschlussbleche vor der Abdichtung'});
+        add('t','222','Spengler 1: Dachrandabschlüsse, Anschlussbleche (Ausmass Dachrand)',r(3+roofFp/250),[[topK,'EA',0],[pre+'gd','EA',0]],pre+'sp1',{cat:'huelle',note:'1. Einsatz Spengler: Dachrand ausmessen und Anschlussbleche vor der Abdichtung'});
         add('t','224.1','Flachdach: Dampfbremse, Dämmung, Abdichtung',r(6+roofFp/(bw==='montage'?150:70)),[[topK,'EA',0],[pre+'sp1','AA',1]],pre+'da',{cat:'huelle',note:'6 AT + Dachfläche / 70'});
       }
       if(P.pv){ vergabe('PV-Anlage'+(N?' '+N:''),pre+'vpv'); leadT(NN+'PV-Anlage: Lieferfrist',L.pv,[[pre+'vpv','EA',0]],pre+'lpv');
@@ -5644,7 +5654,7 @@ function _tpBuildTemplate(P){
     const fDur=(F,share)=>r(F.base*(share<1?0.5+0.5*share:1)+ogA*F.per*sfA*share);
     const fLead=F=>!!(F&&F.bkp&&/^215|^216|^221\.8|^214\.4/.test(F.bkp));
     const facade=(F,share,key,startDeps)=>{
-      if(fLead(F)){ add('m','',`Naturmass ${F.l.split(' (')[0]}`,0,[[F.ov?feK:pre+'rf','EA',0]],key+'n',{cat:'lead'}); leadT(NN+`${F.l.split(' (')[0]}: Lieferfrist`,L.fassade,[[key+'n','EA',0]],key+'l'); startDeps=startDeps.concat([[key+'l','EA',0]]); }
+      if(fLead(F)){ add('m','',`Ausmass ${F.l.split(' (')[0]}`,0,[[F.ov?feK:pre+'rf','EA',0]],key+'n',{cat:'lead'}); leadT(NN+`${F.l.split(' (')[0]}: Lieferfrist`,L.fassade,[[key+'n','EA',0]],key+'l'); startDeps=startDeps.concat([[key+'l','EA',0]]); }
       if(P.fassade==='awd'&&F===F1||F.bkp==='226'||F.bkp==='226.0'){
         const d=fDur(F,share);
         add('t',F.bkp,`Fassade: Dämmung + Armierung${share<1?` (ca. ${Math.round(share*100)} %)`:''}`,r(d*0.6),startDeps,key,{cat:'huelle',season:'aussen'});
@@ -5660,11 +5670,12 @@ function _tpBuildTemplate(P){
     const faEnd=last(pre+'fa2',pre+'fa',pre+'fb2',pre+'fb');
     if(P.storen!=='keine'&&!P.small&&B.above.some(f=>!isInd(f))){
       const SN={lamellen:'Lamellenstoren',rollladen:'Rollläden',markisen:'Markisen / Senkrechtmarkisen'}[P.storen]||'Storen';
-      add('m','','Naturmass '+SN,0,[[feK,'EA',0]],pre+'nso',{cat:'lead'}); leadT(NN+SN+': Lieferfrist',L.storen,[[pre+'nso','EA',0]],pre+'lso');
+      add('m','','Ausmass '+SN,0,[[feK,'EA',0]],pre+'nso',{cat:'lead'}); leadT(NN+SN+': Lieferfrist',L.storen,[[pre+'nso','EA',0]],pre+'lso');
       add('t','228',SN+' montieren',r(3+ogA*2*sfA),[[pre+'lso','EA',0],[last(pre+'fa2',pre+'fa',feK),'EA',0]],pre+'so',{cat:'huelle',note:'vor dem Gerüstabbau'});
+      if(P.markisen) add('t','228','Markisen Sitzplätze / Loggias montieren',r(2+Math.max(1,B.units||4)*0.3),[[pre+'so','EA',0]],pre+'mk',{cat:'huelle',note:'Gelenkarm-/Kurbelmarkisen gemäss Farbkonzept'});
     }
     if(P.balkone!=='keine'&&B.above.length>1){
-      add('m','','Naturmass Geländer (Balkone/Brüstungen)',0,[[pre+'rf','EA',0]],pre+'nge',{cat:'lead'}); leadT(NN+'Geländer: Lieferfrist',L.metallbau,[[pre+'nge','EA',0]],pre+'lge');
+      add('m','','Ausmass Geländer (Balkone/Brüstungen)',0,[[pre+'rf','EA',0]],pre+'nge',{cat:'lead'}); leadT(NN+'Geländer: Lieferfrist',L.metallbau,[[pre+'nge','EA',0]],pre+'lge');
       add('t','272.2','Balkon-/Brüstungsgeländer montieren',r(3+ogA*1.5),[[pre+'lge','EA',0],[faEnd||feK,'EA',0]],pre+'ge',{cat:'huelle'});
     }
     if(P.tore!=='keine'&&(bi===0||B.fl.some(f=>f.nutz==='tg'||isInd(f)))){
@@ -5691,7 +5702,7 @@ function _tpBuildTemplate(P){
     }
     const wohnFloors=B.fl.filter(f=>f.nutz==='wohnen'), schrFloors=B.fl.filter(f=>f.N.ub||f.N.decke);
     if(P.zargen!=='holz'&&schrFloors.length){ vergabe('Metallzargen'+(N?' '+N:''),pre+'vz'); leadT(NN+'Metallzargen: Lieferfrist',L.zargen,[[pre+'vz','EA',0]],pre+'lz'); }
-    // Naturmass Innentüren/Schränke + Küchen (Schlüssel der Ausbau-Vorgänge werden unten erzeugt)
+    // Ausmass Innentüren/Schränke + Küchen (Schlüssel der Ausbau-Vorgänge werden unten erzeugt)
     if(P.zus.bemusterung) add('m','',`Bemusterung / Käuferwünsche abgeschlossen${N?' '+N:''}`,0,[[pre+'rf','EA',10]],pre+'bem',{cat:'lead',note:'Grundlage für Bestellung Küchen, Innentüren, Bodenbeläge, Sanitärapparate'});
     if(P.zus.blowerdoor) add('t','','Luftdichtheitsmessung (Blower-Door)',1,[[pre+'dicht','EA',5]],pre+'bd',{fixDur:true,cat:'huelle',note:'vor dem Schliessen der Installationsebenen/Innenverkleidungen'});
     const bemD=P.zus.bemusterung?[[pre+'bem','EA',0]]:null;
@@ -5712,18 +5723,18 @@ function _tpBuildTemplate(P){
         t('ib','211.5','Industrieboden / Hartbetonbelag',5+f.fp/300,[],{ext:[[pre+'dd','EA',0],[feK,'EA',0]],nz:true});
         t('e','232','Elektro: Hallenbeleuchtung, Installationen',4+f.fp/400,['ib']);
         t('h','244','HLK: Hallenheizung / Lüftung',4+f.fp/500,['ib'],{aa:true});
-        t('m2','285.1','Maler: Wände, Stützen, Markierungen',3+f.fp/600,['e','h']);
+        t('m2','285.1','Malerarbeiten (Wände, Stützen, Markierungen)',3+f.fp/600,['e','h']);
         t('bs','236.8','Brandschutz, Signaletik, Sprinkler-Anschluss',2,['m2']);
       }else if(N2.tg){
         t('e','232','TG: Elektro, Beleuchtung, Brandmelde',3+f.fp/500,[],{ext:[[pre+'r_'+f.id,'EA',10]]});
         t('h','244','TG: Lüftung / CO-Warnanlage, Sprinkler',3+f.fp/500,[],{aa:true,ext:[[pre+'r_'+f.id,'EA',10]]});
-        t('m2','285.1','TG: Maler Wände/Decke',2+f.fp/600,['e','h']);
+        t('m2','285.1','TG: Malerarbeiten',2+f.fp/600,['e','h']);
         t('bs','281.1','TG: Bodenbeschichtung, Markierung, Signaletik',3+f.fp/500,['m2']);
       }else if(N2.keller){
         t('e','232','Elektro: Rohinstallation',3*s,[],{ext:[[pre+'r_'+f.id,'EA',10]]});
         t('s','254','HLKS: Rohinstallation, Technikräume',3*s,[],{aa:true,ext:[[pre+'r_'+f.id,'EA',10]]});
         if(zM)t('z','272.0','Metallzargen versetzen',1,['e','s'],{ext:[[pre+'lz','EA',0]]});
-        t('m2','285.1','Maler: Wände/Decken Keller',2*s,['e','s','z']);
+        t('m2','285.1','Malerarbeiten Keller',2*s,['e','s','z']);
         t('bs','281.1','Kellerboden: Beschichtung',2*s,['m2']);
         t('ka','272','Kellerabteile / Metallbau',2*s,['bs']);
         t('ef','233','Elektro: Fertigmontage',1.5*s,['m2']);
@@ -5731,7 +5742,7 @@ function _tpBuildTemplate(P){
         t('e','232','Elektro: Grundinstallation Edelrohbau',3*s,[],{ext:[[pre+'r_'+f.id,'EA',10],[feK,'EA',0]]});
         t('s','254','HLKS: Anschlüsse / Steigzonen bereitstellen',3*s,[],{aa:true,ext:[[pre+'r_'+f.id,'EA',10]]});
         t('g1','271','Gipser: Kern / Treppenhaus, Brandabschnitte',3*s,['e','s']);
-        t('m2','285.1','Maler: Grundanstrich Edelrohbau',2*s,['g1']);
+        t('m2','285.1','Malerarbeiten Edelrohbau',2*s,['g1']);
         t('ue','','Übergabe Edelrohbau an Mieter',0,['m2'],{ms:true});
       }else{
         t('e','232','Elektro: Rohinstallation',6*s*fa,[],{ext:[[pre+'r_'+f.id,'EA',10]]});
@@ -5745,10 +5756,9 @@ function _tpBuildTemplate(P){
         }
         t('g2','271','Gipser: Deckputz / Abrieb, Fenstersimse innen',4*s*fa,[has('x')?'':'u'].filter(Boolean).concat(['g1']),{lag:3,season:'innen'});
         if(N2.decke) t('dc','283','Deckenbekleidung / Akustikdecke',5*s*fa,['g2']);
-        t('m1','285.1','Maler: Grundanstrich',3*s*fa,['g2','dc'],{season:'innen'});
         const nBad=Q.baeder?Q.baeder*f.shBad:0, nKu=Q.kuechen?Q.kuechen*f.shKu:0;
         if(N2.nass>0.2) t('p','282.4',f.nutz==='wohnen'?'Plattenarbeiten Bäder / Küche':'Plattenarbeiten Nasszellen',nBad?1+nBad*1.5:(f.nutz==='wohnen'&&u?1+u*1.3:6*s*N2.nass),['t','g2'],{season:'innen',note:nBad?`ca. ${Math.round(nBad)} Nasszellen × 1.5 AT`:''});
-        t('m2','285.1','Maler: Schlussanstrich',4*s*fa,['m1','p'],{season:'innen'});
+        t('m2','285.1','Malerarbeiten',6*s*fa,['g2','dc','p'],{season:'innen'});
         t('b','281',f.nutz==='wohnen'?'Bodenbeläge (Parkett / Belag)':'Bodenbeläge',4*s*fa,['t','m2'],{ext:dryAT&&!P.small?[[pre+'ibh','EA',0]]:[]});
         t('sc','273',zM?'Schreiner: Türblätter einhängen, Einbauschränke':'Schreiner: Innentüren mit Holzzargen, Einbauschränke',nTu?1+nTu/(zM?14:7)+1.5*s*fa:4*s*fa,['b'],{ext:[[pre+'ltu','EA',0]],note:nTu?`ca. ${Math.round(nTu)} Türen (${zM?'14':'7'} Stk./AT) + Einbauschränke`:''});
         if(f.nutz==='wohnen') t('k','258','Küchen montieren',nKu?0.5+nKu*1.0:0.5+u*0.8,['b','p'],{ext:[[pre+'lku','EA',0]],note:nKu?`ca. ${Math.round(nKu)} Küchen × 1 AT`:''});
@@ -5796,7 +5806,7 @@ function _tpBuildTemplate(P){
           if(x.ms) add('m',x.bkp,x.name,0,deps,key,{cat:'ausbau'});
           else add('t',x.bkp,x.name+(fls.length>1?` (${fls.length} Geschosse)`:''),d,deps,key,{cat:'ausbau',fixDur:!!x.fix,season:x.season||''});
           tradeLast[id]=key; tradeFirst[id]=tradeFirst[id]||key; floorEnds.push(key);
-          // Alias-Schlüssel für Naturmass-Verweise (erstes Geschoss)
+          // Alias-Schlüssel für Ausmass-Verweise (erstes Geschoss)
           fls.forEach(f=>{ rows.push({k:'alias',key:pre+f.id+'_'+id,to:key}); keys.add(pre+f.id+'_'+id); });
         });
       });
@@ -5804,14 +5814,14 @@ function _tpBuildTemplate(P){
     // Treppenhaus + Abschluss je Baukörper
     grp(NN+'Fertigstellung & Abnahme',6,{bk:B.key});
     if(B.og>=3&&B.above.some(f=>!f.N.ind)){
-      add('m','','Naturmass Treppengeländer',0,[[pre+'rf','EA',0]],pre+'ntg',{cat:'lead'}); leadT(NN+'Treppengeländer: Lieferfrist',L.metallbau,[[pre+'ntg','EA',0]],pre+'ltg');
+      add('m','','Ausmass Treppengeländer',0,[[pre+'rf','EA',0]],pre+'ntg',{cat:'lead'}); leadT(NN+'Treppengeländer: Lieferfrist',L.metallbau,[[pre+'ntg','EA',0]],pre+'ltg');
       add('t','272.2','Treppenhaus: Geländer / Handlauf montieren',r(2+B.og),[[pre+'ltg','EA',0],[tradeLast.g2||pre+'rf','EA',0]],pre+'thg',{cat:'ausbau'});
       add('t','285.1','Treppenhaus: Gipser, Maler, Bodenbelag',r(3+B.og*1.5),[[pre+'thg','EA',0],[tradeLast.m2||pre+'rf','EA',0]],pre+'th',{cat:'ausbau'});
     }
     add('t','221.5','Hauseingang / Aussentüren (definitiv), Schliessanlage',r(2+B.og*0.3),[[pre+'lhe','EA',0],[faEnd||feK,'EA',0],[tradeLast.m2||pre+'rf','AA',0]],pre+'tu',{cat:'huelle',note:'bis dahin provisorische Bautür'});
     add('t','','Inbetriebnahmen / Einregulierung / Abnahmen HLKSE',r(3+B.fl.length*0.8),[[tradeLast.ef,'EA',0],[tradeLast.sf,'EA',0],[pre+'hzz','EA',0],[pre+'lu','EA',0],[pre+'ehv','EA',0]],pre+'ibn',{cat:'ht',note:'Sicherheitsnachweis Elektro, Lüftung einregulieren, Heizung einregulieren'});
     add('t','287','Baureinigung'+(N?' '+N:''),r(2+B.fl.length*1),[...[...new Set(Object.values(tradeLast))].map(k=>[k,'EA',0]),[pre+'th','EA',0],[pre+'tu','EA',0]],pre+'re',{cat:'ausbau'});
-    add('m','',`Abnahme SIA 118${N?' '+N:''}`,0,[[pre+'re','EA',0],[pre+'ibn','EA',0],[pre+'ga','EA',0],[pre+'lab','EA',0],[pre+'so','EA',0],[pre+'ge','EA',0],[pre+'to','EA',0]],pre+'ab',{cat:'abschluss'});
+    add('m','',`Abnahme SIA 118${N?' '+N:''}`,0,[[pre+'re','EA',0],[pre+'ibn','EA',0],[pre+'ga','EA',0],[pre+'lab','EA',0],[pre+'so','EA',0],[pre+'mk','EA',0],[pre+'ge','EA',0],[pre+'to','EA',0]],pre+'ab',{cat:'abschluss'});
     span('Bauheizung / Bautrocknung (bei Bedarf, Winter)',tradeFirst.u,tradeLast.b,pre+'bh',{bkp:'135.2'});
     bkEnds.push(pre);
     prevLast.rohbauFirst=neu?pre+'bp':rk[B.fl[0].id]; prevLast.rohbauLast=topK;
@@ -5821,7 +5831,7 @@ function _tpBuildTemplate(P){
   // ---------- Umgebung & Abschluss ----------
   grp('Umgebung, Kranabbau & Übergabe',6);
   const allRf=bkEnds.map(p=>[p+'rf','EA',0]);
-  if(has('kr')){ add('t','211.0','Turmdrehkran abbauen',2,[...bkEnds.map(p=>[last(p+'da',p+'rf'),'EA',0])],'kra',{fixDur:true,cat:'prov'}); span('Turmdrehkran (Vorhaltung)','kr','kra','krs',{bkp:'211.0'}); }
+  if(has('kr')){ add('t','211.0','Turmdrehkran abbauen',2,P.kranMonate?bkEnds.map(p=>[p+'rf','EA',Math.round(P.kranMonate*21)]):[...bkEnds.map(p=>[last(p+'da',p+'rf'),'EA',0])],'kra',{fixDur:true,cat:'prov',note:P.kranMonate?`vorgehalten bis ${P.kranMonate} Monate nach Rohbauende (Baubeschrieb)`:''}); span('Turmdrehkran (Vorhaltung)','kr','kra','krs',{bkp:'211.0'}); }
   if(neu) add('t','411.4','Kanalisation Grundstück / Werkleitungen (Wasser, Elektro, Telecom) – Tiefbau',r(5+Math.min(fpSum,1500)/150),[...allRf.map(([k])=>[k,'EA',5]),['ko','EA',0]],'ka',{note:'Leitungen ausserhalb Gebäude nach Hinterfüllung, Hausanschlüsse Werke'+(P.heizung==='fernwaerme'?', inkl. Fernwärme':'')});
   if(P.kanal==='neu'&&neu) add('m','','Kanalisation: Dichtheitsprüfung / Kanal-TV, Abnahme Gemeinde',0,[['ka','EA',3]],'kab');
   { const uD=P.umgebungM2?r(6+P.umgebungM2/70):r((neu?8:5)+Math.min(fpSum,1300)/60), uDeps=[...bkEnds.map(p=>[p+'ga','EA',0]),...bkEnds.map(p=>[last(p+'fa2',p+'fa',p+'fe'),'EA',0]),['ka','EA',0],['kra','EA',0]];
@@ -5829,9 +5839,11 @@ function _tpBuildTemplate(P){
     add('t','421','Umgebung: Gärtnerarbeiten, Bepflanzung, Rasen',r(uD*0.55),[['gz','AA',2]],'ga',{season:'aussen',post:true,note:'witterungsabhängig (nicht bei Frost/Schnee) – darf nach dem Bezug fertiggestellt werden, zählt nicht zum Bauende'}); }
   add('t','211.0','Räumung Baustelleninstallation',4,bkEnds.map(p=>[p+'re','EA',-2]),'ri',{fixDur:true,cat:'prov'});
   if(P.reserve>0) add('t','583','Terminreserve (Witterung, Unvorhergesehenes)',P.reserve,[...bkEnds.map(p=>[p+'ab','EA',0]),['gz','EA',0]],'rs',{fixDur:true,note:'bewusst eingeplante Reserve vor der Übergabe'});
-  add('m','','Bauübergabe / Bezug',0,[...bkEnds.map(p=>[p+'ab','EA',2]),['gz','EA',0],['ri','EA',0],['rs','EA',0],['kab','EA',0]],'ue',{cat:'abschluss'});
-  if(P.grundwasser&&neu){ const lastUG=P.bks.map(b=>b.fl.filter(f=>f.lvl<0).map(f=>b.key+'_r_'+f.id).pop()).filter(Boolean).pop()||(P.bks[0].key+'_bp');
-    rows.splice(rows.findIndex(x=>x.key==='kg'),0,{k:'s',bkp:'176',name:'Wasserhaltung / Grundwasserabsenkung (Betrieb bis UG dicht)',span:['au',lastUG],key:'wh',ph:1,deps:[],cat:'prov'}); keys.add('wh'); }
+  if(P.zus.riss) add('t','101','Rissprotokolle Schlussaufnahme Nachbarn',2,allRf.map(([k])=>[k,'EA',5]),'rp2',{fixDur:true});
+  if(neu) add('m','','Bauabnahme Gemeinde / Bezugsbewilligung',0,[...bkEnds.map(p=>[p+'ab','EA',0]),['kab','EA',0]],'bzb',{cat:'abschluss',note:'Abnahmen und Kontrollen Bauamt, Bezugsbewilligung vor der Übergabe'});
+  add('m','','Bauübergabe / Bezug',0,[...bkEnds.map(p=>[p+'ab','EA',2]),['gz','EA',0],['ri','EA',0],['rs','EA',0],['kab','EA',0],['bzb','EA',0]],'ue',{cat:'abschluss'});
+  if((P.grundwasser||P.wasserhaltung)&&neu){ const lastUG=P.bks.map(b=>b.fl.filter(f=>f.lvl<0).map(f=>b.key+'_r_'+f.id).pop()).filter(Boolean).pop()||(P.bks[0].key+'_bp');
+    rows.splice(rows.findIndex(x=>x.key==='kg'),0,{k:'s',bkp:'176',name:P.grundwasser?'Wasserhaltung / Grundwasserabsenkung (Betrieb bis UG dicht)':'Offene Wasserhaltung (Rohbau UG)',span:['au',lastUG],key:'wh',ph:1,deps:[],cat:'prov'}); keys.add('wh'); }
   // ---------- Bereinigen: Aliase auflösen, ungültige Verweise/Zeitspannen entfernen ----------
   const alias={}; rows.filter(x=>x.k==='alias').forEach(x=>alias[x.key]=x.to);
   const res=k=>alias[k]||k;
@@ -5865,18 +5877,46 @@ function _tpEaster(y){
   const mo=Math.floor((h+l-7*m+114)/31),da=((h+l-7*m+114)%31)+1;
   return Math.round(Date.UTC(y,mo-1,da)/864e5);
 }
-// Gesetzliche Feiertage Kanton St. Gallen
-function _tpHolidaysSG(y){
-  const D=(m,d)=>Math.round(Date.UTC(y,m-1,d)/864e5), E=_tpEaster(y);
-  return [[D(1,1),'Neujahr'],[D(1,2),'Berchtoldstag'],[E-2,'Karfreitag'],[E+1,'Ostermontag'],[E+39,'Auffahrt'],[E+50,'Pfingstmontag'],
-    [D(8,1),'Bundesfeier'],[D(11,1),'Allerheiligen'],[D(12,25),'Weihnachten'],[D(12,26),'Stephanstag']];
+// Feiertage je Kanton (arbeitsfreie Feiertage gemäss kantonaler Regelung, Richtwerte – Gemeinde-Ausnahmen in „Plan & Arbeitskalender" ergänzen)
+const TP_KANTONE={AG:'Aargau',AI:'Appenzell Innerrhoden',AR:'Appenzell Ausserrhoden',BE:'Bern',BL:'Basel-Landschaft',BS:'Basel-Stadt',FR:'Freiburg',GE:'Genf',GL:'Glarus',GR:'Graubünden',JU:'Jura',LU:'Luzern',NE:'Neuenburg',NW:'Nidwalden',OW:'Obwalden',SG:'St. Gallen',SH:'Schaffhausen',SO:'Solothurn',SZ:'Schwyz',TG:'Thurgau',TI:'Tessin',UR:'Uri',VD:'Waadt',VS:'Wallis',ZG:'Zug',ZH:'Zürich'};
+const TP_KT_HOL={
+  ZH:'NJ BT KF OM MA AF PM BF WE ST', BE:'NJ BT KF OM AF PM BF WE ST', LU:'NJ BT KF OM AF PM FL BF MH AH ME WE ST', UR:'NJ HK JO KF OM AF PM FL BF MH AH ME WE ST',
+  SZ:'NJ HK JO KF OM AF PM FL BF MH AH ME WE ST', OW:'NJ BT KF OM AF PM FL BF MH BK AH ME WE ST', NW:'NJ JO KF OM AF PM FL BF MH AH ME WE ST', GL:'NJ BT NF KF OM AF PM BF AH WE ST',
+  ZG:'NJ BT KF OM AF PM FL BF MH AH ME WE ST', FR:'NJ BT KF OM AF PM FL BF MH AH ME WE ST', SO:'NJ BT KF OM MA AF PM FL BF MH AH WE ST', BS:'NJ KF OM MA AF PM BF WE ST',
+  BL:'NJ KF OM MA AF PM BF WE ST', SH:'NJ BT KF OM MA AF PM BF WE ST', AR:'NJ KF OM AF PM BF WE ST', AI:'NJ KF OM AF PM FL BF MH AH ME WE ST',
+  SG:'NJ BT KF OM AF PM BF AH WE ST', GR:'NJ KF OM AF PM BF WE ST', AG:'NJ BT KF OM AF PM FL BF MH AH ME WE ST', TG:'NJ BT KF OM MA AF PM BF WE ST',
+  TI:'NJ HK JO OM MA AF PM FL PP BF MH AH ME WE ST', VD:'NJ BT KF OM AF PM BF LJ WE', VS:'NJ JO AF FL BF MH AH ME WE', NE:'NJ RN KF OM MA AF PM BF LJ WE',
+  GE:'NJ KF OM AF PM BF JG WE RE', JU:'NJ BT KF OM MA AF PM FL JU BF MH AH WE'};
+function _tpHolidays(kt,y){
+  const D=(m,d)=>Math.round(Date.UTC(y,m-1,d)/864e5), E=_tpEaster(y), dow=n=>_tpDow(n);
+  const sun=(m,k)=>{ let n=D(m,1); while(dow(n)!==0)n++; return n+7*(k-1); }; // k-ter Sonntag im Monat
+  const thu1Apr=(()=>{ let n=D(4,1); while(dow(n)!==4)n++; return n; })();
+  const M={NJ:[D(1,1),'Neujahr'],BT:[D(1,2),'Berchtoldstag'],HK:[D(1,6),'Heilige Drei Könige'],RN:[D(3,1),'Republikfeier'],JO:[D(3,19),'Josefstag'],NF:[thu1Apr,'Näfelser Fahrt'],
+    KF:[E-2,'Karfreitag'],OM:[E+1,'Ostermontag'],MA:[D(5,1),'Tag der Arbeit'],AF:[E+39,'Auffahrt'],PM:[E+50,'Pfingstmontag'],FL:[E+60,'Fronleichnam'],JU:[D(6,23),'Unabhängigkeitstag Jura'],
+    PP:[D(6,29),'Peter und Paul'],BF:[D(8,1),'Bundesfeier'],MH:[D(8,15),'Mariä Himmelfahrt'],JG:[sun(9,1)+4,'Genfer Bettag'],LJ:[sun(9,3)+1,'Bettagsmontag'],BK:[D(9,25),'Bruder Klaus'],
+    AH:[D(11,1),'Allerheiligen'],ME:[D(12,8),'Mariä Empfängnis'],WE:[D(12,25),'Weihnachten'],ST:[D(12,26),'Stephanstag'],RE:[D(12,31),'Restauration']};
+  return (TP_KT_HOL[kt]||TP_KT_HOL.SG).split(' ').map(k=>M[k]).filter(Boolean);
 }
+function _tpHolidaysSG(y){ return _tpHolidays('SG',y); }
+// Kanton aus der Projektadresse (PLZ) ableiten – Richtwert, im Arbeitskalender änderbar
+function _tpKantonGuess(txt){
+  const m=String(txt||'').match(/\b([1-9]\d{3})\s+[A-ZÄÖÜ]/); if(!m)return '';
+  const z=+m[1];
+  const R=[[1000,1199,'VD'],[1200,1299,'GE'],[1300,1499,'VD'],[1500,1599,'VD'],[1600,1799,'FR'],[1800,1899,'VD'],[1890,1999,'VS'],[2000,2399,'NE'],[2400,2499,'NE'],[2500,2699,'BE'],[2700,2999,'JU'],
+    [3000,3899,'BE'],[3900,3999,'VS'],[4000,4099,'BS'],[4100,4499,'BL'],[4500,4699,'SO'],[4700,4799,'SO'],[4800,4899,'AG'],[4900,4999,'BE'],[5000,5799,'AG'],[6000,6299,'LU'],[6300,6349,'ZG'],
+    [6350,6459,'SZ'],[6460,6499,'UR'],[6500,6999,'TI'],[7000,7799,'GR'],[8000,8199,'ZH'],[8200,8299,'SH'],[8300,8499,'ZH'],[8500,8599,'TG'],[8600,8699,'ZH'],[8700,8749,'ZH'],[8750,8779,'GL'],
+    [8780,8799,'GL'],[8800,8839,'ZH'],[8840,8849,'SZ'],[8850,8899,'SG'],[8900,8999,'ZH'],[9000,9049,'SG'],[9050,9059,'AI'],[9060,9099,'AR'],[9100,9199,'AR'],[9200,9499,'SG'],[9500,9599,'TG'],[9600,9699,'SG']];
+  const r=R.find(([a,b])=>z>=a&&z<=b); return r?r[2]:'';
+}
+const _tpKtCache={};
+async function _tpLoadKanton(pid){ pid=pid||state.projectId; if(!pid)return ''; if(_tpKtCache[pid]!=null)return _tpKtCache[pid]; let k=''; try{ const pr=await get('projects',pid); k=_tpKantonGuess((pr&&pr.address)||'')||_tpKantonGuess((pr&&pr.name)||''); }catch(e){} _tpKtCache[pid]=k; return k; }
+function _tpKantonOf(plan){ const c=(plan&&plan.calendar)||{}; return c.kanton||_tpKtCache[(plan&&plan.projectId)||state.projectId]||'SG'; }
 function _tpCal(plan){
   const c=(plan&&plan.calendar)||{};
   const wd=new Set(Array.isArray(c.workdays)&&c.workdays.length?c.workdays:[1,2,3,4,5]);
-  const useHol=c.holidays!=='none';
+  const useHol=c.holidays!=='none'; const kt=_tpKantonOf(plan);
   const holCache=new Map();
-  const holYear=y=>{ if(!holCache.has(y)) holCache.set(y,new Map(_tpHolidaysSG(y))); return holCache.get(y); };
+  const holYear=y=>{ if(!holCache.has(y)) holCache.set(y,new Map(_tpHolidays(kt,y))); return holCache.get(y); };
   const closures=(c.closures||[]).map(x=>({a:_tpD(x.from),b:_tpD(x.to),label:x.label||'Betriebsferien'})).filter(x=>x.a!=null&&x.b!=null&&x.b>=x.a);
   const holName=n=>useHol?(holYear(_tpYMD(n)[0]).get(n)||null):null;
   const closure=n=>closures.find(x=>n>=x.a&&n<=x.b)||null;
@@ -5886,7 +5926,7 @@ function _tpCal(plan){
   const add=(n,k)=>{ k=Math.round(k||0); let x; if(k>=0){ x=next(n); for(let i=0;i<k;i++){ x=next(x+1); } } else { x=prev(n); for(let i=0;i<-k;i++){ x=prev(x-1); } } return x; };
   const diff=(a,b)=>{ if(a===b)return 0; let s=0; if(b>a){ for(let x=a+1;x<=b;x++) if(isWork(x))s++; return s; } for(let x=b+1;x<=a;x++) if(isWork(x))s++; return -s; };
   const countIncl=(a,b)=>{ if(b<a)return 0; let s=0; for(let x=a;x<=b;x++) if(isWork(x))s++; return s; };
-  return {isWork,next,prev,add,diff,countIncl,holName,closure,wd,closures,useHol};
+  return {isWork,next,prev,add,diff,countIncl,holName,closure,wd,closures,useHol,kt};
 }
 
 /* ---------- Terminberechnung ---------- */
@@ -5971,6 +6011,8 @@ function _tpSchedule(plan){
     if(sc&&!t.ignoreSeason){ const Wl=WIN[sc]||[]; const s0=s; let g=0;
       for(;;){ const e=cal.add(s,dur-1); const w=Wl.find(w=>s<=w.b&&e>=w.a); if(!w||g++>12)break; s=cal.next(w.b+1); }
       if(s>s0){ t.seasonShift=s-s0; t.seasonFrom=_tpIso(s0); } }
+    // Bauferien = Sperre: kurze Vorgänge (bis 10 AT) nicht durch die Ferien unterbrechen → nach den Ferien beginnen
+    if(!ms&&!t.fixed&&!t.lead&&t.kind==='task'&&dur<=10&&cal.closures.length){ let g=0; for(;;){ const e=cal.add(s,dur-1); const c=cal.closures.find(c=>c.a>s&&c.a<=e); if(!c||g++>8)break; s=cal.next(c.b+1); } }
     t.dur=dur; t.start=_tpIso(s); t.end=_tpIso(ms?s:cal.add(s,dur-1));
     t.progress=Math.max(0,Math.min(100,Math.round(+t.progress||0)));
   }
@@ -6034,7 +6076,7 @@ function _tpDependsOn(plan,aId,bId){ // hängt a (direkt/indirekt) von b ab?
   return false;
 }
 // Gestaltung (Vorschlag A „Fein & hell", 04.11.2026): Farbe je Gruppe, helle Balken, Fortschritt in voller Farbe
-const TP_GRP_PALETTE=['#64748b','#b7791f','#3b6fb6','#2f8f83','#7c5cc4','#c2477a','#4d8a3a','#c4652a','#2b8bb0','#8a7f2a'];
+const TP_GRP_PALETTE=['#475569','#a16207','#2563eb','#0f9d76','#7c3aed','#db2777','#4d7c0f','#ea580c','#0e7490','#854d0e'];
 function _tpHex(h){ h=String(h||'').replace('#',''); if(h.length===3)h=h.split('').map(c=>c+c).join(''); const n=parseInt(h,16); return isNaN(n)?[100,116,139]:[(n>>16)&255,(n>>8)&255,n&255]; }
 function _tpMix(hex,w,base){ const c=_tpHex(hex), b=base||[255,255,255]; return '#'+c.map((v,i)=>Math.round(v*(1-w)+b[i]*w).toString(16).padStart(2,'0')).join(''); }
 function _tpDark(hex,w){ return _tpMix(hex,w==null?0.35:w,[0,0,0]); }
@@ -6159,6 +6201,8 @@ function _tpEnsureStyles(){
 .tp-zoomctl input[type=range]{width:110px;accent-color:var(--ink)}
 .tp-zoomlbl{font-size:11.5px;color:var(--muted);min-width:52px;margin-left:4px}
 .tp-locked .tp-drag,.tp-locked .lk,.tp-locked .rz{display:none}
+.tp-del-l{font-size:12.5px;line-height:1.5;border:1px solid var(--line);border-radius:8px;padding:8px 11px;margin-bottom:8px}
+.tp-del-l b{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:2px}
 .tp-locked .tp-svg-bar [data-part="move"]{cursor:default}
 .tp-locked #tpLeft input:disabled{color:var(--ink);opacity:1;background:transparent;-webkit-text-fill-color:var(--ink)}
 .tp-leg .tp-leg-h{font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:14px 0 6px}
@@ -6313,14 +6357,14 @@ function _tpLegendItems(){
   const pat=`<defs><pattern id="lgSpan" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e3edf7"/><line x1="0" y1="0" x2="0" y2="6" stroke="#9fbad6" stroke-width="2"/></pattern><pattern id="lgLead" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#f2dfa7"/><line x1="0" y1="0" x2="0" y2="8" stroke="#d8b65a" stroke-width="3"/></pattern></defs>`;
   return {
     bars:[
-      [sw(`<rect x="1.5" y="3.5" width="31" height="10" rx="4" fill="#d8e2f0" stroke="#3b6fb6" stroke-opacity=".38"/>`),'Vorgang','heller Balken in der Farbe der Gruppe; eigene Farbe je Vorgang (⋯) bzw. Gruppenfarbe wählbar'],
-      [sw(`<rect x="1.5" y="3.5" width="31" height="10" rx="4" fill="#d8e2f0"/><rect x="1.5" y="3.5" width="19" height="10" rx="4" fill="#3b6fb6"/>`),'Fortschritt','erledigter Anteil in voller Gruppenfarbe (Spalte %)'],
-      [sw(`<rect x="1.5" y="3.5" width="31" height="10" rx="4" fill="#fdf3dc" stroke="#c98a12" stroke-dasharray="4 3"/>`),'Lieferfrist / Fabrikation ⏳','gestrichelt gelb – Beginn = spätester Bestell-/Vergabetermin, Ende = Montagebeginn'],
+      [sw(`<rect x="1.5" y="3.5" width="31" height="10" rx="3.5" fill="#2563eb"/>`),'Vorgang','Balken in voller Farbe der Gruppe; eigene Farbe je Vorgang (⋯) bzw. Gruppenfarbe wählbar'],
+      [sw(`<rect x="1.5" y="3.5" width="31" height="10" rx="3.5" fill="#2563eb"/><rect x="1.5" y="3.5" width="19" height="10" rx="3.5" fill="#193f8f"/>`),'Fortschritt','erledigter Anteil dunkler (Spalte %)'],
+      [sw(`<rect x="1.5" y="3.5" width="31" height="10" rx="3.5" fill="#ffedd5" stroke="#c2410c" stroke-dasharray="4 3"/>`),'Lieferfrist / Fabrikation ⏳','gestrichelt orange – Beginn = spätester Bestell-/Vergabetermin, Ende = Montagebeginn; läuft auch über Bauferien'],
       [sw(`<line x1="4" y1="8" x2="30" y2="8" stroke="#7c5cc4" stroke-width="6" stroke-linecap="round" stroke-dasharray="7 6"/>`),'Zeitspanne ↔','gestrichelte Linie – läuft automatisch über die verknüpften Vorgänge (z.B. Gerüststandzeit, Provisorien)'],
       [sw(`<rect x="0" y="0" width="34" height="16" fill="#ebf1f9"/><rect x="2" y="5" width="30" height="6" rx="3" fill="#3b6fb6"/>`),'Gruppe','getönte Gruppenzeile, schmaler Sammelbalken in der Gruppenfarbe, daneben Dauer in AT'],
       [sw(`<path d="M17 1.5 L23.5 8 L17 14.5 L10.5 8Z" fill="#1a1a1a" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/>`),'Meilenstein ◆','Stichtag ohne Dauer (z.B. Baubeginn, Gebäude dicht, Übergabe)'],
       [sw(`<path d="M17 1.5 L23.5 8 L17 14.5 L10.5 8Z" fill="#d92d20" stroke-linejoin="round"/>`),'Kritischer Meilenstein','liegt auf dem kritischen Weg'],
-      [sw(`<rect x="2" y="3.5" width="30" height="10" rx="4" fill="#d8e2f0" stroke="#d92d20" stroke-width="1.75"/>`),'Kritischer Weg','feiner roter Rahmen – kein Puffer, Verzug verschiebt das Bauende'],
+      [sw(`<rect x="2" y="3.5" width="30" height="10" rx="3.5" fill="#2563eb" stroke="#dc2626" stroke-width="2"/>`),'Kritischer Weg','roter Rahmen – kein Puffer, Verzug verschiebt das Bauende'],
       [sw(`<rect x="2" y="3.5" width="30" height="10" rx="4" fill="#d8e2f0" stroke="#d4732a" stroke-width="2.25"/>`),'Konflikt','orange umrandet – Fixtermin liegt vor dem Ende eines Vorgängers'],
       [sw(`<rect x="1.5" y="1" width="31" height="9" rx="4" fill="#d8e2f0"/><rect x="5" y="12" width="28" height="3" rx="1.5" fill="#c3c7cc"/>`),'Basisplan (Soll)','grauer Strich unter dem Balken = ursprünglich vereinbarter Termin'],
       [sw(`<rect x="0" y="0" width="34" height="16" fill="#fff7d6"/><rect x="2" y="3.5" width="30" height="10" rx="4" fill="#d8e2f0" stroke="#1a1a1a" stroke-width="1.5"/>`),'Ausgewählt','gelb hinterlegte Zeile, schwarz umrandeter Balken'],
@@ -6330,9 +6374,9 @@ function _tpLegendItems(){
       [sw(`<line x1="17" y1="0" x2="17" y2="16" stroke="#2c7a4b" stroke-width="2" stroke-dasharray="4 3"/>`),'Soll-Übergabe','grün gestrichelt (Plan-Einstellungen)'],
       [sw(`<path d="M2 4 H12 V12 H30" fill="none" stroke="#9aa0a6"/><path d="M30 12 l-5 -3 v6z" fill="#9aa0a6"/>`),'Verknüpfung','Ende→Anfang, Anfang→Anfang, Ende→Ende'],
       [sw(`<path d="M2 4 H12 V12 H30" fill="none" stroke="#d92d20" stroke-width="1.5"/><path d="M30 12 l-5 -3 v6z" fill="#d92d20"/>`),'Kritische Verknüpfung','zwischen zwei kritischen Vorgängen'],
-      [sw(`<rect x="0.5" y="0.5" width="33" height="15" fill="#f7f8fa" stroke="#e3e5e8"/>`),'Arbeitsfrei','Wochenende'],
-      [sw(`<rect x="0.5" y="0.5" width="33" height="15" fill="#fdeeee" stroke="#e3e5e8"/>`),'Feiertag','gemäss Arbeitskalender (SG)'],
-      [sw(`<rect x="0.5" y="0.5" width="33" height="15" fill="#fdf0e3" stroke="#e3e5e8"/>`),'Bauferien / Sperrzeit','Weihnachts-/Sommerferien, eigene Sperrzeiten'],
+      [sw(`<rect x="0.5" y="0.5" width="33" height="15" fill="#e3e6ea"/>`),'Wochenende','grau, arbeitsfrei'],
+      [sw(`<rect x="0.5" y="0.5" width="33" height="15" fill="#f87171" opacity=".6"/>`),'Feiertag',`gesetzlicher Feiertag Kanton ${esc(TP_KANTONE[_tpKantonOf(_tp.plan)]||'')} (Arbeitskalender)`],
+      [sw(`<defs><pattern id="lgFer" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#fee2e2"/><line x1="0" y1="0" x2="0" y2="8" stroke="#fca5a5" stroke-width="3.5"/></pattern></defs><rect x="0.5" y="0.5" width="33" height="15" fill="url(#lgFer)" stroke="#dc2626" stroke-width="1.5"/>`),'Bauferien = Sperre','rot schraffiert – keine Arbeiten; Vorgänge ruhen und laufen danach weiter'],
     ],
     symbols:[['⏳','Lieferfrist – Bestellung spätestens am Startdatum'],['↔','Zeitspanne'],['❄','wegen Winterpause verschoben'],['⚠','Kollision/Warnung (Details: ⚠-Feld oben)'],['📌','Fixtermin (Start fest)'],['⠿','Zeile ziehen = verschieben'],['🔒','Terminplan gesperrt']],
     bkp:[...TP_BKP_LEG.map(([k,n])=>[TP_COLORS[k],'BKP '+k+(k.length===1?'xx':'x'),n]),['#607d8b','–','ohne BKP']],
@@ -6350,7 +6394,7 @@ function _tpLegendDialog(){
 }
 // Sperre: Signatur der terminrelevanten Daten (Auf-/Zuklappen bleibt erlaubt)
 function _tpLockSig(p){ return JSON.stringify({n:p.name,s:p.start,h:p.handover,c:p.calendar,pa:p.params,b:p.baseline,t:(p.tasks||[]).map(t=>{ const o=Object.assign({},t); delete o.collapsed; return o; })}); }
-function _tpLockHint(){ const n=Date.now(); if(n-(_tp.lockHintAt||0)<2500)return; _tp.lockHintAt=n; toast('🔒 Terminplan gesperrt – zum Bearbeiten oben „Freigeben" klicken'); }
+function _tpLockHint(){ const n=Date.now(); if(n-(_tp.lockHintAt||0)<2500)return; _tp.lockHintAt=n; toast(_tp.aggr?'Zusammengefasste Ansicht – zum Bearbeiten Genauigkeit „Fein" wählen':'🔒 Terminplan gesperrt – zum Bearbeiten oben „Freigeben" klicken'); }
 async function _tpToggleLock(){
   const p=_tp.plan; if(!p)return;
   if(p.locked){ if(!confirm('Terminplan zum Bearbeiten freigeben?\n\nDanach können Termine wieder verschoben und geändert werden. Mit „🔒 Sperren" wieder schützen.'))return; p.locked=false; }
@@ -6361,6 +6405,7 @@ async function _tpToggleLock(){
 }
 async function renderTerminplan(){
   _tpEnsureStyles();
+  await _tpLoadKanton(state.projectId);
   const stage=document.getElementById('stage');
   if(!state.projectId){
     stage.innerHTML=`<div class="module"><div class="mod-head"><div><h1>Terminplan</h1></div></div><div class="mod-body"><div class="empty"><div class="big">📅</div><h3>Kein Projekt gewählt</h3><p>Bitte zuerst ein Projekt eröffnen oder auswählen.</p></div></div></div>`;
@@ -6397,6 +6442,8 @@ async function renderTerminplan(){
       <div class="tp-bar">
         <button class="btn ${p.locked?'btn-steel':'btn-ghost'} btn-sm" id="tpLock" title="${p.locked?'Gesperrt'+(p.lockedBy?' von '+esc(p.lockedBy):'')+(p.lockedAt?' am '+fmtDate(p.lockedAt.slice(0,10)):'')+' – klicken zum Freigeben':'Terminplan gegen versehentliches Verschieben sperren'}">${p.locked?'🔒 Gesperrt · Freigeben':'🔓 Sperren'}</button>${_tpInfoBtn('lock')}
         <span class="sep hide-m"></span>
+        <div class="tp-seg" id="tpLevel" title="Genauigkeit der Darstellung">${Object.entries(TP_LEVELS).map(([k,l])=>`<button data-lv="${k}" class="${_tpLevel()===k?'on':''}">${l}</button>`).join('')}</div>${_tpInfoBtn('level')}
+        <span class="sep hide-m"></span>
         <button class="btn btn-primary btn-sm tp-edit" id="tpAddTask">＋ Vorgang</button>
         <button class="btn btn-ghost btn-sm tp-edit" id="tpAddMs" title="Meilenstein">◆<span class="lbl-m"> Meilenstein</span></button>
         <button class="btn btn-ghost btn-sm tp-edit" id="tpAddGrp" title="Gruppe">▤<span class="lbl-m"> Gruppe</span></button>
@@ -6427,6 +6474,8 @@ async function renderTerminplan(){
   $('tpUndo').onclick=()=>_tpUndo(false);
   $('tpRedo').onclick=()=>_tpUndo(true);
   $('tpZoom').onclick=e=>{ const b=e.target.closest('[data-z]'); if(!b)return; _tpSetPx(TP_ZOOMS[b.dataset.z].px); };
+  $('tpLevel').onclick=e=>{ const b=e.target.closest('[data-lv]'); if(!b)return; _tp.level=b.dataset.lv; try{ localStorage.setItem('bv_tp_level',_tp.level); }catch(x){}
+    $('tpLevel').querySelectorAll('[data-lv]').forEach(x=>x.classList.toggle('on',x===b)); _tp.sel=null; _tpRenderBody(); };
   $('tpZoomIn').onclick=()=>_tpSetPx(_tpPx()*1.3); $('tpZoomOut').onclick=()=>_tpSetPx(_tpPx()/1.3);
   $('tpZoomSl').oninput=e=>{ const v=+e.target.value; cancelAnimationFrame(_tp.zRaf); _tp.zRaf=requestAnimationFrame(()=>_tpSetPx(_tpSliderToPx(v))); };
   $('tpLock').onclick=()=>_tpToggleLock();
@@ -6474,6 +6523,64 @@ function _tpBindKeys(){
     else if((e.ctrlKey||e.metaKey)&&(e.key.toLowerCase()==='y'||(e.key.toLowerCase()==='z'&&e.shiftKey))){ e.preventDefault(); _tpUndo(true); }
   });
 }
+// ---- Genauigkeit der Darstellung: Fein (alle Vorgänge) · Normal (BKP 3-stellig, Ausbau je Gewerk) · Grob (BKP-Hauptgruppen) ----
+const TP_LEVELS={grob:'Grob',normal:'Normal',fein:'Fein'};
+function _tpLevel(){ if(!_tp.level){ try{ _tp.level=localStorage.getItem('bv_tp_level')||'fein'; }catch(e){ _tp.level='fein'; } } return TP_LEVELS[_tp.level]?_tp.level:'fein'; }
+const TP_GROB=[['V','1 Vorbereitung, Rückbau','#8a5a2b'],['BG','17/20 Baugrube, Spezialtiefbau','#a16207'],['RB','21 Rohbau','#2563eb'],['HU','22 Gebäudehülle','#ea580c'],
+  ['HT','23–26 Haustechnik, Transportanlagen','#7c3aed'],['A1','27 Ausbau 1','#0f9d76'],['A2','28 Ausbau 2','#0e7490'],['UM','4 Umgebung','#4d7c0f'],['NK','5 Baunebenkosten, Reserve','#64748b']];
+function _tpBkpName(code){ const r=(typeof BKP_CRB2017!=='undefined'?BKP_CRB2017:[]).find(x=>x[0]===code); return r?r[1]:''; }
+function _tpAggregate(p,level){
+  if(!p||!level||level==='fein')return p;
+  const cal=_tpCal(p), GC=_tpGroupColors(p);
+  const items=[]; let g=null; p.tasks.forEach(t=>{ if(t.kind==='group'){ g=t; return; } items.push({t,g}); });
+  const bk3=t=>{ const m=String(t.bkp||'').match(/^(\d{1,3})/); return m?m[1]:''; };
+  const keyMs=/baubeginn|rohbau fertig|aufrichte|dach dicht|gebäude dicht|abnahme|übergabe|bezugsbewilligung/i, minorMs=/ausmass|naturmass|vergabe|bestell|lieferung|freigabe werkpl/i;
+  const mk=(id,kind,name,list,extra)=>{ let a=null,b=null,dw=0,pw=0;
+    list.forEach(x=>{ const s=_tpD(x.start),e=_tpD(x.end); if(s==null||e==null)return; a=a==null?s:Math.min(a,s); b=b==null?e:Math.max(b,e); const d=Math.max(1,x.dur||1); dw+=d; pw+=d*(x.progress||0); });
+    if(a==null)return null; const cos=[...new Set(list.map(x=>x.company).filter(Boolean))];
+    return Object.assign({id,kind,name,start:_tpIso(a),end:_tpIso(b),dur:kind==='ms'?0:cal.countIncl(a,b),progress:dw?Math.round(pw/dw):0,crit:list.some(x=>x.crit),deps:[],company:cos.length===1?cos[0]:'',bkp:'',agg:list.length,float:Math.min(...list.map(x=>x.float||0)),group:null},extra||{}); };
+  const out=[];
+  if(level==='grob'){
+    const catOf=(t,gn)=>{ const b=bk3(t), gl=(gn||'').toLowerCase();
+      if(/vorbereit/.test(gl)) return /^(17|20)/.test(b)?'BG':'V';
+      if(/tiefbau|baugrube/.test(gl)) return 'BG';
+      if(/rohbau|gerüst/.test(gl)) return 'RB';
+      if(/hülle/.test(gl)) return /^2[3-6]/.test(b)?'HT':'HU';
+      if(/haustechnik/.test(gl)) return 'HT';
+      if(/ausbau/.test(gl)) return /^2[3-6]/.test(b)?'HT':/^28/.test(b)?'A2':/^22/.test(b)?'HU':'A1';
+      if(/fertigstellung|abnahme/.test(gl)) return /^2[3-6]/.test(b)?'HT':'A2';
+      if(/umgebung|übergabe/.test(gl)) return /^5/.test(b)?'NK':'UM';
+      if(/^(0|1[0-6]|1[89])/.test(b)) return 'V'; if(/^(17|20)/.test(b)) return 'BG'; if(/^21/.test(b)) return 'RB'; if(/^22/.test(b)) return 'HU'; if(/^2[3-6]/.test(b)) return 'HT';
+      if(/^27/.test(b)) return 'A1'; if(/^28/.test(b)) return 'A2'; if(/^4/.test(b)) return 'UM'; if(/^5/.test(b)) return 'NK';
+      gn=(gn||'').toLowerCase(); return /vorbereit/.test(gn)?'V':/tiefbau|baugrube/.test(gn)?'BG':/rohbau|gerüst/.test(gn)?'RB':/hülle/.test(gn)?'HU':/haustechnik/.test(gn)?'HT':/ausbau/.test(gn)?'A1':/fertigstellung|abnahme/.test(gn)?'A2':/umgebung/.test(gn)?'UM':'NK'; };
+    const by={};
+    items.forEach(({t,g})=>{ if(t.kind!=='task'||t.lead||t.post)return; const c=catOf(t,g&&g.name); (by[c]=by[c]||[]).push(t); });
+    TP_GROB.forEach(([k,n,col])=>{ if(!by[k])return; const r=mk('agg_'+k,'task',n,by[k],{color:col}); if(r)out.push(r); });
+    items.forEach(({t})=>{ if(t.kind==='ms'&&/baubeginn|übergabe|bezugsbewilligung|rohbau fertig/i.test(t.name||'')) out.push(Object.assign({},t,{deps:[],group:null})); });
+    out.sort((a,b)=>_tpD(a.start)-_tpD(b.start)||(a.kind==='ms')-(b.kind==='ms'));
+  } else {
+    const order=[], DG={};
+    items.forEach(({t,g})=>{
+      const gn=g?(g.name||''):''; const pre=gn.includes(' · ')?gn.split(' · ')[0]+' · ':'';
+      const key=g?(/ausbau/i.test(gn)?pre+'|Ausbau':g.id):'_';
+      if(!DG[key]){ DG[key]={key,g,name:g?(/ausbau/i.test(gn)?pre+'Ausbau (alle Geschosse)':gn):'',color:g?GC.get(g.id):null,rows:[],map:{},rohbau:/rohbau/i.test(gn)}; order.push(key); }
+      const D=DG[key];
+      if(t.lead)return;
+      if(t.kind==='ms'){ if(keyMs.test(t.name||'')||!minorMs.test(t.name||'')) D.rows.push({single:t}); return; }
+      if(t.kind==='span'||D.rohbau||!bk3(t)||!/\|Ausbau$/.test(D.key)){ D.rows.push({single:t}); return; }
+      const k=bk3(t)+(t.kind==='task'?'':'|'+t.kind);
+      if(!D.map[k]){ D.map[k]={list:[],code:bk3(t)}; D.rows.push({merge:D.map[k]}); }
+      D.map[k].list.push(t); });
+    order.forEach(key=>{ const D=DG[key]; if(!D.rows.length&&!D.g)return;
+      const gid=D.g?'aggG_'+D.g.id:null; const kids=[];
+      D.rows.forEach((r,i)=>{ if(r.single){ kids.push(Object.assign({},r.single,{deps:[],group:gid})); return; }
+        const L=r.merge.list; if(L.length===1){ kids.push(Object.assign({},L[0],{deps:[],group:gid})); return; }
+        const nm=_tpBkpName(r.merge.code); const x=mk(gid+'_'+r.merge.code+'_'+i,'task',`${r.merge.code} ${nm||L[0].name||''}`,L,{group:gid,bkp:r.merge.code}); if(x)kids.push(x); });
+      if(D.g){ const all=kids.filter(k=>k.kind!=='span'); const gr=mk(gid,'group',D.name,all.length?all:kids,{color:D.color,collapsed:false})||{id:gid,kind:'group',name:D.name,color:D.color,empty:true,deps:[]}; out.push(gr); }
+      kids.forEach(k=>out.push(k)); });
+  }
+  return Object.assign({},p,{tasks:out,locked:true,_agg:level});
+}
 function _tpVisibleRows(p){
   const out=[]; let hide=false;
   p.tasks.forEach((t,i)=>{ if(t.kind==='group'){ hide=!!t.collapsed; out.push({t,i}); } else if(!hide) out.push({t,i}); });
@@ -6494,8 +6601,9 @@ function _tpRange(p){
   return [a,b];
 }
 function _tpRenderBody(){
-  const p=_tp.plan; const grid=document.getElementById('tpGrid'); if(!p||!grid)return;
-  const cal=_tpCal(p); _tp.cal=cal;
+  const p0=_tp.plan; const grid=document.getElementById('tpGrid'); if(!p0||!grid)return;
+  const p=_tpLevel()!=='fein'?_tpAggregate(p0,_tpLevel()):p0; _tp.aggr=p!==p0;
+  const cal=_tpCal(p0); _tp.cal=cal;
   const active=document.activeElement&&document.activeElement.dataset?{tid:document.activeElement.dataset.tid,f:document.activeElement.dataset.f}:null;
   const colset=TP_COLSETS[_tpColset()];
   const cols=colset.map(k=>Object.assign({},TP_COLS.find(c=>c.k===k)));
@@ -6509,19 +6617,19 @@ function _tpRenderBody(){
   const H=Math.max(rows.length*TP_ROW_H,TP_ROW_H*3);
   grid.style.gridTemplateColumns=`${LW}px ${CW}px`;
   // Summenzeile
-  _tpRenderSummary(p,cal);
+  _tpRenderSummary(p0,cal);
   const companies=[...new Set([...(_tp.contacts||[]).map(c=>c.company).filter(Boolean),...p.tasks.map(t=>t.company).filter(Boolean)])].sort((a,b)=>a.localeCompare(b));
   const depText=new Map(p.tasks.map(t=>[t.id,_tpDepText(p,t)]));
   const cell=(c,t,i)=>{
-    const G0=t.kind==='group', sp=t.kind==='span', g=G0||sp, ms=t.kind==='ms', id=t.id;
+    const G0=t.kind==='group', sp=t.kind==='span', g=G0||sp||!!_tp.aggr, ms=t.kind==='ms', id=t.id;
     switch(c.k){
       case 'nr': return `<div class="tp-nr" data-sel="${id}" title="${t.conflict?'Fixtermin liegt vor dem Vorgänger-Termin (Konflikt)':'Doppelklick: Position (Nr.) eingeben'}"><span class="tp-drag" data-drag="${id}" title="Ziehen = Zeile verschieben (Gruppe samt Inhalt) · Alt+↑/↓">⠿</span>${t.conflict?'<span class="warn">⚠</span>':''}${t.fixed?'📌':''}${i+1}</div>`;
-      case 'bkp': return G0?'<div></div>':`<div><input data-tid="${id}" data-f="bkp" value="${esc(t.bkp||'')}" list="tpBkpList"></div>`;
+      case 'bkp': return G0?'<div></div>':_tp.aggr?`<div class="tp-ro">${esc(t.bkp||'')}</div>`:`<div><input data-tid="${id}" data-f="bkp" value="${esc(t.bkp||'')}" list="tpBkpList"></div>`;
       case 'name': return `<div style="padding-left:${G0?2:(t.group?14:4)}px" ${sp?'title="Zeitspanne: läuft automatisch von Beginn bis Ende der verknüpften Vorgänge (Bearbeiten über ⋯)"':t.lead?'title="Lieferfrist / Fabrikation (Dauer aus Projektparametern)"':''}>${G0?`<span class="tp-tog" data-tog="${id}">${t.collapsed?'▸':'▾'}</span><span class="tp-gdot" style="background:${_tpColor(t,p)}"></span>`:(ms?'<span style="color:var(--muted);margin-right:2px">◆</span>':sp?'<span style="color:#6b8fb5;margin-right:2px">↔</span>':t.lead?'<span style="color:#8a6d1f;margin-right:2px">⏳</span>':'')}<input data-tid="${id}" data-f="name" value="${esc(t.name||'')}" placeholder="${G0?'Gruppe':ms?'Meilenstein':'Vorgang'}"></div>`;
-      case 'company': return G0?'<div></div>':`<div><input data-tid="${id}" data-f="company" value="${esc(t.company||t.trade||'')}" list="tpCompList"></div>`;
+      case 'company': return G0?'<div></div>':_tp.aggr?`<div class="tp-ro">${esc(t.company||'')}</div>`:`<div><input data-tid="${id}" data-f="company" value="${esc(t.company||t.trade||'')}" list="tpCompList"></div>`;
       case 'start': if(t.lead) return `<div class="tp-ro" title="Bestellung spätestens (Lieferfrist liegt direkt vor der Montage)">⏳ ${_tpFmt(_tpD(t.start))}</div>`; return g?`<div class="tp-ro">${t.empty?'':_tpFmt(_tpD(t.start))}</div>`:`<div><input type="date" data-tid="${id}" data-f="start" value="${t.start}"></div>`;
       case 'end': if(t.lead) return `<div class="tp-ro">${_tpFmt(_tpD(t.end))}</div>`; return g?`<div class="tp-ro">${t.empty?'':_tpFmt(_tpD(t.end))}</div>`:(ms?'<div></div>':`<div><input type="date" data-tid="${id}" data-f="end" value="${t.end}"></div>`);
-      case 'dur': return g?`<div class="tp-ro" style="justify-content:flex-end">${t.empty?'':t.dur}</div>`:(ms?'<div class="tp-ro" style="justify-content:center">◆</div>':`<div><input type="number" min="1" data-tid="${id}" data-f="dur" value="${t.dur}"></div>`);
+      case 'dur': return g?`<div class="tp-ro" style="justify-content:${ms?'center':'flex-end'}">${t.empty?'':ms?'◆':t.dur}</div>`:(ms?'<div class="tp-ro" style="justify-content:center">◆</div>':`<div><input type="number" min="1" data-tid="${id}" data-f="dur" value="${t.dur}"></div>`);
       case 'deps': return g?'<div></div>':`<div title="${esc((t.deps||[]).map(d=>{ const x=p.tasks.find(y=>y.id===d.id); return x?`${p.tasks.indexOf(x)+1} ${x.name||''} (${({EA:'Ende→Anfang',AA:'Anfang→Anfang',EE:'Ende→Ende'})[d.type]||d.type}${d.lag?(d.lag>0?' +':' ')+d.lag:''})`:''; }).join('\n')||'Rechtsklick auf Balken: Vorgänger/Nachfolger verknüpfen')}"><input data-tid="${id}" data-f="deps" value="${esc(depText.get(id))}" placeholder="${_tp.sel===id?'z.B. 3; 5AA+2':''}"></div>`;
       case 'prog': return g?`<div class="tp-ro" style="justify-content:flex-end">${t.empty?'':t.progress+'%'}</div>`:(ms?'<div></div>':`<div><input type="number" min="0" max="100" step="5" data-tid="${id}" data-f="progress" value="${t.progress||''}" placeholder="–"></div>`);
       case 'act': return `<div class="tp-act"><button data-menu="${id}" title="Bearbeiten / Optionen">⋯</button></div>`;
@@ -6626,7 +6734,7 @@ function _tpHeaderSvg(r0,r1,px,CW,cal){
   const months=()=>{ let n=r0; const out=[]; while(n<=r1){ const [y,m]=_tpYMD(n); const e=Math.min(r1,Math.round(Date.UTC(y,m+1,1)/864e5)-1); out.push([n,e,y,m]); n=e+1; } return out; };
   if(z==='tag'){
     for(let n=r0;n<=r1;n+=7){ const e=Math.min(r1,n+6); top+=seg(n,e,`KW ${_tpKW(n)} · ${_tpFmt(n)}`,0,22,'t'); }
-    for(let n=r0;n<=r1;n++){ const x=(n-r0)*px; const wk=!cal.isWork(n); if(wk)bot+=`<rect x="${x}" y="22" width="${px}" height="22" fill="#f3f4f6"/>`; bot+=`<line x1="${x}" y1="24" x2="${x}" y2="44" stroke="#eceef1"/><text x="${x+px/2}" y="31" text-anchor="middle" font-size="9" fill="#a0a5ab">${TP_WD_NAMES[_tpDow(n)]}</text><text x="${x+px/2}" y="41" text-anchor="middle" font-size="10.5" font-weight="500" fill="${wk?'#a0a5ab':'#3d4248'}">${_tpYMD(n)[2]}</text>`; }
+    for(let n=r0;n<=r1;n++){ const x=(n-r0)*px; const wk=!cal.isWork(n); if(wk)bot+=`<rect x="${x}" y="22" width="${px}" height="22" fill="${cal.closure(n)?'#fecaca':cal.holName(n)?'#fca5a5':'#e3e6ea'}"/>`; bot+=`<line x1="${x}" y1="24" x2="${x}" y2="44" stroke="#eceef1"/><text x="${x+px/2}" y="31" text-anchor="middle" font-size="9" fill="#a0a5ab">${TP_WD_NAMES[_tpDow(n)]}</text><text x="${x+px/2}" y="41" text-anchor="middle" font-size="10.5" font-weight="500" fill="${wk?'#a0a5ab':'#3d4248'}">${_tpYMD(n)[2]}</text>`; }
   }else if(z==='woche'){
     months().forEach(([a,b,y,m])=>{ top+=seg(a,b,(b-a+1)*px>70?`${TP_MONTHS_LONG[m]} ${y}`:`${TP_MONTHS[m]} ${String(y).slice(2)}`,0,22,'t'); });
     for(let n=r0;n<=r1;n+=7){ bot+=seg(n,Math.min(r1,n+6),'KW '+_tpKW(n),22,22,'s'); }
@@ -6637,6 +6745,7 @@ function _tpHeaderSvg(r0,r1,px,CW,cal){
     let n=r0; while(n<=r1){ const y=_tpYMD(n)[0]; const e=Math.min(r1,Math.round(Date.UTC(y+1,0,1)/864e5)-1); top+=seg(n,e,String(y),0,22,'t'); n=e+1; }
     n=r0; while(n<=r1){ const [y,m]=_tpYMD(n); const e=Math.min(r1,Math.round(Date.UTC(y,m-m%3+3,1)/864e5)-1); bot+=seg(n,e,'Q'+(Math.floor(m/3)+1),22,22,'s'); n=e+1; }
   }
+  cal.closures.forEach(c=>{ const a=Math.max(c.a,r0),b=Math.min(c.b,r1); if(b<a)return; const x=(a-r0)*px,w=(b-a+1)*px; bot+=`<rect x="${x}" y="40" width="${w}" height="4" fill="#dc2626"><title>${esc(c.label)} – Sperre</title></rect>`; });
   const td=_tpD(todayISO()); const tdx=(td-r0+0.5)*px;
   const tdl=`Heute ${_tpFmtShort(td)}`, tw=tdl.length*5.6+12;
   return `<svg width="${CW}" height="44" xmlns="http://www.w3.org/2000/svg" style="display:block;font-family:inherit"><rect width="${CW}" height="44" fill="#fbfbfc"/>${top}${bot}${td>=r0&&td<=r1?`<g><title>Heute ${_tpFmt(td)}</title><line x1="${tdx}" y1="38" x2="${tdx}" y2="44" stroke="#d92d20" stroke-width="2"/><rect x="${Math.max(0,tdx-tw/2)}" y="24" width="${tw}" height="16" rx="8" fill="#d92d20"/><text x="${Math.max(tw/2,tdx)}" y="35.5" text-anchor="middle" font-size="10" font-weight="600" fill="#fff">${tdl}</text></g>`:''}</svg>`;
@@ -6645,12 +6754,10 @@ function _tpChartSvg(p,rows,r0,r1,px,CW,H,cal){
   const parts=[]; const z=_tp.zoom;
   // Hintergrund: Zeilen
   const GC=_tpGroupColors(p);
-  rows.forEach(({t},ri)=>{ const y=ri*TP_ROW_H; if(t.kind==='group') parts.push(`<rect x="0" y="${y}" width="${CW}" height="${TP_ROW_H}" fill="${_tpMix(GC.get(t.id)||'#64748b',0.9)}"/>`); else if(_tp.sel===t.id) parts.push(`<rect x="0" y="${y}" width="${CW}" height="${TP_ROW_H}" fill="#fff7d6"/>`); });
+  rows.forEach(({t},ri)=>{ const y=ri*TP_ROW_H; if(t.kind==='group') parts.push(`<rect x="0" y="${y}" width="${CW}" height="${TP_ROW_H}" fill="${_tpMix(GC.get(t.id)||t.color||'#64748b',0.86)}"/>`); else if(_tp.sel===t.id) parts.push(`<rect x="0" y="${y}" width="${CW}" height="${TP_ROW_H}" fill="#fff7d6"/>`); });
   // Arbeitsfreie Tage / Ferien
   if(px>=6){
-    for(let n=r0;n<=r1;n++){ if(!cal.isWork(n)){ const cl=cal.closure(n), hn=cal.holName(n); parts.push(`<rect x="${(n-r0)*px}" y="0" width="${px}" height="${H}" fill="${cl?'#fdf0e3':hn?'#fdeeee':'#f7f8fa'}" opacity="${cl||hn?0.75:0.9}"><title>${esc(cl?cl.label:hn?hn:'arbeitsfrei')}</title></rect>`); } }
-  }else{
-    cal.closures.forEach(c=>{ const a=Math.max(c.a,r0),b=Math.min(c.b,r1); if(b>=a) parts.push(`<rect x="${(a-r0)*px}" y="0" width="${(b-a+1)*px}" height="${H}" fill="#fdf0e3" opacity=".75"><title>${esc(c.label)}</title></rect>`); });
+    for(let n=r0;n<=r1;n++){ if(!cal.isWork(n)){ const cl=cal.closure(n), hn=cal.holName(n); if(cl)continue; parts.push(`<rect x="${(n-r0)*px}" y="0" width="${px}" height="${H}" fill="${hn?'#f87171':'#e3e6ea'}" opacity="${hn?0.5:1}"><title>${esc(hn?hn+' (Feiertag '+(cal.kt||'')+')':'arbeitsfrei')}</title></rect>`); } }
   }
   // Rasterlinien
   if(z==='tag'){ for(let n=r0;n<=r1;n++) parts.push(`<line x1="${(n-r0)*px}" y1="0" x2="${(n-r0)*px}" y2="${H}" stroke="${_tpDow(n)===1?'#e6e8eb':'#f3f4f6'}"/>`); }
@@ -6725,16 +6832,18 @@ function _tpChartSvg(p,rows,r0,r1,px,CW,H,cal){
     if(_tp.issueIds&&_tp.issueIds.has(t.id)) label='⚠ '+label;
     const inside=!t.lead&&label&&w>=label.length*6.4+16;
     bars.push(`${base}<g class="tp-svg-bar ${sel?'selb':''}" data-tid="${t.id}"><title>${esc(tip)}</title>
-      <rect ${t.lead?'':'data-part="move"'} x="${x}" y="${by}" width="${w}" height="${bh}" rx="${Math.min(5,w/2)}" fill="${t.lead?'url(#tpLead)':_tpMix(col,0.8)}" ${crit?'stroke="#d92d20" stroke-width="1.75"':t.conflict?'stroke="#d4732a" stroke-width="2.25"':sel?'stroke="#1a1a1a" stroke-width="1.5"':t.lead?'stroke="#c98a12" stroke-width="1.25" stroke-dasharray="4 3"':`stroke="${col}" stroke-opacity=".38" stroke-width="1"`}/>
-      ${t.progress&&!t.lead?`<rect data-part="move" x="${x}" y="${by}" width="${Math.max(Math.min(w,8),w*t.progress/100)}" height="${bh}" rx="${Math.min(5,w/2)}" fill="${col}"/>`:''}
-      ${inside?(()=>{ const pw=t.progress?Math.max(Math.min(w,8),w*t.progress/100):0, cid='tpc'+ri;
-        return `<text x="${x+8}" y="${by+11.6}" font-size="11" font-weight="600" fill="${_tpDark(col,0.3)}" pointer-events="none">${esc(label)}</text>`+(pw?`<clipPath id="${cid}"><rect x="${x}" y="${by}" width="${pw}" height="${bh}"/></clipPath><text x="${x+8}" y="${by+11.6}" font-size="11" font-weight="600" fill="#ffffff" clip-path="url(#${cid})" pointer-events="none">${esc(label)}</text>`:''); })():''}
+      <rect ${t.lead?'':'data-part="move"'} x="${x}" y="${by}" width="${w}" height="${bh}" rx="${Math.min(4,w/2)}" fill="${t.lead?'url(#tpLead)':col}" ${crit?'stroke="#dc2626" stroke-width="2"':t.conflict?'stroke="#d4732a" stroke-width="2.25"':sel?'stroke="#111827" stroke-width="2"':t.lead?'stroke="#c2410c" stroke-width="1.4" stroke-dasharray="4 3"':''}/>
+      ${t.progress&&!t.lead?`<rect data-part="move" x="${x}" y="${by}" width="${Math.max(Math.min(w,8),w*t.progress/100)}" height="${bh}" rx="${Math.min(4,w/2)}" fill="${_tpDark(col,0.32)}"/>`:''}
+      ${inside?`<text x="${x+8}" y="${by+11.6}" font-size="11" font-weight="600" fill="#ffffff" pointer-events="none">${esc(label)}</text>`:''}
       <rect class="rz" data-part="end" x="${x+w-6}" y="${by}" width="9" height="${bh}" fill="transparent"/>
       <circle class="lk" data-part="link" cx="${x+w+9}" cy="${by+bh/2}" r="5" fill="#fff" stroke="#1a1a1a" stroke-width="1.5"/>
-      ${!inside||(t.progress&&t.progress<100)?`<text x="${x+w+18}" y="${by+11.6}" font-size="11" fill="${t.lead?'#8a5a12':'#5c6168'}" pointer-events="none">${esc(inside?t.progress+' %':label)}</text>`:''}</g>`);
+      ${!inside||(t.progress&&t.progress<100)?`<text x="${x+w+18}" y="${by+11.6}" font-size="11" font-weight="${t.lead?600:500}" fill="${t.lead?'#9a3412':'#2b3036'}" pointer-events="none">${esc(inside?t.progress+' %':label)}</text>`:''}</g>`);
   });
-  const defs=`<defs><pattern id="tpSpan" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e3edf7"/><line x1="0" y1="0" x2="0" y2="6" stroke="#9fbad6" stroke-width="2"/></pattern><pattern id="tpLead" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="9" height="9" fill="#fdf3dc"/><line x1="0" y1="0" x2="0" y2="9" stroke="#f6dfa6" stroke-width="3.5"/></pattern><marker id="tpArr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#9aa0a6"/></marker><marker id="tpArrC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#d92d20"/></marker></defs>`;
-  return `<svg id="tpSvg" class="${_tp.sel?'has-sel':''}" width="${CW}" height="${H}" xmlns="http://www.w3.org/2000/svg" style="font-family:inherit">${defs}${parts.join('')}${links.join('')}${bars.join('')}<g id="tpTmp"></g></svg>`;
+  // Bauferien = Sperre: über den Balken (Arbeiten ruhen), mit Beschriftung
+  const fer=[]; cal.closures.forEach(c=>{ const a=Math.max(c.a,r0),b=Math.min(c.b,r1); if(b<a)return; const x=(a-r0)*px,w=(b-a+1)*px;
+    fer.push(`<g pointer-events="none"><rect x="${x}" y="0" width="${w}" height="${H}" fill="url(#tpFerien)" opacity=".82"/><line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="#dc2626" stroke-width="1.5"/><line x1="${x+w}" y1="0" x2="${x+w}" y2="${H}" stroke="#dc2626" stroke-width="1.5"/>${w>=64?`<rect x="${x+4}" y="5" width="${Math.min(w-8,(c.label.length+9)*5.9+14)}" height="17" rx="8.5" fill="#dc2626"/><text x="${x+11}" y="17.5" font-size="10.5" font-weight="700" fill="#ffffff">${esc(c.label)} · Sperre</text>`:''}</g>`); });
+  const defs=`<defs><pattern id="tpSpan" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e3edf7"/><line x1="0" y1="0" x2="0" y2="6" stroke="#9fbad6" stroke-width="2"/></pattern><pattern id="tpLead" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="9" height="9" fill="#ffedd5"/><line x1="0" y1="0" x2="0" y2="9" stroke="#fdba74" stroke-width="3.5"/></pattern><pattern id="tpFerien" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="10" height="10" fill="#fee2e2"/><line x1="0" y1="0" x2="0" y2="10" stroke="#fca5a5" stroke-width="4"/></pattern><marker id="tpArr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#9aa0a6"/></marker><marker id="tpArrC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#d92d20"/></marker></defs>`;
+  return `<svg id="tpSvg" class="${_tp.sel?'has-sel':''}" width="${CW}" height="${H}" xmlns="http://www.w3.org/2000/svg" style="font-family:inherit">${defs}${parts.join('')}${links.join('')}${bars.join('')}${fer.join('')}<g id="tpTmp"></g></svg>`;
 }
 
 /* ---------- Bearbeitung (Tabelle) ---------- */
@@ -6764,7 +6873,7 @@ function _tpWireLeft(p){
   left.addEventListener('click',e=>{
     if(_tp.pick){ const row=e.target.closest('[data-row]'); if(row){ e.preventDefault(); _tpPickTarget(row.dataset.row); return; } }
     const tog=e.target.closest('[data-tog]'); if(tog){ const t=p.tasks.find(x=>x.id===tog.dataset.tog); if(t){ t.collapsed=!t.collapsed; _tpCommit(p); } return; }
-    const mb=e.target.closest('[data-menu]'); if(mb){ _tpSelect(mb.dataset.menu); _tpRowMenu(mb,mb.dataset.menu); return; }
+    const mb=e.target.closest('[data-menu]'); if(mb){ if(_tp.aggr){ _tpLockHint(); return; } _tpSelect(mb.dataset.menu); _tpRowMenu(mb,mb.dataset.menu); return; }
     const row=e.target.closest('[data-row]'); if(row){ if(_tp.sel!==row.dataset.row){ _tpSelect(row.dataset.row); } if(window.innerWidth<=720&&!e.target.closest('input')) _tpOpenTaskEditor(row.dataset.row); else if(e.target.closest('[data-sel]')) _tpRevealTask(row.dataset.row); }
   });
 }
@@ -6876,14 +6985,57 @@ function _tpRowMenu(anchor,tid){
 }
 async function _tpDeleteRow(tid){
   const p=_tp.plan; const t=p.tasks.find(x=>x.id===tid); if(!t)return;
+  if(p.locked){ _tpLockHint(); return; }
   const label=t.name||(t.kind==='group'?'Gruppe':'Vorgang');
-  if(!confirm(`„${label}" löschen?${t.kind==='group'?' (Die Vorgänge der Gruppe bleiben erhalten.)':''} Verknüpfungen zu diesem Vorgang werden entfernt.`))return;
+  const nr=new Map(p.tasks.map((x,i)=>[x.id,i+1]));
+  const gi=p.tasks.indexOf(t); const members=[];
+  if(t.kind==='group'){ for(let i=gi+1;i<p.tasks.length&&p.tasks[i].kind!=='group';i++) members.push(p.tasks[i]); }
+  const DT={EA:'Ende → Anfang',AA:'Anfang → Anfang',EE:'Ende → Ende'};
+  const nm=x=>`${nr.get(x.id)} ${x.name||''}`;
+  const ext=R=>{ const preds=new Map(), succs=new Map();
+    p.tasks.forEach(x=>{ if(R.has(x.id)){ (x.deps||[]).forEach(d=>{ if(!R.has(d.id)){ const P=p.tasks.find(y=>y.id===d.id); if(P)preds.set(P.id,{x:P,d}); } }); return; }
+      (x.deps||[]).forEach(d=>{ if(R.has(d.id)) succs.set(x.id,{x,d}); }); });
+    return {preds:[...preds.values()],succs:[...succs.values()]}; };
+  const Rone=new Set([tid]), Rall=new Set([tid,...members.map(x=>x.id)]);
+  const E1=ext(t.kind==='group'?Rall:Rone);
+  const linked=E1.preds.length||E1.succs.length;
+  if(t.kind!=='group'&&!linked){ if(!confirm(`„${label}" löschen?`))return; return _tpDoDelete(p,Rone,'remove',tid); }
+  const list=(L,txt)=>L.length?`<div class="tp-del-l"><b>${txt}</b>${L.slice(0,8).map(({x,d})=>`<div>${esc(nm(x))} <span style="color:var(--muted)">· ${DT[d.type||'EA']||d.type}${d.lag?(d.lag>0?' +':' ')+d.lag+' AT':''}</span></div>`).join('')}${L.length>8?`<div style="color:var(--muted)">… und ${L.length-8} weitere</div>`:''}</div>`:'';
+  modal(`<div class="modal-head"><h3>„${esc(label)}" löschen?</h3><p>${t.kind==='group'?`Gruppe mit ${members.length} Vorgängen.`:'Der Vorgang ist verknüpft.'} Wie sollen die Verknüpfungen weitergehen?</p></div>
+    <div class="modal-body">
+      ${t.kind==='group'?`<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px">
+        <label class="tp-chk"><input type="radio" name="dl-what" value="group" checked> Nur die Gruppe auflösen – die Vorgänge bleiben erhalten</label>
+        <label class="tp-chk"><input type="radio" name="dl-what" value="all" ${members.length?'':'disabled'}> Gruppe <b>mit allen ${members.length} Vorgängen</b> löschen</label></div>`:''}
+      <div id="dl-links">${list(E1.preds,'Vorgänger')}${list(E1.succs,'Nachfolger')}</div>
+      <div id="dl-mode" style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+        <label class="tp-chk" style="align-items:flex-start"><input type="radio" name="dl-mode" value="bridge" checked> <span><b>Verknüpfungen überbrücken</b> (empfohlen)<br><span style="font-size:12px;color:var(--muted)">Die Nachfolger werden direkt mit den Vorgängern verknüpft – die Kette bleibt geschlossen, Termine rücken nach.</span></span></label>
+        <label class="tp-chk" style="align-items:flex-start"><input type="radio" name="dl-mode" value="remove"> <span><b>Verknüpfungen entfernen</b><br><span style="font-size:12px;color:var(--muted)">Die Nachfolger verlieren diesen Vorgänger.</span></span></label>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal()">Abbrechen</button><button class="btn btn-danger" id="dl-ok" style="background:#b91c1c;color:#fff;border-color:#b91c1c">Löschen</button></div>`);
+  const what=()=>{ const r=document.querySelector('[name=dl-what]:checked'); return r?r.value:'one'; };
+  const upd=()=>{ const all=what()==='all'; const E=ext(all?Rall:t.kind==='group'?new Set([tid]):Rone);
+    document.getElementById('dl-links').innerHTML=t.kind==='group'&&!all?'<div style="font-size:12.5px;color:var(--muted)">Die Gruppe hat keine eigenen Verknüpfungen – die Vorgänge behalten ihre.</div>':list(E.preds,'Vorgänger')+list(E.succs,'Nachfolger');
+    document.getElementById('dl-mode').style.display=t.kind==='group'&&!all?'none':'flex'; };
+  document.querySelectorAll('[name=dl-what]').forEach(r=>r.onchange=upd); upd();
+  document.getElementById('dl-ok').onclick=async()=>{ const mode=(document.querySelector('[name=dl-mode]:checked')||{}).value||'remove'; const all=what()==='all';
+    closeModal(); await _tpDoDelete(p,all?Rall:Rone,mode,tid); };
+}
+async function _tpDoDelete(p,R,mode,tid){
   _tpPushUndo();
-  p.tasks=p.tasks.filter(x=>x.id!==tid);
-  p.tasks.forEach(x=>{ if(x.deps)x.deps=x.deps.filter(d=>d.id!==tid); });
-  if(_tp.sel===tid)_tp.sel=null;
+  const byId=new Map(p.tasks.map(x=>[x.id,x]));
+  const predsOf=(id,seen)=>{ const r=byId.get(id); const out=[]; ((r&&r.deps)||[]).forEach(d=>{ if(R.has(d.id)){ if(!seen.has(d.id)){ seen.add(d.id); out.push(...predsOf(d.id,seen)); } } else out.push(d); }); return out; };
+  let n=0;
+  p.tasks.forEach(S=>{ if(R.has(S.id)||!S.deps)return; const nd=[];
+    S.deps.forEach(d=>{ if(!R.has(d.id)){ nd.push(d); return; }
+      if(mode!=='bridge')return;
+      predsOf(d.id,new Set([d.id])).forEach(pp=>{ if(pp.id===S.id||nd.some(x=>x.id===pp.id)||S.deps.some(x=>x.id===pp.id&&!R.has(x.id)))return;
+        if(_tpDependsOn(p,pp.id,S.id))return; nd.push({id:pp.id,type:d.type||'EA',lag:d.lag||0}); n++; }); });
+    S.deps=nd; });
+  p.tasks=p.tasks.filter(x=>!R.has(x.id));
+  if(_tp.sel&&R.has(_tp.sel))_tp.sel=null;
   await _tpCommit(p);
-  toast('Gelöscht – mit ↶ rückgängig machbar',true);
+  toast(`Gelöscht${n?` – ${n} Verknüpfung${n>1?'en':''} überbrückt`:''} – mit ↶ rückgängig machbar`,true);
 }
 
 /* ---------- Diagramm-Interaktion (Verschieben, Dauer ziehen, Verknüpfen) ---------- */
@@ -6894,6 +7046,7 @@ function _tpWireChart(p){
   const svgPt=e=>{ const r=svg.getBoundingClientRect(); return {x:e.clientX-r.left,y:e.clientY-r.top}; };
   svg.addEventListener('contextmenu',e=>{
     const g=e.target.closest('[data-tid]'); if(!g)return; e.preventDefault();
+    if(_tp.aggr){ _tpLockHint(); return; }
     _tpSelect(g.dataset.tid); _tpBarMenu(g.dataset.tid,{x:e.clientX,y:e.clientY});
   });
   svg.addEventListener('pointerdown',e=>{
@@ -7241,7 +7394,7 @@ function _tpRealize(p){
   return info;
 }
 // Auswahllisten der Projektparameter (gemeinsam für Formular, Assistent und Annahmen-Anzeige)
-const TP_BOOL=['pv','tg','hang','rueckbau','schadstoff','grundwasser','pfaehlung','unterfangung'];
+const TP_BOOL=['pv','tg','hang','rueckbau','schadstoff','grundwasser','pfaehlung','unterfangung','wasserhaltung','markisen'];
 const TP_OPT={
   art:Object.entries(TP_ARTEN),
   typ:Object.entries(TP_TYPES).map(([k,t])=>[k,t.l]),
@@ -7251,7 +7404,7 @@ const TP_OPT={
   dach:[['flach','Flachdach'],['flach_begruent','Flachdach begrünt'],['steil','Steildach'],['bestand','bestehend (keine Arbeiten)']],
   fassade:Object.entries(TP_FASSADEN).map(([k,f])=>[k,f.l]),
   fenster:[['holzmetall','Holz-Metall'],['holz','Holz'],['kunststoff','Kunststoff'],['alu','Aluminium'],['keine','keine / bestehend']],
-  fensterMass:[['naturmass','nach Naturmass am Rohbau (üblich)'],['planmass','nach Planmass (Bestellung vor Rohbau)']],
+  fensterMass:[['naturmass','nach Ausmass am Rohbau (üblich)'],['planmass','nach Planmass (Bestellung vor Rohbau)']],
   storen:[['lamellen','Lamellenstoren'],['rollladen','Rollläden'],['markisen','Markisen / Senkrechtmarkisen'],['keine','keine']],
   balkone:[['keine','keine'],['auskragend','auskragend, mit Rohbau betoniert'],['vorgestellt','vorgestellte Balkonelemente (vorfabriziert)']],
   tore:[['keine','keine'],['garage','Garagentor(e)'],['industrie','Industrietore (Sektional/Roll)']],
@@ -7291,11 +7444,11 @@ const TP_HELP={
   gf:'Geschossfläche nach SIA 416. Wird bei fehlenden Grundflächen gleichmässig auf die Geschosse verteilt.',
   bauweise:'Massiv: Rohbau ca. 11 AT pro Geschoss (×Flächenfaktor). Holz/Element: ca. 6 AT pro Geschoss plus Werkplanung/Vorfertigung als Lieferfrist.',
   dach:'Flachdach: Spengler 1 + Abdichtung; Steildach: Spengler + Unterdach/Deckung. Begrünt: zusätzlich Substrat/Ansaat (witterungsabhängig).',
-  fassade:'Bestimmt Ablauf und Dauer: verputzte Fassaden (AWD) sind witterungsabhängig (nicht unter +5 °C), hinterlüftete Bekleidungen mit Naturmass und Lieferfrist.',
+  fassade:'Bestimmt Ablauf und Dauer: verputzte Fassaden (AWD) sind witterungsabhängig (nicht unter +5 °C), hinterlüftete Bekleidungen mit Ausmass und Lieferfrist.',
   fenster:'Fenstermontage nach Dach dicht; Lieferfrist liegt direkt davor (Balkenbeginn = Bestellung spätestens).',
   fensterAnz:'Anzahl Fenster und Fenstertüren. Montageleistung ≈ 12 Stk. pro Arbeitstag (2–3 Monteure, Kran/Hebegerät).',
   storen:'Storenbauer misst nach der Fenstermontage aus; Montage vor dem Gerüstabbau.',
-  balkone:'Vorgestellte Balkone: Fabrikation als Lieferfrist, Versetzen geschossweise mit dem Rohbau. Geländer nach Naturmass.',
+  balkone:'Vorgestellte Balkone: Fabrikation als Lieferfrist, Versetzen geschossweise mit dem Rohbau. Geländer nach Ausmass.',
   heizung:'Erdsonden: Bohrungen vor der Bodenplatte. Heizung in Betrieb = Voraussetzung für Belegreifheizen und Bodenbeläge.',
   estrich:'Zementestrich: Belegreife ≤ 2.0 CM-% (mit Bodenheizung ≤ 1.8 %), Anhydrit ≤ 0.5 % (≤ 0.3 %). Trocknung ist eine fixe Wartezeit vor Platten/Parkett.',
   estrichCm:'Zementestrich trocknet bis 4 cm ca. 1 Woche pro cm, darüber deutlich langsamer (6 cm ≈ 6 Wochen).',
@@ -7328,6 +7481,8 @@ const TP_ZUS={
   bewohnt:{l:'Arbeiten im bewohnten / betriebenen Bestand',h:'Etappierung, Schutzmassnahmen, eingeschränkte Arbeitszeiten: Dauern ×1.2.'},
   arbeitszeit:{l:'Eingeschränkte Arbeitszeiten / Lärmschutz',h:'z.B. Lärmauflagen, Nachtruhe, Anlieferfenster: Dauern ×1.1.'},
   lieferengpass:{l:'Lieferengpässe / lange Lieferzeiten',h:'Alle Lieferfristen ×1.25.'},
+  riss:{l:'Rissprotokolle Nachbarliegenschaften',h:'Bestandsaufnahme der Nachbargebäude, Zufahrt und Stützmauern vor Abbruch/Baugrube (3 AT) und Schlussaufnahme nach dem Rohbau.'},
+  fertigteile:{l:'Betonfertigteile (Treppen, Lichtschächte)',h:'Vergabe → Fabrikation (Lieferfrist) → Versetzen geschossweise mit dem Rohbau.'},
   ankerrecht:{l:'Anker über Parzellengrenze (Ankerrecht Nachbarn)',h:'Baugrubensicherung mit Ankern im Nachbargrundstück: Zustimmung/Dienstbarkeit der Nachbarn als eigener Vorgang (15 AT) vor dem Baugrubenabschluss – idealerweise vor Baubeginn erledigen.'}
 };
 const TP_BK_NUM=['ug','og','fp','fpOg','einheiten'];
@@ -7485,7 +7640,7 @@ function _tpParamSections(pre,raw){
       <div class="field-row">${sel('bauweise','Bauweise',TP_OPT.bauweise)}${sel('dach','Dach',TP_OPT.dach)}${yn('pv','PV-Anlage','max-width:140px')}</div>
       <div class="field-row">${sel('fassade','Fassade (Hauptfassade)',TP_OPT.fassade)}${sel('fassade2','2. Fassadenart (Kombination)',TP_OPT.fassade.filter(([k])=>k!=='bestand'),{noOpen:true,none:'keine'})}${num('fassade2Anteil','Anteil 2. Fassade %','min="5" max="95" step="5"','max-width:150px')}</div>
       <div class="field-row">${sel('fenster','Fenster',TP_OPT.fenster)}${num('fensterAnz','Anzahl Fenster/Fenstertüren','min="0" step="1"','max-width:190px','Schätzung')}${sel('storen','Sonnenschutz',TP_OPT.storen)}</div>
-      <div class="field-row">${sel('balkone','Balkone',TP_OPT.balkone)}${sel('tore','Tore',TP_OPT.tore)}${num('toreAnz','Anzahl Tore','min="1" max="50"','max-width:130px')}</div>
+      <div class="field-row">${sel('balkone','Balkone',TP_OPT.balkone)}${sel('tore','Tore',TP_OPT.tore)}${num('toreAnz','Anzahl Tore','min="1" max="50"','max-width:130px')}${yn('markisen','Markisen Sitzplätze/Loggias')}</div>
       ${hint('Lieferfristen liegen direkt vor der Montage (Balkenbeginn = spätester Bestelltermin). Fassaden-, Storen- und Geländerbauer messen am Bau aus; der Spengler kommt zweimal (Dachrand/Anschlussbleche vor dem Dach, Abschlüsse nach der Fassade).')}`},
     {t:'Haustechnik & Innenausbau',html:`
       <div class="field-row">${sel('heizung','Heizung',TP_OPT.heizung)}${sel('lueftung','Lüftung',TP_OPT.lueftung)}${sel('aufzug','Aufzug',TP_OPT.aufzug)}</div>
@@ -7496,7 +7651,8 @@ function _tpParamSections(pre,raw){
     {t:'Baugrund & Baustelle',html:`
       <div class="field-row">${sel('baugrube','Baugrube',TP_OPT.baugrube)}${yn('grundwasser','Grundwasser / Wasserhaltung')}${yn('pfaehlung','Pfählung / schlechter Baugrund')}</div>
       <div class="field-row">${yn('hang','Hanglage')}${yn('unterfangung','Unterfangung Nachbargebäude')}${sel('kanal','Anschluss öff. Kanalisation',TP_OPT.kanal)}</div>
-      <div class="field-row">${yn('rueckbau','Rückbau bestehender Bauten')}${yn('schadstoff','Schadstoffsanierung (Asbest/PCB)')}</div>
+      <div class="field-row">${yn('rueckbau','Rückbau bestehender Bauten')}${num('rueckbauM2','Grundfläche Altbau (m²)','min="0" step="10"','max-width:190px','= Neubau')}${yn('schadstoff','Schadstoffsanierung (Asbest/PCB)')}</div>
+      <div class="field-row">${yn('wasserhaltung','Offene Wasserhaltung (Rohbau UG)')}${num('hinterM3','Hinterfüllung (m³)','min="0" step="10"','max-width:170px','Schätzung')}${num('kranMonate','Kran nach Rohbauende (Monate)','min="0" max="12"','max-width:220px','bis Dach')}</div>
       <div class="field-row">${sel('platz','Platzverhältnisse / Zufahrt',TP_OPT.platz)}${sel('kran','Kran',TP_OPT.kran)}${sel('kolonnen','Rohbau-Equipen',TP_OPT.kolonnen)}</div>
       <div class="field-row">${num('aushubM3','Aushub (m³ fest)','min="0" step="50"','max-width:170px','Schätzung')}${num('abschlussM2','Baugrubenabschluss (m²)','min="0" step="10"','max-width:200px','Schätzung')}${num('umgebungM2','Umgebungsfläche (m²)','min="0" step="50"','max-width:200px','Schätzung')}</div>`},
     {t:'Besonderheiten & Freitext',html:`
@@ -7506,7 +7662,7 @@ function _tpParamSections(pre,raw){
       <div id="${pre}-ftres"></div>
       <div class="field-row" style="flex-wrap:wrap">${Object.entries(TP_ZUS).map(([k,z])=>`<label class="tp-chk tp-zus" title="${esc(z.h)}"><input type="checkbox" id="${pre}-zus_${k}" ${R['zus_'+k]==='ja'?'checked':''}> ${esc(z.l)} <span class="tp-i">ⓘ</span></label>`).join('')}</div>`},
     {t:'Lieferfristen & Vergabe',html:`
-      ${hint('Wochen ab Vergabe/Bestellung bzw. ab Naturmass bis Lieferung auf die Baustelle. Leer = Richtwert. Die Fristen erscheinen im Plan als eigene Balken (Vergabe → Lieferfrist → Montage).')}
+      ${hint('Wochen ab Vergabe/Bestellung bzw. ab Ausmass bis Lieferung auf die Baustelle. Leer = Richtwert. Die Fristen erscheinen im Plan als eigene Balken (Vergabe → Lieferfrist → Montage).')}
       <div class="field-row">${num('vergabeVorlauf','Vergaben erfolgen … Wochen vor Baubeginn','min="0" max="52"','max-width:260px','0')}</div>
       <div class="field-row" style="flex-wrap:wrap">${leads}</div>`},
     {t:'Etappierung & Detaillierung',html:`
@@ -7526,7 +7682,7 @@ function _tpParamsHtml(pre,raw){
   return _tpParamSections(pre,raw).map(s=>`<div class="tp-ph">${s.t}</div>${s.html}`).join('');
 }
 const TP_PSEL=['folge','art','typ','ausbau','bauweise','dach','fassade','fassade2','fenster','storen','winter','bauheizung','kolonnen','balkone','tore','heizung','lueftung','estrich','zargen','aufzug','baugrube','platz','kran','kanal','detail','etappen','ferienWinter','ferienSommer','ansatz','reserve','takt'];
-const TP_PNUM=['gv','gf','toreAnz','fassade2Anteil','estrichCm','vergabeVorlauf','versatz','fensterAnz','tuerenAnz','kuechenAnz','baederAnz','liftAnz','umgebungM2','aushubM3','abschlussM2',...Object.keys(TP_LEADS).map(k=>'lead_'+k)];
+const TP_PNUM=['gv','gf','toreAnz','fassade2Anteil','estrichCm','vergabeVorlauf','versatz','fensterAnz','tuerenAnz','kuechenAnz','baederAnz','liftAnz','umgebungM2','aushubM3','abschlussM2','hinterM3','rueckbauM2','kranMonate',...Object.keys(TP_LEADS).map(k=>'lead_'+k)];
 function _tpReadParams(pre,opt){
   const g=id=>document.getElementById(pre+'-'+id), v=id=>g(id)?g(id).value:'', n=id=>{ const x=v(id); return x===''?'':Math.max(0,+x); };
   const o={}; [...TP_PSEL,...TP_BOOL].forEach(k=>{ if(g(k))o[k]=v(k); });
@@ -7918,6 +8074,7 @@ function _tpPlanSuggest(P,F){
   if(P.some(p=>p.bestand)&&!P.some(p=>p.neubau)) add('art','anbau','Projektart: Anbau / Erweiterung','Anschluss an Bestand / Erweiterungsbau');
   // Baugrubenplan (Bauingenieur): Kubaturen, Baugrubenabschluss, Anker über die Parzellengrenze
   const bgp=P.find(p=>p.aushubM3); if(bgp) add('aushubM3',Math.round(bgp.aushubM3),`Aushub ${_tpFmtN(bgp.aushubM3)} m³ fest`,`Aushubkubatur im ${bgp.name}`+(bgp.hinterM3?` (Hinterfüllung ${_tpFmtN(bgp.hinterM3)} m³)`:''));
+  const hfp=P.find(p=>p.hinterM3); if(hfp) add('hinterM3',Math.round(hfp.hinterM3),`Hinterfüllung ${_tpFmtN(hfp.hinterM3)} m³`,`Baugrubenplan ${hfp.name}`);
   const abp=P.find(p=>p.abschluss&&p.abschluss.m2); if(abp){ const a=abp.abschluss.art.replace(/^./,c=>c.toUpperCase());
     add('baugrube','spezial',`Baugrube mit Baugrubenabschluss (${a})`,`${a} ${_tpFmtN(abp.abschluss.m2)} m² im ${abp.name}`);
     add('abschlussM2',Math.round(abp.abschluss.m2),`Baugrubenabschluss ${_tpFmtN(abp.abschluss.m2)} m² (${a})`,'Ausmass im Baugrubenplan'); }
@@ -8041,7 +8198,16 @@ function _tpAnalyze(texts,takeoffs){
     info.push(`Baubeschrieb ${t.name}: ${bk.length} BKP-Positionen${bk.length?` (BKP ${bk[0]}–${bk[bk.length-1]})`:''}${/totalunternehm/.test(rl)?' · Totalunternehmer':/generalunternehm/.test(rl)?' · Generalunternehmer':''}${H.length?' · enthält: '+H.join(', '):''}`);
     const mx=[...new Set((r.match(/\b\d[.,]5(?:\s?\/\s?\d[.,]5)*\s?Zi\b/g)||[]).flatMap(x=>x.match(/\d[.,]5/g)))]; const pt=(rl.match(/für\s(\d{1,3})\s(?:parteien|wohnungen)/)||[])[1];
     if(mx.length||pt) info.push(`Wohnungen laut Baubeschrieb: ${pt?pt+' Parteien':''}${mx.length?(pt?' · ':'')+'Typen '+mx.map(x=>x.replace('.',',')+' Zi.').join(', '):''}`);
-    if(/kran[^.]{0,40}\+\s?\d\s?monate/i.test(r)) info.push('Kran laut Baubeschrieb: '+(r.match(/kran[^.]{0,60}\+\s?\d\s?Monate[^)]{0,30}/i)||[''])[0].replace(/\s+/g,' ')); });
+    if(/kran.{0,60}\+\s?\d\s?monate/i.test(r)) info.push('Kran laut Baubeschrieb: '+(r.match(/kran.{0,60}\+\s?\d\s?Monate[^)]{0,30}/i)||[''])[0].replace(/\s+/g,' '));
+    // Kennwerte aus dem Baubeschrieb → Projektparameter (Vorschläge zum Ankreuzen)
+    const km=r.match(/kran.{0,80}?\+\s?(\d{1,2})\s?monate/i); if(km) add('kranMonate',+km[1],`Kran ${km[1]} Monate über Rohbauende vorhalten`,'Baubeschrieb BKP 211');
+    if(/rissprotokoll|bestandsaufnahme[^.]{0,40}nachbar/i.test(r)) add('zus_riss','ja',TP_ZUS.riss.l,'Baubeschrieb BKP 101: Rissprotokolle Nachbarn');
+    if(/offene\s+wasserhaltung|wasserhaltung[^.]{0,60}rohbau/i.test(r)) add('wasserhaltung','ja','Offene Wasserhaltung während Rohbau UG','Baubeschrieb BKP 176');
+    if(/fertigbauteile|fertigteile|elementtreppe|montagebau in beton/i.test(r)) add('zus_fertigteile','ja',TP_ZUS.fertigteile.l,'Baubeschrieb BKP 212: Treppen/Lichtschächte als Fertigteile');
+    if(/markis|markies/i.test(r)) add('markisen','ja','Markisen Sitzplätze/Loggias','Baubeschrieb BKP 228');
+    if(/abbruch[^.]{0,50}(?:einfamilienhaus|efh)/i.test(r)){ add('rueckbauM2',150,'Grundfläche Altbau ≈ 150 m² (Einfamilienhaus)','Baubeschrieb BKP 112: Abbruch Einfamilienhaus – Grundfläche prüfen und eintragen'); sug[sug.length-1].off=true; }
+    else if(/abbruch[^.]{0,50}(?:mehrfamilienhaus|mfh|gewerbe|halle|scheune)/i.test(r)) info.push('Abbruch laut Baubeschrieb – Grundfläche Altbau im Schritt „Baugrund & Baustelle" eintragen');
+    if(/bauaustrocknung|bautrockner/i.test(r)&&!/ohne bauheizung/i.test(rl)) add('bauheizung','ja','Bauheizung/Bauaustrocknung: ja','Baubeschrieb BKP 286'); });
   // Ausmasse: Flächen/Längen nach Stichwort im Namen/BKP
   let A={dach:0,fassade:0,boden:0,rand:0,fenster:0}; let nIt=0;
   (takeoffs||[]).forEach(t=>(t.items||[]).forEach(it=>{ nIt++; const n=((it.name||'')+' '+(it.category||'')+' '+(t.name||'')+' '+(it.bkp||'')).toLowerCase();
@@ -8290,7 +8456,7 @@ function _tpGrundlagenDialog(){
       row('Winterpause Aussenarbeiten','Standard 15.12.–28.02.; mineralische Putze/Anstriche nicht unter +5 °C und nicht bei Frost während der Abbindezeit'),
       row('Witterungsreserve Rohbau','15 % der Rohbau-Arbeitstage zwischen Dezember und Februar, mindestens 5 AT'),
       row('Ohne Bauheizung','Gipser, Unterlagsboden, Maler, Platten nicht im Winterfenster (Mindesttemperatur +5 °C)'),
-      row('Feiertage','Kanton St. Gallen inkl. Ostern/Pfingsten/Auffahrt; Weihnachts-Bauferien 23.12.–06.01.'),
+      row('Feiertage','je Kanton (aus der Projektadresse, im Arbeitskalender änderbar); Bauferien als Sperre'),
       row('Realistischer Ansatz','+15 % auf alle Dauern, Reserve vor Abnahme 10 AT, Kalibrierung mindestens auf den Erfahrungswert')])}
     <div style="font-size:12px;color:var(--muted);margin-top:10px">Quellen u.a.: Baumit Schweiz, Technische Information „Belegreife Estrich"; Lignum, „Was kostet ein Holzbau?" (Wüest Partner); Messerli Informatik (BauAD-Module); SBV/Unia zu Arbeitszeitregeln LMV; Erfahrungswerte Bauleitung. Werte laufend mit eigenen Projekten abgleichen.</div>
     </div><div class="modal-foot"><button class="btn btn-primary" onclick="closeModal()">Schliessen</button></div>`,{wide:true});
@@ -8560,15 +8726,18 @@ function _tpSettingsDialog(){
         <label class="tp-chk" style="margin-top:6px"><input type="checkbox" id="ps-rebuild"> Bauablauf aus den Parametern <b>komplett neu aufbauen</b> (nötig bei geänderten Baukörpern, Geschossen, Nutzungen, Zargen, Etappierung …; ersetzt alle Vorgänge – Unternehmer-Zuordnungen und Fortschritt der Standardvorgänge bleiben, mit ↶ rückgängig machbar)</label>
         <div style="font-size:11.5px;color:var(--muted);margin-top:4px">Ohne Neuaufbau werden nur Dauern und Vorläufe nachgeführt. Einzelne Vorgänge lassen sich auch über „＋ aus BKP / Unternehmern" ergänzen.</div></div>
       <div class="field"><label>Arbeitstage</label><div style="display:flex;gap:12px;flex-wrap:wrap">${[1,2,3,4,5,6,0].map(d=>`<label class="tp-chk"><input type="checkbox" data-wd="${d}" ${(c.workdays||[1,2,3,4,5]).includes(d)?'checked':''}> ${TP_WD_NAMES[d]}</label>`).join('')}</div></div>
-      <div class="field"><label class="tp-chk"><input type="checkbox" id="ps-hol" ${c.holidays!=='none'?'checked':''}> Gesetzliche Feiertage Kanton St. Gallen berücksichtigen</label>
-        <div style="font-size:11.5px;color:var(--muted);margin-top:4px">${_tpHolidaysSG(y).map(([n,l])=>`${l} ${_tpFmtShort(n)}`).join(' · ')}</div></div>
-      <div class="field"><label>Betriebs-/Bauferien (arbeitsfrei)</label><div id="ps-cl"></div><button type="button" class="btn btn-ghost btn-sm" id="ps-addcl">＋ Ferien hinzufügen</button></div>
+      <div class="field-row" style="align-items:flex-end"><div class="field"><label class="tp-chk"><input type="checkbox" id="ps-hol" ${c.holidays!=='none'?'checked':''}> Feiertage berücksichtigen – Kanton</label>
+        <select id="ps-kt"><option value="">automatisch aus Projektadresse (${esc(TP_KANTONE[_tpKtCache[p.projectId||state.projectId]]||'nicht erkannt → St. Gallen')})</option>${Object.entries(TP_KANTONE).sort((a,b)=>a[1].localeCompare(b[1])).map(([k,l])=>`<option value="${k}" ${c.kanton===k?'selected':''}>${esc(l)} (${k})</option>`).join('')}</select></div></div>
+        <div id="ps-holl" style="font-size:11.5px;color:var(--muted);margin:-6px 0 12px"></div>
+      <div class="field"><label>Bauferien (arbeitsfrei, als Sperre – es werden keine Arbeiten hineingeplant)</label><div id="ps-cl"></div><button type="button" class="btn btn-ghost btn-sm" id="ps-addcl">＋ Ferien hinzufügen</button></div>
       <div style="font-size:12px;color:var(--muted);line-height:1.5">Dauern werden in Arbeitstagen (AT) gerechnet. Bei Änderung des Kalenders verschieben sich die Endtermine entsprechend.</div>
     </div>
     <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal()">Abbrechen</button><button class="btn btn-primary" id="ps-ok">Übernehmen</button></div>`,{wide:true});
   const $=id=>document.getElementById(id);
   const draw=()=>{ $('ps-cl').innerHTML=closures.map((x,i)=>`<div class="tp-closure"><input data-ci="${i}" data-cf="label" value="${esc(x.label||'')}" placeholder="z.B. Weihnachtsferien"><input type="date" data-ci="${i}" data-cf="from" value="${x.from||''}"><input type="date" data-ci="${i}" data-cf="to" value="${x.to||''}"><button class="row-del" type="button" data-ci="${i}" data-cf="rm">×</button></div>`).join('')||'<div style="font-size:12.5px;color:var(--muted);margin-bottom:6px">Keine</div>'; };
   draw();
+  const holL=()=>{ const kt=$('ps-kt').value||_tpKtCache[p.projectId||state.projectId]||'SG'; $('ps-holl').textContent=`Feiertage ${TP_KANTONE[kt]||kt} ${y}: `+_tpHolidays(kt,y).map(([n,l])=>`${l} ${_tpFmtShort(n)}`).join(' · ')+' – Richtwerte, Gemeinde-Ausnahmen als Ferien ergänzen'; };
+  holL(); $('ps-kt').onchange=holL;
   _tpWireParamDefaults('ps');
   $('ps-cl').oninput=e=>{ const i=+e.target.dataset.ci,f=e.target.dataset.cf; if(isNaN(i)||f==='rm')return; closures[i][f]=e.target.value; };
   $('ps-cl').onclick=e=>{ if(e.target.dataset.cf==='rm'){ closures.splice(+e.target.dataset.ci,1); draw(); } };
@@ -8581,7 +8750,7 @@ function _tpSettingsDialog(){
     _tpPushUndo();
     const oldStart=p.start, newStart=$('ps-start').value||p.start;
     p.name=$('ps-name').value.trim()||'Terminplan'; p.handover=$('ps-ho').value||'';
-    p.calendar={workdays:wd,holidays:$('ps-hol').checked?'SG':'none',closures};
+    p.calendar={workdays:wd,holidays:$('ps-hol').checked?'kanton':'none',kanton:$('ps-kt').value||'',closures};
     if(newStart!==oldStart&&$('ps-shift').checked&&_tpD(oldStart)!=null){
       const delta=_tpD(newStart)-_tpD(oldStart);
       p.tasks.forEach(t=>{ if(t.kind!=='group'&&(!t.deps||!t.deps.length||t.fixed)) t.start=_tpIso(_tpD(t.start)+delta); });
@@ -8635,7 +8804,7 @@ async function _tpExportXlsx(){
 const TP_PDF_SCALES={tag:{mm:5,l:'Tage (5 mm pro Tag)'},woche:{mm:1.6,l:'Wochen (1.6 mm pro Tag ≈ 11 mm pro KW)'},monat:{mm:0.55,l:'Monate (0.55 mm pro Tag ≈ 17 mm pro Monat)'},quartal:{mm:0.22,l:'Quartale (0.22 mm pro Tag ≈ 20 mm pro Quartal)'}};
 const TP_PDF_PAPER={a4:[297,210],a3:[420,297],a2:[594,420],a1:[841,594],a0:[1189,841]};
 const TP_PDF_COLS=[{k:'nr',l:'Nr',w:7,al:'right'},{k:'bkp',l:'BKP',w:11},{k:'name',l:'Vorgang',w:58},{k:'company',l:'Unternehmer',w:40},{k:'start',l:'Start',w:15},{k:'end',l:'Ende',w:15},{k:'dur',l:'AT',w:8,al:'right'},{k:'deps',l:'Vorgänger',w:18},{k:'prog',l:'%',w:8,al:'right'}];
-const TP_PDF_DEFAULTS={paper:'a3',orient:'l',layout:'rows',scale:'auto',range:'all',from:null,to:null,weeks:6,inRange:true,
+const TP_PDF_DEFAULTS={level:'fein',paper:'a3',orient:'l',layout:'rows',scale:'auto',range:'all',from:null,to:null,weeks:6,inRange:true,
   companies:null,groups:null,kinds:{task:true,ms:true,lead:true,span:true},critOnly:false,openOnly:false,context:true,msAlways:true,collapsed:false,
   cols:['nr','bkp','name','company','start','end','dur'],links:true,crit:true,base:false,weekend:true,today:true,legend:true,label:'auto',repeatTable:true,split:'none',title:''};
 Object.assign(TP_INFO,{
@@ -8783,8 +8952,8 @@ async function _tpPdfSection(doc,p,o,{newPage=false,proj,subtitle=''}={}){
     const yy1=top+pg.rows.length*rowH;
     // Hintergrund
     if(o.weekend){
-      if(mpd>=0.9){ for(let d=a;d<=b;d++){ if(!cal.isWork(d)){ const cl=cal.closure(d),hn=cal.holName(d); if(cl)doc.setFillColor(253,233,215); else if(hn)doc.setFillColor(255,233,233); else doc.setFillColor(244,244,244); doc.rect(X(d),top,mpd,yy1-top,'F'); } } }
-      else cal.closures.forEach(c=>{ const s=Math.max(c.a,a),e=Math.min(c.b,b); if(e>=s){ doc.setFillColor(253,233,215); doc.rect(X(s),top,(e-s+1)*mpd,yy1-top,'F'); } });
+      if(mpd>=0.9){ for(let d=a;d<=b;d++){ if(!cal.isWork(d)){ const cl=cal.closure(d),hn=cal.holName(d); if(cl)doc.setFillColor(254,215,215); else if(hn)doc.setFillColor(250,170,170); else doc.setFillColor(227,230,234); doc.rect(X(d),top,mpd,yy1-top,'F'); } } }
+      else cal.closures.forEach(c=>{ const s=Math.max(c.a,a),e=Math.min(c.b,b); if(e>=s){ doc.setFillColor(254,215,215); doc.rect(X(s),top,(e-s+1)*mpd,yy1-top,'F'); } });
     }
     doc.setDrawColor(215);doc.setLineWidth(0.15);
     n=a; while(n<=b){ const [yy2,m]=_tpYMD(n); n=Math.round(Date.UTC(yy2,m+1,1)/864e5); if(n<=b)doc.line(X(n),top,X(n),yy1); }
@@ -8826,11 +8995,10 @@ async function _tpPdfSection(doc,p,o,{newPage=false,proj,subtitle=''}={}){
       if(e<a||s>b)return done();
       const x0=X(Math.max(s,a)),x1=X(Math.min(e,b)+1), bh=rowH*0.56, by=yy+(rowH-bh)/2-0.25;
       const col=_tpColor(t,p), rgb=_hexToRgbArr(col), lt=_hexToRgbArr(_tpMix(col,0.8)); const bw=Math.max(0.6,x1-x0), rr=Math.min(bh*0.32,bw/2);
-      if(t.lead){ doc.setFillColor(253,243,220); doc.roundedRect(x0,by,bw,bh,rr,rr,'F'); doc.setDrawColor(246,223,166); doc.setLineWidth(0.45); for(let hx=x0+0.9;hx<x1-0.3;hx+=1.5){ doc.line(hx,by+bh-0.2,Math.min(hx+bh-0.4,x1-0.3),by+0.2); }
-        doc.setDrawColor(201,138,18); doc.setLineWidth(0.25); if(doc.setLineDashPattern)doc.setLineDashPattern([0.9,0.6],0); doc.roundedRect(x0,by,bw,bh,rr,rr,'S'); if(doc.setLineDashPattern)doc.setLineDashPattern([],0); }
-      else { doc.setFillColor(lt[0],lt[1],lt[2]); doc.roundedRect(x0,by,bw,bh,rr,rr,'F'); }
-      if(t.progress&&!t.lead){ doc.setFillColor(rgb[0],rgb[1],rgb[2]); doc.roundedRect(x0,by,Math.max(Math.min(bw,rr*2),bw*t.progress/100),bh,rr,rr,'F'); }
-      if(!t.lead&&!(o.crit&&t.crit)&&!t.conflict){ const ed=_hexToRgbArr(_tpMix(col,0.55)); doc.setDrawColor(ed[0],ed[1],ed[2]); doc.setLineWidth(0.12); doc.roundedRect(x0,by,bw,bh,rr,rr,'S'); }
+      if(t.lead){ doc.setFillColor(255,237,213); doc.roundedRect(x0,by,bw,bh,rr,rr,'F'); doc.setDrawColor(253,186,116); doc.setLineWidth(0.45); for(let hx=x0+0.9;hx<x1-0.3;hx+=1.5){ doc.line(hx,by+bh-0.2,Math.min(hx+bh-0.4,x1-0.3),by+0.2); }
+        doc.setDrawColor(194,65,12); doc.setLineWidth(0.25); if(doc.setLineDashPattern)doc.setLineDashPattern([0.9,0.6],0); doc.roundedRect(x0,by,bw,bh,rr,rr,'S'); if(doc.setLineDashPattern)doc.setLineDashPattern([],0); }
+      else { doc.setFillColor(rgb[0],rgb[1],rgb[2]); doc.roundedRect(x0,by,bw,bh,rr,rr,'F'); }
+      if(t.progress&&!t.lead){ const dk=_hexToRgbArr(_tpDark(col,0.32)); doc.setFillColor(dk[0],dk[1],dk[2]); doc.roundedRect(x0,by,Math.max(Math.min(bw,rr*2),bw*t.progress/100),bh,rr,rr,'F'); }
       if(o.crit&&t.crit){ doc.setDrawColor(217,45,32);doc.setLineWidth(0.4);doc.roundedRect(x0,by,bw,bh,rr,rr,'S'); }
       if(t.conflict){ doc.setDrawColor(212,115,42);doc.setLineWidth(0.5);doc.roundedRect(x0,by,bw,bh,rr,rr,'S'); }
       if(o.label!=='none'){
@@ -8883,8 +9051,8 @@ async function _tpPdfSection(doc,p,o,{newPage=false,proj,subtitle=''}={}){
     const hatch=(x,yy,f,s)=>{ doc.setFillColor(...f); doc.rect(x,yy-1.2,5,2.4,'F'); doc.setDrawColor(...s); doc.setLineWidth(0.25); for(let hx=x+0.6;hx<x+5;hx+=1.3) doc.line(hx,yy+1.2,Math.min(hx+2.4,x+5),yy-1.2); };
     doc.setFont(undefined,'bold'); doc.text('Legende:',lx,ly+0.9); lx+=doc.getTextWidth('Legende:')+4; doc.setFont(undefined,'normal');
     const cm=p.colorMode==='bkp';
-    leg((x,yy)=>{doc.setFillColor(216,226,240);doc.roundedRect(x,yy-1.2,5,2.4,0.8,0.8,'F');},cm?'Vorgang (Farbe nach BKP)':'Vorgang (Farbe der Gruppe)');
-    leg((x,yy)=>{doc.setFillColor(216,226,240);doc.roundedRect(x,yy-1.2,5,2.4,0.8,0.8,'F');doc.setFillColor(59,111,182);doc.roundedRect(x,yy-1.2,3,2.4,0.8,0.8,'F');},'Fortschritt');
+    leg((x,yy)=>{doc.setFillColor(37,99,235);doc.roundedRect(x,yy-1.2,5,2.4,0.8,0.8,'F');},cm?'Vorgang (Farbe nach BKP)':'Vorgang (Farbe der Gruppe)');
+    leg((x,yy)=>{doc.setFillColor(37,99,235);doc.roundedRect(x,yy-1.2,5,2.4,0.8,0.8,'F');doc.setFillColor(25,63,143);doc.roundedRect(x,yy-1.2,3,2.4,0.8,0.8,'F');},'Fortschritt');
     leg((x,yy)=>hatch(x,yy,[253,243,220],[201,138,18]),'Lieferfrist (Beginn = bestellen bis)');
     leg((x,yy)=>{doc.setFillColor(214,205,240);doc.roundedRect(x,yy-0.5,5,1,0.5,0.5,'F');doc.setFillColor(124,92,196);doc.roundedRect(x,yy-0.5,1.5,1,0.5,0.5,'F');doc.roundedRect(x+2.6,yy-0.5,1.5,1,0.5,0.5,'F');},'Zeitspanne');
     leg((x,yy)=>{doc.setFillColor(59,111,182);doc.roundedRect(x,yy-0.6,5,1.2,0.6,0.6,'F');},'Gruppe');
@@ -8895,7 +9063,7 @@ async function _tpPdfSection(doc,p,o,{newPage=false,proj,subtitle=''}={}){
     if(o.links)leg((x,yy)=>{doc.setDrawColor(130);doc.setLineWidth(0.2);doc.line(x,yy-1,x+2,yy-1);doc.line(x+2,yy-1,x+2,yy+1);doc.line(x+2,yy+1,x+5,yy+1);},'Verknüpfung');
     if(o.today)leg((x,yy)=>{doc.setDrawColor(192,57,43);doc.setLineWidth(0.4);doc.line(x+2.5,yy-1.5,x+2.5,yy+1.5);},'Heute '+_tpFmtShort(td));
     if(ho!=null)leg((x,yy)=>{doc.setDrawColor(44,122,75);doc.setLineWidth(0.4);if(doc.setLineDashPattern)doc.setLineDashPattern([0.8,0.6],0);doc.line(x+2.5,yy-1.5,x+2.5,yy+1.5);if(doc.setLineDashPattern)doc.setLineDashPattern([],0);},'Soll-Übergabe');
-    if(o.weekend){ leg((x,yy)=>{doc.setFillColor(242,243,245);doc.rect(x,yy-1.2,5,2.4,'F');},'arbeitsfrei'); leg((x,yy)=>{doc.setFillColor(253,238,238);doc.rect(x,yy-1.2,5,2.4,'F');},'Feiertag'); leg((x,yy)=>{doc.setFillColor(253,240,227);doc.rect(x,yy-1.2,5,2.4,'F');},'Bauferien / Sperrzeit'); }
+    if(o.weekend){ leg((x,yy)=>{doc.setFillColor(227,230,234);doc.rect(x,yy-1.2,5,2.4,'F');},'Wochenende'); leg((x,yy)=>{doc.setFillColor(250,170,170);doc.rect(x,yy-1.2,5,2.4,'F');},'Feiertag Kanton '+(cal.kt||'')); leg((x,yy)=>{doc.setFillColor(254,215,215);doc.rect(x,yy-1.2,5,2.4,'F');doc.setDrawColor(220,38,38);doc.setLineWidth(0.3);doc.rect(x,yy-1.2,5,2.4,'S');},'Bauferien = Sperre'); }
     if(rows.some(r=>r.ctx)) leg((x,yy)=>{opa(0.42);doc.setFillColor(91,126,166);doc.rect(x,yy-1.2,5,2.4,'F');opa(1);},'» blass = Vor-/Nachfolger anderer Unternehmer');
     // BKP-Farben der ausgegebenen Vorgänge
     const used=new Map(); if(cm) rows.forEach(({t})=>{ if(t.kind!=='task'||t.lead)return; const c=_tpColor(t,p); const b2=String(t.bkp||'').replace(/\D/g,''); const k=TP_COLORS[b2.slice(0,2)]?b2.slice(0,2):TP_COLORS[b2.slice(0,1)]?b2.slice(0,1):''; if(!t.color&&!used.has(k)) used.set(k,c); });
@@ -8913,7 +9081,9 @@ async function exportTerminplanPDF(p,opts,{returnDoc=false}={}){
   if(opts&&opts.format&&!opts.paper) o.paper=opts.format; // ältere Aufrufe
   if(opts&&opts.comp===false&&!opts.cols) o.cols=TP_PDF_DEFAULTS.cols.filter(k=>k!=='company');
   if(opts&&(opts.from!=null||opts.to!=null)&&!opts.range) o.range='custom';
+  await _tpLoadKanton(p.projectId||state.projectId);
   _tpSchedule(p);
+  if(o.level&&o.level!=='fein'){ p=_tpAggregate(p,o.level); o.groups=null; o.links=false; }
   const proj=await get('projects',p.projectId||state.projectId)||{name:''};
   const {jsPDF}=window.jspdf;
   const origPDF=Object.assign({},PDF);
@@ -8967,6 +9137,8 @@ function _tpPdfDialog(){
   <div class="modal-body tp-pdf">
     <div class="tp-pdf-pre">${H('Vorlage','pdfPreset')}<select id="pp-preset"><option value="">– aktuelle Einstellungen –</option>${presets.map((x,i)=>`<option value="${i}">${esc(x.name)}</option>`).join('')}</select>
       <button type="button" class="btn btn-ghost btn-sm" id="pp-psave">Als Vorlage speichern …</button><button type="button" class="btn btn-ghost btn-sm" id="pp-pdel" style="display:none">Vorlage löschen</button></div>
+    <div class="tp-pdf-pre">${H('Genauigkeit','level')}<div class="tp-seg" id="pp-level">${Object.entries(TP_LEVELS).map(([k,l])=>`<button type="button" data-lv="${k}" class="${(o.level||'fein')===k?'on':''}">${l}</button>`).join('')}</div>
+      <span style="font-size:12px;color:var(--muted)">Grob = BKP-Hauptgruppen · Normal = BKP 3-stellig · Fein = alle Vorgänge</span></div>
     <div class="tp-pdf-grid">
       <section>${H('Papier &amp; Seitenaufteilung','pdfLayout')}
         <div class="field-row"><div class="field"><label>Format</label><select id="pp-paper">${[['a4','A4'],['a3','A3'],['a2','A2'],['a1','A1'],['a0','A0'],['plot','Plot / Originalgrösse (1 Blatt)']].map(([k,l])=>`<option value="${k}" ${o.paper===k?'selected':''}>${l}</option>`).join('')}</select></div>
@@ -9010,7 +9182,7 @@ function _tpPdfDialog(){
   const read=()=>{
     const r=document.querySelector('[name=pp-range]:checked').value, coAll=[...box.querySelectorAll('[data-co]')], grAll=[...box.querySelectorAll('[data-gr]')];
     const coSel=coAll.filter(x=>x.checked).map(x=>x.dataset.co), grSel=grAll.filter(x=>x.checked).map(x=>x.dataset.gr);
-    return Object.assign({},TP_PDF_DEFAULTS,{paper:$('pp-paper').value,orient:$('pp-orient').value,layout:document.querySelector('[name=pp-layout]:checked').value,scale:$('pp-scale').value,repeatTable:$('pp-rep').checked,
+    return Object.assign({},TP_PDF_DEFAULTS,{level:(box.querySelector('#pp-level .on')||{dataset:{lv:'fein'}}).dataset.lv,paper:$('pp-paper').value,orient:$('pp-orient').value,layout:document.querySelector('[name=pp-layout]:checked').value,scale:$('pp-scale').value,repeatTable:$('pp-rep').checked,
       range:r,weeks:+$('pp-weeks').value,from:_tpD($('pp-from').value),to:_tpD($('pp-to').value),inRange:$('pp-inr').checked,
       cols:TP_PDF_COLS.filter(c=>$('pp-col-'+c.k).checked).map(c=>c.k),links:$('pp-links').checked,crit:$('pp-crit').checked,base:$('pp-base')?$('pp-base').checked:false,weekend:$('pp-we').checked,today:$('pp-today').checked,legend:$('pp-leg').checked,collapsed:$('pp-coll').checked,
       label:$('pp-label').value,title:$('pp-title').value.trim(),
@@ -9024,7 +9196,8 @@ function _tpPdfDialog(){
     $('pp-scaleF').style.display=plot||x.layout==='tiles'?'':'none'; $('pp-repF').style.display=x.layout==='tiles'&&!plot?'':'none';
     const sel=x.companies; const lists=x.split!=='none'&&sel&&sel.length?sel.map(c=>[c]):[sel];
     let pages=0, rowsN=0, txt='';
-    lists.forEach(l=>{ const xo=Object.assign({},x,{companies:l}); const rows=_tpPdfRows(p,xo); rowsN+=rows.length; const L=_tpPdfLayout(p,xo,rows,42); pages+=L.pages.length+(x.legend&&!plot&&L.pages.length&&(()=>{ const lp=L.pages[L.pages.length-1]; return lp.top+L.headH+lp.rows.length*L.rowH+5>L.H-L.footH-16; })()?1:0);
+    const pa=x.level&&x.level!=='fein'?_tpAggregate(p,x.level):p; if(pa!==p){ x.groups=null; x.links=false; }
+    lists.forEach(l=>{ const xo=Object.assign({},x,{companies:l}); const rows=_tpPdfRows(pa,xo); rowsN+=rows.length; const L=_tpPdfLayout(pa,xo,rows,42); pages+=L.pages.length+(x.legend&&!plot&&L.pages.length&&(()=>{ const lp=L.pages[L.pages.length-1]; return lp.top+L.headH+lp.rows.length*L.rowH+5>L.H-L.footH-16; })()?1:0);
       if(plot) txt=`Plotgrösse ca. ${L.plotSize[0]} × ${L.plotSize[1]} mm${L.plotSize[0]>1189?' – breiter als A0-Rolle (914/1067 mm Rollenbreite: Höhe beachten)':''}`;
       else if(x.layout==='tiles') txt=`${L.tiles[0]} × ${L.tiles[1]} Blätter (Zeilen × Zeit) à ${x.paper.toUpperCase()}`;
       else if(x.layout==='fit') txt=L.rowH<2.6?`⚠ sehr klein: Zeilenhöhe ${L.rowH.toFixed(1)} mm – grösseres Format oder Filter wählen`:`Zeilenhöhe ${L.rowH.toFixed(1)} mm`; });
@@ -9033,6 +9206,7 @@ function _tpPdfDialog(){
     $('pp-ok').disabled=!rowsN&&!(x.split!=='none');
   };
   const apply=x=>{ // Einstellungen in den Dialog übernehmen (Vorlage)
+    box.querySelectorAll('#pp-level [data-lv]').forEach(b=>b.classList.toggle('on',b.dataset.lv===(x.level||'fein')));
     $('pp-paper').value=x.paper; $('pp-orient').value=x.orient; box.querySelectorAll('[name=pp-layout]').forEach(r=>r.checked=r.value===x.layout); $('pp-scale').value=x.scale; $('pp-rep').checked=!!x.repeatTable;
     box.querySelectorAll('[name=pp-range]').forEach(r=>r.checked=r.value===x.range); $('pp-weeks').value=String(x.weeks||6); if(x.from!=null)$('pp-from').value=_tpIso(x.from); if(x.to!=null)$('pp-to').value=_tpIso(x.to); $('pp-inr').checked=!!x.inRange;
     TP_PDF_COLS.forEach(c=>$('pp-col-'+c.k).checked=(x.cols||[]).includes(c.k));
@@ -9042,6 +9216,7 @@ function _tpPdfDialog(){
     const K=Object.assign({},TP_PDF_DEFAULTS.kinds,x.kinds||{}); ['task','ms','lead','span'].forEach(k=>$('pp-k-'+k).checked=!!K[k]);
     box.querySelectorAll('[name=pp-split]').forEach(r=>r.checked=r.value===(x.split||'none')); est(); };
   box.addEventListener('change',est); box.addEventListener('input',e=>{ if(e.target.id==='pp-title')return; est(); });
+  box.querySelector('#pp-level').onclick=e=>{ const b=e.target.closest('[data-lv]'); if(!b)return; box.querySelectorAll('#pp-level [data-lv]').forEach(z=>z.classList.toggle('on',z===b)); est(); };
   box.addEventListener('click',e=>{ const a=e.target.closest('[data-all],[data-none]'); if(!a)return; e.preventDefault(); const k=a.dataset.all||a.dataset.none, on=!!a.dataset.all; box.querySelectorAll(k==='co'?'[data-co]':'[data-gr]').forEach(c=>c.checked=on); est(); });
   $('pp-preset').onchange=()=>{ const i=$('pp-preset').value; $('pp-pdel').style.display=i===''?'none':''; if(i!=='') apply(Object.assign({},TP_PDF_DEFAULTS,presets[+i].o)); };
   $('pp-psave').onclick=async()=>{ const i=$('pp-preset').value; const nm=prompt('Name der Vorlage (z.B. „Wochenprogramm A3"):',i!==''?presets[+i].name:''); if(!nm)return;
