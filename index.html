@@ -3519,13 +3519,13 @@ function cloudIsAdmin(email){
   return a && email && email.trim().toLowerCase()===a;
 }
 // Tabellen, die in die Cloud synchronisiert werden (entspricht STORES ohne 'app')
-const CLOUD_TABLES = ['projects','plans','defects','contacts','protocols','acceptances','checklists','workorders','journal','notes','users','files','honorars','baubeschriebe','takeoffs','bkpOverrides','contactsDirectory','orgSettings','categories','portalTokens','schedules','trash'];
+const CLOUD_TABLES = ['projects','plans','defects','contacts','protocols','acceptances','checklists','workorders','journal','notes','users','files','honorars','baubeschriebe','takeoffs','bkpOverrides','contactsDirectory','orgSettings','categories','portalTokens','schedules','costplans','trash'];
 // Tabellen, die erst mit einer neueren Version hinzugekommen sind und in Supabase evtl. noch nicht
 // angelegt wurden (SQL muss manuell im Supabase SQL Editor ausgeführt werden). Solange eine solche
 // Tabelle fehlt, bleiben die Daten lokal erhalten, es gibt KEINE rote Fehler-Pille und vor allem wird
 // die Tabelle NICHT im Live-Sync abonniert - ein Abo auf eine fehlende Tabelle würde sonst den
 // gesamten Realtime-Kanal (alle Tabellen) in einen Fehlerzustand bringen.
-const CLOUD_OPTIONAL_TABLES = ['schedules','trash'];
+const CLOUD_OPTIONAL_TABLES = ['schedules','costplans','trash'];
 const _cloudMissingTables = new Set();
 const _cloudPresentTables = new Set();
 function _isMissingTableErr(e){
@@ -4323,8 +4323,8 @@ let CURRENT_USER={name:'', initials:'?', email:'', role:''};
 // Sichtbare Build-Version – bei jeder Auslieferung hochzählen. Zeigt sich in der Kopfzeile und
 // auf dem Anmeldebildschirm, damit sich auf jedem Gerät sofort prüfen lässt, ob wirklich der
 // aktuelle Stand geladen wurde (statt bei "unterschiedlichem Stand"-Problemen zu raten).
-const BUILD_VERSION='2026-11-04.3';
-const APP_VERSION='1.7.6'; // Versionsnummer wie Installer/Mobile (unauffällig unten in der Seitenleiste angezeigt)
+const BUILD_VERSION='2026-11-04.4';
+const APP_VERSION='1.8.0'; // Versionsnummer wie Installer/Mobile (unauffällig unten in der Seitenleiste angezeigt)
 let CURRENT_AUTH=null; // aktueller Cloud-Login (Auth-User), null = nicht eingeloggt
 const BKP_CRB2017=[['0','Grundstück','H'],['00','Vorstudien','G'],['000','Übergangsposition','P'],['001','Grundstücksbeurteilung, Machbarkeitsstudien','P'],['002','Vermessung, Vermarkung','P'],['003','Geotechnische und weitere Gutachten','P'],['003.1','Baugrund','S'],['003.2','Grundwasser','S'],['003.3','Altlasten','S'],['003.4','Weitere Gutachten','S'],['004','Quartierplankosten, Richtplankosten','P'],['006','Umweltverträglichkeitsprüfung','P'],['009','Übriges','P'],['01','Grundstücks- bzw. Baurechtserwerb','G'],['010','Übergangsposition','P'],['011','Grundstückserwerb','P'],['012','Baurechtserwerb','P'],['013','Brandmauereinkauf','P'],['018','Sanierung Altlasten','P'],['019','Übriges','P'],['02','Nebenkosten zu Grundstücks- bzw. Baurechtserwerb','G'],['020','Übergangsposition','P'],['021','Handänderungssteuer','P'],['022','Notariatskosten','P'],['023','Grundbuchgebühren','P'],['024','Anwaltskosten, Gerichtskosten','P'],['025','Vermittlungsprovisionen','P'],['029','Übriges','P'],['03','Abfindungen, Servitute, Beiträge','G'],['030','Übergangsposition','P'],['031','Abfindungen an Mieter und Pächter','P'],['032','Inkonvenienzentschädigungen','P'],['033','Errichtung von Servituten','P'],['034','Ablösung von Servituten','P'],['035','Wirtschaftspatente','P'],['036','Beiträge Melioration','P'],['037','Beiträge Güterzusammenlegung','P'],['038','Perimeterbeiträge','P'],['039','Übriges','P'],['04','Finanzierung vor Baubeginn','G'],['040','Übergangsposition','P'],['041','Errichten von Hypotheken auf Grundstück','P'],['042','Hypothekarzinsen','P'],['043','Baurechtszinsen','P'],['044','Darlehenszinsen','P'],['045','Eigenkapitalzinsen','P'],['046','Grundstücksteuern','P'],['048','Versicherungen bis Baubeginn','P'],['049','Übriges','P'],['05','Leitungen ausserhalb Grundstück','G'],['050','Übergangsposition','P'],['051','Erdarbeiten','P'],['052','Kanalisationsleitungen','P'],['053','Elektroleitungen, Gebäudeautomation','P'],['054','Leitungen für HLK-Anlagen','P'],['055','Sanitärleitungen','P'],['056','Nebenarbeiten','P'],['059','Übriges','P'],['06','Verkehrsanlagen ausserhalb Grundstück','G'],['060','Übergangsposition','P'],['061','Strassen','P'],['062','Bahnen','P'],['063','Wasserwege','P'],['069','Übriges','P'],['09','Honorare','G'],['090','Übergangsposition','P'],['091','Architekt','P'],['092','Bauingenieur','P'],['093','Elektroingenieur','P'],['094','HLK-Ingenieur','P'],['095','Sanitäringenieur','P'],['096','Landschaftsarchitekt','P'],['097','Spezialisten 1','P'],['097.0','Geometer','S'],['097.1','Geologe, Geotechniker','S'],['098','Spezialisten 2','P'],['098.2','Bauökonom','S'],['098.6','Verkaufsaufwendungen','S'],['099','Übriges','P'],['1','Vorbereitungsarbeiten','H'],['10','Bestandsaufnahmen, Baugrunduntersuchungen','G'],['100','Übergangsposition','P'],['101','Bestandsaufnahmen','P'],['101.1','Planaufnahmen','S'],['101.2','Schadstoffuntersuchungen','S'],['101.3','Erschütterungsmessungen','S'],['101.4','Rissprotokolle','S'],['101.5','Bestandsaufnahmen Bausubstanz','S'],['101.6','Bestandsaufnahmen Gebäudetechnik','S'],['101.7','Weitere Aufnahmen','S'],['102','Baugrunduntersuchungen','P'],['103','Grundwasseruntersuchungen','P'],['104','Baugespann','P'],['109','Übriges','P'],['11','Räumungen, Terrainvorbereitungen','G'],['110','Übergangsposition','P'],['111','Rodungen','P'],['112','Rückbau','P'],['112.0','Demontagen','S'],['112.1','Abbrüche','S'],['112.2','Entsorgung spezieller Bauteile','S'],['113','Sanierung Altlasten','P'],['114','Erdbewegungen','P'],['114.0','Baustelleneinrichtung','S'],['114.1','Erdarbeiten','S'],['119','Übriges','P'],['12','Sicherungen, Provisorien','G'],['120','Übergangsposition','P'],['121','Sicherung vorhandener Anlagen','P'],['122','Provisorien','P'],['123','Unterfangungen','P'],['123.0','Baustelleneinrichtungen','S'],['123.1','Gerüste','S'],['123.2','Spezielle Unterfangungsarbeiten','S'],['123.3','Erdarbeiten','S'],['123.4','Kanalisationen','S'],['123.5','Beton- und Stahlbetonarbeiten','S'],['123.6','Mauerarbeiten','S'],['129','Übriges','P'],['13','Gemeinsame Baustelleneinrichtung','G'],['130','Übergangsposition','P'],['131','Abschrankungen','P'],['132','Zufahrten, Plätze','P'],['133','Büro Bauleitung','P'],['134','Unterkünfte, Verpflegungseinrichtungen','P'],['135','Provisorische Installationen','P'],['135.0','Kanalisationen','S'],['135.1','Elektro','S'],['135.2','HLK-Anlagen, Gebäudeautomation','S'],['135.3','Wasser','S'],['135.4','Telekommunikation','S'],['136','Kosten für Energie, Wasser und dgl.','P'],['137','Provisorische Abschlüsse und Abdeckungen','P'],['138','Sortierung Bauabfälle','P'],['139','Übriges','P'],['14','Anpassungen an bestehenden Bauten','G'],['140','Übergangsposition','P'],['141','Terraingestaltung, Rohbau 1','P'],['141.0','Erdarbeiten','S'],['141.1','Baumeisterarbeiten','S'],['141.2','Montagebau in Beton, vorgefertigtem Mauerwerk','S'],['141.3','Montagebau in Stahl','S'],['141.4','Montagebau in Holz','S'],['141.5','Montagebau als Leichtkonstruktion','S'],['141.6','Natur- und Kunststeinarbeiten','S'],['142','Rohbau 2','P'],['142.1','Fenster, Aussentüren, Tore','S'],['142.2','Spenglerarbeiten','S'],['142.3','Blitzschutzinstallationen','S'],['142.4','Bedachungsarbeiten','S'],['142.5','Spezielle Dichtungen und Dämmungen','S'],['142.6','Fassadenputze','S'],['142.7','Äussere Oberflächenbehandlungen','S'],['142.8','Äussere Abschlüsse, Sonnenschutzanlagen','S'],['143','Elektroanlagen','P'],['144','HLK-Anlagen, Gebäudeautomation','P'],['145','Sanitäranlagen','P'],['146','Transportanlagen, Lageranlagen','P'],['147','Ausbau 1','P'],['147.1','Gipserarbeiten','S'],['147.2','Metallbauarbeiten','S'],['147.3','Schreinerarbeiten','S'],['147.4','Innere Spezialverglasungen','S'],['147.5','Schliessanlagen','S'],['147.6','Innere Abschlüsse','S'],['147.7','Elementwände','S'],['148','Ausbau 2','P'],['148.1','Bodenbeläge','S'],['148.2','Wandbeläge, Wandbekleidungen','S'],['148.3','Deckenbekleidungen','S'],['148.4','Hafnerarbeiten','S'],['148.5','Innere Oberflächenbehandlungen','S'],['148.6','Bautrocknung','S'],['148.7','Baureinigung','S'],['148.8','Gärtnerarbeiten','S'],['149','Übriges','P'],['15','Anpassungen an bestehenden Erschliessungsanlagen','G'],['150','Übergangsposition','P'],['151','Erdarbeiten','P'],['152','Kanalisationsleitungen','P'],['153','Elektroleitungen, Gebäudeautomation','P'],['154','Leitungen für HLK-Anlagen','P'],['155','Sanitärleitungen','P'],['156','Nebenarbeiten','P'],['159','Übriges','P'],['16','Anpassungen an bestehenden Verkehrsanlagen','G'],['160','Übergangsposition','P'],['161','Strassen','P'],['162','Bahnen','P'],['163','Wasserwege','P'],['169','Übriges','P'],['17','Spezialtiefbau','G'],['170','Übergangsposition','P'],['171','Pfähle','P'],['172','Baugrubenabschlüsse','P'],['173','Aussteifungen','P'],['174','Anker','P'],['175','Grundwasserabdichtungen','P'],['176','Wasserhaltung','P'],['176.0','Offene Wasserhaltung','S'],['176.1','Grundwasserabsenkungen','S'],['177','Baugrundverbesserungen','P'],['178','Nebenarbeiten','P'],['179','Übriges','P'],['19','Honorare','G'],['190','Übergangsposition','P'],['191','Architekt','P'],['192','Bauingenieur','P'],['193','Elektroingenieur','P'],['194','HLK-Ingenieur','P'],['195','Sanitäringenieur','P'],['196','Landschaftsarchitekt','P'],['197','Spezialisten 1','P'],['197.0','Geometer','S'],['197.1','Geologe, Geotechniker','S'],['197.2','Fachkoordinator','S'],['197.6','Gebäudeautomationsingenieur','S'],['198','Spezialisten 2','P'],['198.2','Bauökonom','S'],['198.5','Brandschutzingenieur','S'],['199','Übriges','P'],['2','Gebäude','H'],['20','Baugrube','G'],['200','Übergangsposition','P'],['201','Baugrubenaushub','P'],['201.0','Baustelleneinrichtung','S'],['201.1','Erdarbeiten','S'],['201.2','Kontaminiertes Material','S'],['209','Übriges','P'],['21','Rohbau 1','G'],['210','Übergangsposition','P'],['211','Baumeisterarbeiten','P'],['211.0','Baustelleneinrichtung','S'],['211.1','Gerüste','S'],['211.3','Baumeisteraushub','S'],['211.4','Kanalisationen im Gebäude','S'],['211.5','Beton- und Stahlbetonarbeiten','S'],['211.6','Mauerarbeiten','S'],['211.7','Instandsetzungsarbeiten','S'],['211.8','Witterungsbedingte Massnahmen','S'],['212','Montagebau in Beton, vorgefertigtem Mauerwerk','P'],['212.0','Baustelleneinrichtung','S'],['212.1','Gerüste','S'],['212.2','Elemente aus Beton','S'],['212.3','Elemente aus vorgefertigtem Mauerwerk','S'],['212.4','Elemente aus Porenbeton','S'],['213','Montagebau in Stahl','P'],['213.0','Baustelleneinrichtung','S'],['213.1','Gerüste','S'],['213.2','Stahlkonstruktionen','S'],['213.5','Äussere Bekleidungen','S'],['214','Montagebau in Holz','P'],['214.0','Baustelleneinrichtung','S'],['214.1','Zimmerarbeiten','S'],['214.2','Ingenieurholzbau','S'],['214.3','Holzelementbau','S'],['214.4','Äussere Bekleidungen, Gesimse, Treppen','S'],['214.5','Gerüste','S'],['214.6','Geneigte Dächer, Unterkonstruktionen','S'],['215','Montagebau als Leichtkonstruktion','P'],['215.0','Baustelleneinrichtung','S'],['215.1','Gerüste','S'],['215.2','Fassadenbau','S'],['215.4','Traggerippe','S'],['215.5','Äussere Bekleidungen','S'],['216','Natur- und Kunststeinarbeiten','P'],['216.0','Natursteinarbeiten','S'],['216.1','Kunststeinarbeiten','S'],['217','Schutzraumabschlüsse','P'],['219','Übriges','P'],['22','Rohbau 2','G'],['220','Übergangsposition','P'],['221','Fenster, Aussentüren, Tore','P'],['221.0','Fenster aus Holz-Metall','S'],['221.1','Fenster aus Holz','S'],['221.2','Fenster aus Kunststoff','S'],['221.3','Fenster aus Stahl','S'],['221.4','Fenster aus Aluminium','S'],['221.5','Aussentüren, Tore aus Holz','S'],['221.6','Aussentüren, Tore aus Metall','S'],['221.7','Schaufensteranlagen','S'],['221.8','Spezielle äussere lichtdurchlässige Bauteile','S'],['221.9','Metallbaufertigteile','S'],['222','Spenglerarbeiten','P'],['223','Bedachungsarbeiten','P'],['224','Deckungen','P'],['224.0','Deckungen geneigte Dächer','S'],['224.1','Dichtungsbeläge Flachdächer','S'],['224.2','Glaseinbauten in geneigten Dächern','S'],['224.3','Gerüste','S'],['224.4','Spezielle Dichtungen und Dämmungen','S'],['225','Fugendichtungen','P'],['225.0','Fugendichtungen','S'],['225.1','Spezielle Dämmungen','S'],['225.2','Spezielle Feuchtigkeitsabdichtungen','S'],['225.3','Brandschutzbekleidungen und dgl.','S'],['225.4','Fassadenputze','S'],['226','Gerüste','P'],['226.0','Aussenputze','S'],['226.1','Verputzte Aussenwärmedämmungen','S'],['226.2','Äussere Oberflächenbehandlungen','S'],['227','Äussere Oberflächenbehandlungen','P'],['227.0','Gerüste','S'],['227.1','Äussere Malerarbeiten','S'],['227.2','Äussere Holzschutzarbeiten','S'],['227.3','Äussere Holzbehandlungsarbeiten','S'],['228','Äussere Abschlüsse, Sonnenschutzanlagen','P'],['228.0','Fenster- und Fenstertürläden','S'],['228.1','Rollläden','S'],['228.2','Lamellenstoren (Raffstoren)','S'],['228.3','Markisen','S'],['228.4','Blendschutzanlagen','S'],['228.5','Insektenschutz','S'],['228.6','Äussere bewegliche Gitterabschlüsse','S'],['229','Übriges','P'],['23','Elektroanlagen','G'],['230','Übergangsposition','P'],['231','Starkstromanlagen','P'],['231.0','Netzersatzanlagen','S'],['231.1','Hoch- und Mittelspannungsanlagen','S'],['231.2','Schaltgerätekombinationen','S'],['231.3','Blindstromkompensations-Anlagen','S'],['231.4','Sicherheitsanlagen','S'],['231.5','Energieerzeugungsanlagen','S'],['231.9','Übriges','S'],['232','Starkstrominstallationen','P'],['232.0','Erschliessungen','S'],['232.1','Erdungen und Schutzpotenzialausgleich','S'],['232.2','Rohranlagen','S'],['232.3','Installationssysteme','S'],['232.4','Haupt- und Steigleitungen','S'],['232.5','Lichtinstallationen','S'],['232.6','Kraftinstallationen','S'],['232.7','HLKS-Installationen','S'],['232.9','Übriges','S'],['233','Leuchten und Lampen','P'],['233.0','Lieferung','S'],['233.1','Montage','S'],['234','Elektrogeräte','P'],['235','Schwachstromanlagen','P'],['235.0','Telekommunikationsanlagen','S'],['235.1','Radio- und Fernsehanlagen','S'],['235.2','Multimediaanlagen','S'],['235.3','Informatikanlagen','S'],['235.4','Kommunikationsanlagen','S'],['235.8','Sicherheitsanlagen','S'],['235.9','Übriges','S'],['236','Schwachstrominstallationen','P'],['236.1','Installationen zu Telekommunikationsanlagen','S'],['236.2','Radio- und Fernsehanlagen','S'],['236.3','Multimedia-Installationen','S'],['236.4','UKV-Installationen','S'],['236.5','Installationen zu Kommunikationsanlagen','S'],['236.6','Audio-, Video- und Uhreninstallationen','S'],['236.7','Sicherheitsinstallationen','S'],['236.8','Brandschutzinstallationen','S'],['236.9','Übriges','S'],['237','Gebäudeautomations-Installationen','P'],['238','Provisorische Installationen','P'],['239','Übriges','P'],['24','HLK-Anlagen, Gebäudeautomation','G'],['240','Übergangsposition','P'],['242','Heizungsanlagen','P'],['242.0','Apparate','S'],['242.1','Leitungen','S'],['242.2','Armaturen, Instrumente','S'],['242.3','Regelung','S'],['242.4','Schaltgerätekombinationen','S'],['242.5','Transport, Montage','S'],['242.6','Dämmungen','S'],['242.7','Unternehmerdienstleistungen','S'],['244','Lufttechnische Anlagen','P'],['244.0','Apparate','S'],['244.1','Leitungen','S'],['244.2','Armaturen, Instrumente','S'],['244.3','Regelung','S'],['244.4','Schaltgerätekombinationen','S'],['244.5','Transport, Montage','S'],['244.6','Dämmungen','S'],['244.7','Unternehmerdienstleistungen','S'],['245','Rauch- und Wärmeabzugsanlagen','P'],['245.0','Apparate','S'],['245.1','Leitungen','S'],['245.2','Armaturen, Instrumente','S'],['245.3','Regelung','S'],['245.4','Schaltgerätekombinationen','S'],['245.5','Transport, Montage','S'],['245.6','Dämmungen','S'],['245.7','Unternehmerdienstleistungen','S'],['246','Kälteanlagen','P'],['246.0','Apparate','S'],['246.1','Leitungen','S'],['246.2','Armaturen, Instrumente','S'],['246.3','Regelung','S'],['246.4','Schaltgerätekombinationen','S'],['246.5','Transport, Montage','S'],['246.6','Dämmungen','S'],['246.7','Unternehmerdienstleistungen','S'],['247','Spezialanlagen','P'],['247.4','Schutzraumbelüftungen','S'],['247.5','Thermische Solaranlagen','S'],['247.6','Spezielle Energieerzeugung','S'],['247.7','Staubsaugeranlagen','S'],['248','Gebäudeautomation','P'],['248.1','Managementebene','S'],['248.2','Automationsebene','S'],['248.3','Feldebene','S'],['248.4','Raumautomation','S'],['248.5','Automationsnetzwerk','S'],['248.6','Schaltgerätekombinationen','S'],['248.7','Integration','S'],['249','Übriges','P'],['25','Sanitäranlagen','G'],['250','Übergangsposition','P'],['251','Allgemeine Sanitärapparate','P'],['251.0','Lieferung','S'],['251.1','Montage','S'],['252','Spezielle Sanitärapparate','P'],['252.0','Lieferung','S'],['252.1','Montage','S'],['253','Versorgungs- und Entsorgungsapparate','P'],['253.0','Wassernachbehandlung','S'],['253.1','Wassererwärmer','S'],['253.2','Abwasserhebeanlagen','S'],['253.3','Druckluftzeuger','S'],['253.6','Thermische Solaranlagen','S'],['254','Sanitärleitungen','P'],['254.1','Kaltwasserleitungen','S'],['254.2','Warmwasserleitungen','S'],['254.3','Drucklufttleitungen','S'],['254.4','Gasleitungen','S'],['254.5','Löschleitungen','S'],['254.6','Leitungen für thermische Solaranlagen','S'],['254.7','Schmutzwasserleitungen','S'],['254.8','Regenwasserleitungen','S'],['254.9','Grundleitungen','S'],['255','Dämmungen','P'],['256','Sanitärinstallationselemente','P'],['256.0','Lieferung','S'],['256.1','Montage','S'],['257','Löschanlagen','P'],['257.1','Sprinkleranlagen','S'],['257.2','Feuerlöschposten','S'],['258','Kücheneinrichtungen','P'],['259','Übriges','P'],['26','Transportanlagen, Lageranlagen','G'],['260','Übergangsposition','P'],['261','Aufzüge','P'],['262','Fahrtreppen, Fahrstei ge','P'],['263','Fassadenreinigungsanlagen','P'],['264','Sonstige Förderanlagen','P'],['265','Hebeeinrichtungen','P'],['266','Parkieranlagen','P'],['269','Übriges','P'],['27','Ausbau 1','G'],['270','Übergangsposition','P'],['271','Gipserarbeiten','P'],['271.0','Innenputze','S'],['271.1','Trockenbauarbeiten','S'],['271.2','Gerüste','S'],['272','Metallbauarbeiten','P'],['272.0','Innentüren aus Metall','S'],['272.1','Metallbaufertigteile','S'],['272.2','Allgemeine Metallbauarbeiten','S'],['272.3','Innere Verglasungen','S'],['272.4','Schutzraumteile','S'],['273','Schreinerarbeiten','P'],['273.0','Innentüren','S'],['273.1','Wandschränke, Gestelle und dgl.','S'],['273.2','Innere Verglasungen','S'],['273.3','Allgemeine Schreinerarbeiten','S'],['274','Innere Spezialverglasungen','P'],['275','Schliessanlagen','P'],['276','Innere Abschlüsse','P'],['276.0','Verdunkelungseinrichtungen','S'],['276.1','Innere bewegliche Gitterabschlüsse','S'],['276.2','Vorhangsysteme','S'],['277','Elementwände','P'],['277.0','Versetzbare Elementwände','S'],['277.1','Schiebe- und Faltwände','S'],['277.2','Fest stehende Elementwände','S'],['278','Beschriftungen, Markierungen, Signaletik','P'],['279','Übriges','P'],['28','Ausbau 2','G'],['280','Übergangsposition','P'],['281','Bodenbeläge','P'],['281.0','Estriche (Unterlagsböden)','S'],['281.1','Fugenlose Bodenbeläge','S'],['281.2','Bodenbeläge aus Kunststoffen, Textilien und dgl.','S'],['281.4','Bodenbeläge aus Naturstein','S'],['281.5','Bodenbeläge aus Kunststein','S'],['281.6','Bodenbeläge aus Holz','S'],['281.7','Bodenbeläge aus Platten','S'],['281.8','Doppelböden','S'],['281.9','Sockel','S'],['282','Wandbeläge, Wandbekleidungen','P'],['282.0','Fugenlose Wandbeläge','S'],['282.1','Tapeziererarbeiten','S'],['282.2','Wandbekleidungen aus Naturstein','S'],['282.3','Wandbekleidungen aus Kunststein','S'],['282.4','Wandbeläge aus Platten','S'],['282.5','Wandbekleidungen aus Holz und Holzwerkstoffen','S'],['282.6','Wandbekleidungen aus Kunststoffen, Textilien und dgl.','S'],['282.7','Gerüste','S'],['283','Deckenbekleidungen','P'],['283.0','Gerüste','S'],['283.1','Deckenbekleidungen aus Metall','S'],['283.2','Deckenbekleidungen aus Gips','S'],['283.3','Deckenbekleidungen aus Mineralfasern','S'],['283.4','Deckenbekleidungen aus Holz und Holzwerkstoffen','S'],['283.5','Deckenbekleidungen aus Kunststoffen, Textilien und dgl.','S'],['284','Hafnerarbeiten','P'],['285','Innere Oberflächenbehandlungen','P'],['285.0','Gerüste','S'],['285.1','Innere Malerarbeiten','S'],['285.2','Innere Holzschutzarbeiten','S'],['285.3','Innere Holzbehandlungsarbeiten','S'],['286','Bautrocknung','P'],['287','Baureinigung','P'],['288','Gärtnerarbeiten (Gebäude)','P'],['289','Übriges','P'],['29','Honorare','G'],['290','Übergangsposition','P'],['291','Architekt','P'],['292','Bauingenieur','P'],['293','Elektroingenieur','P'],['294','HLK-Ingenieur','P'],['295','Sanitäringenieur','P'],['296','Landschaftsarchitekt','P'],['297','Spezialisten 1','P'],['297.0','Geometer','S'],['297.1','Geologe, Geotechniker','S'],['297.2','Innenarchitekt','S'],['297.3','Bauphysiker','S'],['297.4','Akustiker','S'],['297.5','Fachkoordinator','S'],['297.6','Gebäudeautomationsingenieur','S'],['297.7','Fassadeningenieur','S'],['298','Spezialisten 2','P'],['298.2','Bauökonom','S'],['298.3','Prüfingenieur','S'],['298.4','Umweltingenieur','S'],['298.5','Brandschutzingenieur','S'],['299','Übriges','P'],['3','Betriebseinrichtungen','H'],['30','Baugrube','G'],['300','Übergangsposition','P'],['301','Baugruben aushub','P'],['309','Übriges','P'],['31','Rohbau 1','G'],['311','Baumeisterarbeiten','P'],['312','Montagebau in Beton, vorgefertigtem Mauerwerk','P'],['313','Montagebau in Stahl','P'],['314','Montagebau in Holz','P'],['315','Montagebau als Leichtkonstruktion','P'],['316','Natur- und Kunststeinarbeiten','P'],['317','Schutzraumabschlüsse','P'],['319','Übriges','P'],['32','Rohbau 2','G'],['320','Übergangsposition','P'],['321','Fenster, Aussentüren, Tore','P'],['322','Spenglerarbeiten','P'],['323','Blitzschutzanlagen','P'],['324','Bedachungsarbeiten','P'],['325','Spezielle Dichtungen und Dämmungen','P'],['326','Fassadenputze','P'],['327','Äussere Oberflächenbehandlungen','P'],['328','Äussere Abschlüsse, Sonnenschutzanlagen','P'],['329','Übriges','P'],['33','Elektroanlagen','G'],['330','Übergangsposition','P'],['331','Starkstromapparate','P'],['332','Starkstrominstallationen','P'],['333','Leuchten und Lampen','P'],['334','Elektrogeräte','P'],['335','Schwachstromapparate','P'],['336','Schwachstrominstallationen','P'],['337','Gebäudeautomations-Installationen','P'],['338','Provisorische Installationen','P'],['339','Übriges','P'],['34','HLK-Anlagen, Gebäudeautomation','G'],['340','Übergangsposition','P'],['342','Heizungsanlagen','P'],['344','Lufttechnische Anlagen','P'],['345','Rauch- und Wärmeabzugsanlagen','P'],['346','Kälteanlagen','P'],['347','Spezialanlagen','P'],['348','Gebäudeautomation','P'],['349','Übriges','P'],['35','Sanitäranlagen','G'],['350','Übergangsposition','P'],['351','Allgemeine Sanitärapparate','P'],['351.0','Lieferung','S'],['351.1','Montage','S'],['352','Spezielle Sanitärapparate','P'],['352.0','Lieferung','S'],['352.1','Montage','S'],['353','Versorgungs- und Entsorgungsapparate','P'],['353.0','Wassernachbehandlung','S'],['353.1','Wassererwärmer','S'],['353.2','Abwasserhebeanlagen','S'],['353.3','Druckluftzeuger','S'],['353.6','Thermische Solaranlagen','S'],['354','Sanitärleitungen','P'],['354.1','Kaltwasserleitungen','S'],['354.2','Warmwasserleitungen','S'],['354.3','Drucklufttleitungen','S'],['354.4','Gasleitungen','S'],['354.5','Löschleitungen','S'],['354.6','Leitungen für thermische Solaranlagen','S'],['354.7','Schmutzwasserleitungen','S'],['354.8','Regenwasserleitungen','S'],['354.9','Grundleitungen','S'],['355','Dämmungen','P'],['356','Sanitärinstallationselemente','P'],['356.0','Lieferung','S'],['356.1','Montage','S'],['357','Löschanlagen','P'],['357.1','Sprinkleranlagen','S'],['357.2','Feuerlöschposten','S'],['358','Kücheneinrichtungen','P'],['359','Übriges','P'],['36','Transportanlagen, Lageranlagen','G'],['360','Übergangsposition','P'],['361','Aufzüge','P'],['362','Fahrtreppen, Fahrstei ge','P'],['364','Sonstige Förderanlagen','P'],['365','Hebeeinrichtungen','P'],['366','Parkieranlagen','P'],['369','Übriges','P'],['37','Ausbau 1','G'],['370','Übergangsposition','P'],['371','Gipserarbeiten','P'],['372','Metallbauarbeiten','P'],['373','Schreinerarbeiten','P'],['374','Innere Spezialverglasungen','P'],['375','Schliessanlagen','P'],['376','Innere Abschlüsse','P'],['377','Elementwände','P'],['378','Beschriftungen, Markierungen, Signaletik','P'],['379','Übriges','P'],['38','Ausbau 2','G'],['380','Übergangsposition','P'],['381','Bodenbeläge','P'],['382','Wandbeläge, Wandbekleidungen','P'],['383','Deckenbekleidungen','P'],['384','Hafnerarbeiten','P'],['385','Innere Oberflächenbehandlungen','P'],['386','Bautrocknung','P'],['387','Baureinigung','P'],['39','Honorare','G'],['390','Übergangsposition','P'],['391','Architekt','P'],['392','Bauingenieur','P'],['393','Elektroingenieur','P'],['394','HLK-Ingenieur','P'],['395','Sanitäringenieur','P'],['396','Landschaftsarchitekt','P'],['397','Spezialisten 1','P'],['397.0','Geometer','S'],['397.1','Geologe, Geotechniker','S'],['397.2','Innenarchitekt','S'],['397.3','Bauphysiker','S'],['397.4','Akustiker','S'],['397.5','Fachkoordinator','S'],['397.6','Gebäudeautomationsingenieur','S'],['397.7','Fassadeningenieur','S'],['398','Spezialisten 2','P'],['398.2','Bauökonom','S'],['398.3','Prüfingenieur','S'],['398.4','Umweltingenieur','S'],['398.5','Brandschutzingenieur','S'],['399','Übriges','P'],['4','Umgebung','H'],['40','Terraingestaltung','G'],['400','Übergangsposition','P'],['401','Erdbewegungen','P'],['401.0','Baustelleneinrichtung','S'],['401.1','Erdarbeiten','S'],['409','Übriges','P'],['41','Rohbau- und Ausbauarbeiten','G'],['410','Übergangsposition','P'],['411','Baumeisterarbeiten','P'],['411.0','Baustelleneinrichtung','S'],['411.1','Gerüste','S'],['411.2','Böschungs- und Uferverbaungen','S'],['411.3','Baumeisteraushub','S'],['411.4','Kanalisationen ausserhalb Gebäude','S'],['411.5','Beton- und Stahlbetonarbeiten','S'],['411.6','Maurerarbeiten','S'],['411.7','Instandsetzungsarbeiten','S'],['411.8','Witterungsbedingte Massnahmen','S'],['413','Übriger Rohbau 1','P'],['413.2','Montagebau in Beton, vorgefertigtem Mauerwerk','S'],['413.3','Montagebau in Stahl','S'],['413.4','Montagebau in Holz','S'],['413.5','Montagebau als Leichtkonstruktion','S'],['413.6','Natur- und Kunststeinarbeiten','S'],['414','Rohbau 2','P'],['414.1','Fenster, Aussentüren, Tore','S'],['414.2','Spenglerarbeiten','S'],['414.3','Blitzschutzanlagen','S'],['414.4','Bedachungsarbeiten','S'],['414.5','Spezielle Dichtungen und Dämmungen','S'],['414.6','Fassadenputze','S'],['414.7','Äussere Oberflächenbehandlungen','S'],['414.8','Äussere Abschlüsse, Sonnenschutzanlagen','S'],['414.9','Arealabschlüsse','S'],['415','Ausbau 1','P'],['416','Ausbau 2','P'],['419','Übriges','P'],['42','Gartenanlagen','G'],['420','Übergangsposition','P'],['421','Gärtnerarbeiten','P'],['422','Einfriedungen','P'],['423','Ausstattungen, Geräte','P'],['424','Spiel- und Sportplätze','P'],['425','Stützmauern','P'],['429','Übriges','P'],['44','Installationen','G'],['440','Übergangsposition','P'],['442','Elektroanlagen','P'],['443','HLK-Anlagen, Gebäudeautomation','P'],['444','Sanitäranlagen','P'],['446','Transportanlagen','P'],['449','Übriges','P'],['45','Leitungen innerhalb Grundstück','G'],['450','Übergangsposition','P'],['452','Kanalisationsleitungen','P'],['453','Elektroleitungen, Gebäudeautomation','P'],['454','Leitungen für HLK-Anlagen','P'],['455','Sanitärleitungen','P'],['456','Nebenarbeiten','P'],['459','Übriges','P'],['46','Trassenbauten','G'],['460','Übergangsposition','P'],['461','Erd- und Unterbau','P'],['463','Oberbau','P'],['464','Entwässerung','P'],['465','Werkleitungen und Kanalisationen','P'],['468','Ausbau','P'],['47','Kunstbauten','G'],['470','Übergangsposition','P'],['471','Baugrube','P'],['472','Tragkonstruktionen','P'],['473','Oberbau','P'],['474','Entwässerung','P'],['475','Werkleitungen und Kanalisationen','P'],['477','Transportanlagen','P'],['478','Ausbau','P'],['48','Untertagbauten','G'],['480','Übergangsposition','P'],['481','Vortrieb','P'],['482','Auskleidungen, Gewölbe','P'],['483','Oberbau','P'],['484','Entwässerung und Wasserversorgung','P'],['485','Werkleitungen und Kanalisationen','P'],['487','Transportanlagen','P'],['488','Ausbau','P'],['49','Honorare','G'],['490','Übergangsposition','P'],['491','Architekt','P'],['492','Bauingenieur','P'],['493','Elektroingenieur','P'],['494','HLK-Ingenieur','P'],['495','Sanitäringenieur','P'],['496','Landschaftsarchitekt','P'],['497','Spezialisten 1','P'],['497.1','Geologie, Geotechniker','S'],['497.2','Innenarchitekt','S'],['497.3','Bauphysiker','S'],['497.4','Akustiker','S'],['497.5','Fachkoordinator','S'],['498','Spezialisten 2','P'],['498.2','Bauökonom','S'],['498.4','Umweltingenieur','S'],['499','Übriges','P'],['5','Baunebenkosten','H'],['50','Wettbewerbskosten','G'],['500','Übergangsposition','P'],['501','Wettbewerbe','P'],['509','Übriges','P'],['51','Bewilligungen, Gebühren','G'],['510','Übergangsposition','P'],['511','Bewilligungen, Gebühren','P'],['512','Anschlussgebühren','P'],['512.0','Kanalisation','S'],['512.1','Elektrizität','S'],['512.2','Kommunikation','S'],['512.3','Gas','S'],['512.4','Wasser','S'],['512.5','Fernheizung','S'],['512.6','Radio, Fernsehen','S'],['519','Übriges','P'],['52','Dokumentation und Präsentation','G'],['520','Übergangsposition','P'],['521','Muster, Materialprüfungen','P'],['521.0','Muster','S'],['521.1','Materialprüfungen','S'],['522','Modelle','P'],['523','Fotos','P'],['524','Vervielfältigungen, Plandokumente','P'],['525','Dokumentation','P'],['529','Übriges','P'],['53','Versicherungen','G'],['530','Übergangsposition','P'],['531','Bauzeitversicherungen','P'],['532','Spezialversicherungen','P'],['533','Selbstbehalt in Schadenfällen während der Bauzeit','P'],['539','Übriges','P'],['54','Finanzierung ab Baubeginn','G'],['540','Übergangsposition','P'],['541','Errichten von Hypotheken auf','P'],['543','Baukreditzinsen, Bankspesen','P'],['544','Baurechtszinsen','P'],['545','Eigenkapitalzinsen','P'],['546','Liegenschaftssteuer während der Bauzeit','P'],['548','Rückvergütungen','P'],['549','Übriges','P'],['55','Bauherrenleistungen','G'],['550','Übergangsposition','P'],['557','Betriebsplanung','P'],['558','Projektleitung, Projektbegleitung','P'],['559','Übriges','P'],['56','Übrige Baunebenkosten','G'],['560','Übergangsposition','P'],['561','Bewachung durch Dritte','P'],['562','Entschädigungen, Nutzerkosten, Ersatzabgaben','P'],['562.1','Nachbar- und Mieterentschädigungen','S'],['562.2','Einkauf Schutzraum','S'],['562.3','Ersatzabgabe Parkplätze','S'],['562.9','Übriges','S'],['563','Miete von fremdem Grund','P'],['564','Gutachten','P'],['565','Reisespesen','P'],['566','Grundsteinlegung, Aufrichte, Einweihung','P'],['567','Anwaltskosten, Gerichtskosten','P'],['568','Baureklame','P'],['569','Übriges','P'],['57','Mehrwertsteuer (MWST)','G'],['570','Übergangsposition (MWST)','P'],['571','Grundstück (MWST)','P'],['572','Vorbereitungsarbeiten (MWST)','P'],['573','Gebäude (MWST)','P'],['574','Betriebseinrichtungen (MWST)','P'],['575','Umgebung (MWST)','P'],['576','Baunebenkosten (MWST)','P'],['579','Ausstattung (MWST)','P'],['58','Rückstellungen und Reserven','G'],['580','Übergangsposition','P'],['581','Rückstellungen für zu erwartende Kosten','P'],['582','Rückstellungen für Teuerung','P'],['583','Reserven für Unvorhergesehenes','P'],['589','Übriges','P'],['59','Übergangskonten für Honorare','G'],['590','Übergangsposition','P'],['598','Spezialisten','P'],['598.0','Bauherrenberater','S'],['598.1','FM-Berater','S'],['598.6','Verkaufsaufwendungen','S'],['599','Übriges','P'],['6','Reserve','H'],['7','Reserve','H'],['8','Reserve','H'],['9','Ausstattung','H'],['90','Möbel','G'],['900','Übergangsposition','P'],['902','Garderobeneinrichtungen, Gestelle und dgl.','P'],['908','Sporteinrichtungen','P'],['909','Übriges','P'],['91','Beleuchtungskörper','G'],['910','Übergangsposition','P'],['919','Übriges','P'],['92','Textilien','G'],['920','Übergangsposition','P'],['921','Vorhänge und Innendekorationsarbeiten','P'],['929','Übriges','P'],['93','Geräte, Apparate','G'],['930','Übergangsposition','P'],['939','Übriges','P'],['94','Kleininventar','G'],['940','Übergangsposition','P'],['949','Übriges','P'],['96','Transportmittel','G'],['960','Übergangsposition','P'],['969','Übriges','P'],['97','Verbrauchsmaterial','G'],['970','Übergangsposition','P'],['979','Übriges','P'],['98','Kunst am Bau','G'],['980','Übergangsposition','P'],['989','Übriges','P'],['99','Honorare','G'],['990','Übergangsposition','P'],['991','Architekt','P'],['992','Bauingenieur','P'],['993','Elektroingenieur','P'],['994','HLK-Ingenieur','P'],['995','Sanitäringenieur','P'],['996','Landschaftsarchitekt','P'],['997','Spezialisten 1','P'],['997.0','Geometer','S'],['997.2','Innenarchitekt','S'],['997.3','Bauphysiker','S'],['997.4','Akustiker','S'],['998','Spezialisten 2','P'],['998.2','Bauökonom','S'],['999','Übriges','P']];
 // BKP_CRB2017: [Nummer, Bezeichnung, Ebene] – Ebene: H=Hauptgruppe, G=Gruppe, P=Position, S=Sub-Position.
@@ -4382,14 +4382,15 @@ let _sharpTimer=null;
 const MAX_PLAN_CANVAS_DIM=10000;
 
 /* ---------- IndexedDB ---------- */
-const STORES=['projects','plans','defects','contacts','protocols','acceptances','checklists','workorders','journal','notes','users','files','app','honorars','baubeschriebe','takeoffs','bkpOverrides','contactsDirectory','orgSettings','categories','portalTokens','syncHistory','schedules','trash'];
+const STORES=['projects','plans','defects','contacts','protocols','acceptances','checklists','workorders','journal','notes','users','files','app','honorars','baubeschriebe','takeoffs','bkpOverrides','contactsDirectory','orgSettings','categories','portalTokens','syncHistory','schedules','costplans','trash'];
 // Welche Stores werden in die Cloud gespiegelt (alle ausser 'app' = nur lokale Einstellungen, 'syncHistory' = rein lokales Sync-Protokoll der Desktop-App)
-const SYNC_STORES=['projects','plans','defects','contacts','protocols','acceptances','checklists','workorders','journal','notes','users','files','honorars','baubeschriebe','takeoffs','bkpOverrides','contactsDirectory','orgSettings','categories','portalTokens','schedules','trash'];
+const SYNC_STORES=['projects','plans','defects','contacts','protocols','acceptances','checklists','workorders','journal','notes','users','files','honorars','baubeschriebe','takeoffs','bkpOverrides','contactsDirectory','orgSettings','categories','portalTokens','schedules','costplans','trash'];
 function openDB(){return new Promise((res,rej)=>{
   // Version 12: neuer rein lokaler Store 'syncHistory' (Offline-Synchronisierungs-Verlauf, Desktop-App - Offline-Dokumentenspeicher)
   // Version 13: neuer Store 'schedules' (Modul Terminplan, Cloud-Tabelle 'schedules')
   // Version 14: neuer Store 'trash' (Papierkorb für alle Löschungen, Cloud-Tabelle 'trash')
-  const r=indexedDB.open('bauview2',14);
+  // Version 15: neuer Store 'costplans' (Modul Kostenplanung, Cloud-Tabelle 'costplans')
+  const r=indexedDB.open('bauview2',15);
   let settled=false;
   const timeout=setTimeout(()=>{
     if(settled)return;
@@ -4453,7 +4454,7 @@ function _isTombstoned(s,id){ try{ const t=JSON.parse(localStorage.getItem('bauv
 // ---------- Papierkorb: jede Löschung wird vorher gesichert (30 Tage wiederherstellbar) ----------
 const TRASH_EXCLUDE=['trash','syncHistory','app'];
 const TRASH_DAYS=30;
-const TRASH_LABELS={projects:'Projekt',plans:'Plan',defects:'Mangel',contacts:'Unternehmer',protocols:'Protokoll',acceptances:'Abnahme',checklists:'Prüfplan',workorders:'Regieauftrag',journal:'Baujournal',notes:'Aktennotiz',users:'Benutzer',files:'Datei',honorars:'Honorarofferte',baubeschriebe:'Baubeschrieb',takeoffs:'Ausmass',bkpOverrides:'BKP-Anpassung',contactsDirectory:'Firmenverzeichnis',orgSettings:'Einstellung',categories:'Kategorien',portalTokens:'Portal-Zugang',schedules:'Terminplan'};
+const TRASH_LABELS={projects:'Projekt',plans:'Plan',defects:'Mangel',contacts:'Unternehmer',protocols:'Protokoll',acceptances:'Abnahme',checklists:'Prüfplan',workorders:'Regieauftrag',journal:'Baujournal',notes:'Aktennotiz',users:'Benutzer',files:'Datei',honorars:'Honorarofferte',baubeschriebe:'Baubeschrieb',takeoffs:'Ausmass',bkpOverrides:'BKP-Anpassung',contactsDirectory:'Firmenverzeichnis',orgSettings:'Einstellung',categories:'Kategorien',portalTokens:'Portal-Zugang',schedules:'Terminplan',costplans:'Kostenplan'};
 let _trashBatch=null,_trashBatchT=null,_trashBatchItems=[],_trashRestoring=false,_trashQuiet=0;
 function _trashLabel(s,r){
   const t=v=>v==null?'':String(v).trim();
@@ -4486,7 +4487,7 @@ function _trashUndoBar(items){
     else if(u==='open') navigate('trash'); };
 }
 async function _trashRestore(entries){
-  const order=['projects','categories','plans','schedules'];
+  const order=['projects','categories','plans','schedules','costplans'];
   const list=[...entries].sort((a,b)=>{ const ia=order.indexOf(a.store), ib=order.indexOf(b.store); return (ia<0?9:ia)-(ib<0?9:ib); });
   let n=0; _trashRestoring=true;
   try{
@@ -8974,6 +8975,520 @@ function _tpPdfDialog(){
   };
 }
 
+/* ============================================================
+   MODUL: KOSTENPLANUNG (seit 1.8.0)
+   Baukostenplan BKP (SN 506 500) 1-/2-/3-stellig, Kostenermittlung nach SIA-102-Phasen:
+   21 Grobkostenschätzung (±25 %), 31 Kostenschätzung (±15 %), 32 Kostenvoranschlag (±10 %),
+   41 KV-Revision nach Angeboten. Kennwert-/Richtpreis-Datenbank (KP_DATA), Teuerung BFS-Baupreisindex,
+   Reserve BKP 583, Phasenvergleich, Excel und PDF.
+   Speicher: Store 'costplans' (ein Datensatz je Kostenplan, Cloud-Tabelle 'costplans').
+   Präfix _kp…/KP_…
+   ============================================================ */
+const KP_DATA={"version":"2026-11-04","hinweis":"Gliederung und Bezeichnungen nach SN 506 500 Baukostenplan BKP (CRB 2017), wie im BauView-BKP-Katalog. Kennwerte sind Richtwerte aus öffentlichen Quellen und ersetzen keine eigenen Abrechnungswerte.","mwst":8.1,"index":{"name":"BFS Schweizerischer Baupreisindex, Hochbau Schweiz, Basis Oktober 2020 = 100","werte":{"Okt 2020":100.0,"Apr 2023":114.3,"Okt 2023":114.8,"Apr 2024":115.0,"Okt 2024":115.3,"Apr 2025":115.8,"Okt 2025":116.3,"Apr 2026":117.0},"anmerkungen":{"Apr 2023":"abgeleitet aus Okt 2023 (114.8, +0.4 %)","Apr 2024":"Baugewerbe total 115.0","Okt 2024":"abgeleitet aus Okt 2025 (+0.9 %)","Apr 2025":"abgeleitet aus Okt 2025 (+0.4 %)","Apr 2026":"verkettet: neue Basis Okt 2025 = 100, Apr 2026 = 100.6 (+0.6 %)"}},"phasen":[{"id":"21","phase":"21 Machbarkeitsstudie","art":"Grobkostenschätzung","tiefe":1,"genauigkeit":25,"reserve":10,"quelle":"SIA 102, ±25 %"},{"id":"31","phase":"31 Vorprojekt","art":"Kostenschätzung","tiefe":2,"genauigkeit":15,"reserve":5,"quelle":"SIA 102:2014, ±15 %"},{"id":"32","phase":"32 Bauprojekt","art":"Kostenvoranschlag","tiefe":3,"genauigkeit":10,"reserve":3,"reserveUmbau":6,"quelle":"SIA 102 Art. 4.32, ±10 %; Reserve BKP 583 3 % Neubau / 6 % Umbau (Stadt Bern)"},{"id":"41","phase":"41 Ausschreibung","art":"KV-Revision nach Angeboten","tiefe":3,"genauigkeit":5,"reserve":3,"reserveUmbau":6,"quelle":"Genauigkeit nach Vereinbarung, Vorschlag ±5 %"}],"gebaeudearten":[{"id":"efh","name":"Einfamilienhaus","profil":"efh","gv":[780,900,1150],"gf":[2550,2950,3800],"bkp5":6,"quelle":"neho.ch 2026 (mittel 800–950, gehoben 950–1200 CHF/m³); aktiva.swiss 980 CHF/m³ SIA 416"},{"id":"mfh-miete","name":"MFH Mietwohnungen","profil":"wohnen","gv":[620,720,880],"gf":[1980,2300,2800],"bkp5":6,"quelle":"aktiva.swiss 680 CHF/m³ SIA 416 (Renditeobjekt TU); neho.ch MFH 700–850 CHF/m³"},{"id":"mfh-eigentum","name":"MFH Eigentumswohnungen","profil":"wohnen","gv":[760,900,1100],"gf":[2450,2900,3550],"bkp5":6,"quelle":"aktiva.swiss 900 CHF/m³ SIA 416"},{"id":"mfh-holz","name":"MFH Holzbau","profil":"wohnen","gv":[680,800,1000],"gf":[2200,2600,3250],"bkp5":6,"quelle":"Wüest Partner Holzbaukennzahlen 2025: BKP 2 Holzbau 540–1220 CHF/m³ GV; BKP 1–5/GV Holz +9.4 % ggü. Massiv"},{"id":"buero","name":"Büro- und Verwaltungsbau","profil":"buero","gv":[780,950,1200],"gf":[2800,3400,4300],"bkp5":7,"quelle":"aktiva.swiss Verwaltungsbau 950 CHF/m³ SIA 416"},{"id":"schule","name":"Schulhaus","profil":"schule","gv":[850,1000,1250],"gf":[3100,3600,4500],"bkp5":6,"quelle":"Schätzwert ohne öffentliche Einzelquelle – mit eigenen Abrechnungen kalibrieren"},{"id":"heim","name":"Heim- und Pflegebau","profil":"buero","gv":[820,940,1150],"gf":[2900,3300,4000],"bkp5":6,"quelle":"aktiva.swiss Heimbauten 940 CHF/m³ SIA 416"},{"id":"werkstatt","name":"Gewerbe / Werkstatt beheizt","profil":"gewerbe","gv":[500,740,880],"gf":[2000,3050,3650],"bkp5":5,"quelle":"Kanton NW, Werkstatt Job-Vision 2020: BKP 2 636–762 CHF/m³ GV, indexiert; Kt. Schwyz 2023 Werkstatt 285–565 CHF/m³"},{"id":"lager","name":"Lager / Halle unbeheizt","profil":"lager","gv":[180,280,380],"gf":[1100,1700,2300],"bkp5":5,"quelle":"Kt. Schwyz Schätzungsanleitung 2023: Hallen 140–370 CHF/m³; GF-Werte Schätzwert"},{"id":"einstellhalle","name":"Untergeschoss / Einstellhalle","profil":"ug","gv":[430,490,580],"gf":[1450,1650,1950],"bkp5":5,"quelle":"aktiva.swiss UG/Einstellhalle 490 CHF/m³ SIA 416, 1650 CHF/m² HNF"},{"id":"sanierung","name":"Totalsanierung / Umbau","profil":"sanierung","gv":[300,450,650],"gf":[1000,1450,2100],"bkp5":6,"umbau":true,"quelle":"aktiva.swiss Totalsanierung 450 CHF/m³ GV"}],"kennwertStand":"Apr 2025","einstellplatz":{"ep":35000,"quelle":"Wüest Partner 2025: 35'000 (Massiv) / 20'000 (Holz); aktiva.swiss 40'000 je Platz","stand":"Apr 2023"},"profile":{"wohnen":{"name":"Wohnen (BFS-Gewichte Neubau, Okt 2025)","s":{"20":1.1,"21":31.2,"22":10.9,"23":5.0,"24":7.8,"25":12.0,"26":1.1,"27":10.7,"28":7.6,"29":12.6}},"zh":{"name":"MFH Zürich (Zürcher Index Wohnbaupreise, Rev. 2020)","s":{"20":1.5,"21":32.5,"22":10.4,"23":3.4,"24":5.1,"25":9.4,"26":2.1,"27":10.5,"28":6.7,"29":18.4}},"efh":{"name":"Einfamilienhaus (Richtwert)","s":{"20":2,"21":30,"22":13,"23":5,"24":8,"25":11,"26":0,"27":10,"28":8,"29":13}},"buero":{"name":"Büro / Verwaltung (Richtwert)","s":{"20":1.5,"21":26,"22":13,"23":9,"24":13,"25":5,"26":2,"27":9,"28":7,"29":14.5}},"schule":{"name":"Schulbau (Richtwert)","s":{"20":1.5,"21":27,"22":12,"23":8,"24":12,"25":5,"26":1.5,"27":11,"28":7,"29":15}},"gewerbe":{"name":"Gewerbe / Werkstatt (Richtwert)","s":{"20":2,"21":30,"22":14,"23":9,"24":8,"25":4,"26":1,"27":6,"28":4,"29":22}},"lager":{"name":"Lager / Halle (Richtwert)","s":{"20":2,"21":40,"22":20,"23":7,"24":3,"25":2,"26":1,"27":4,"28":3,"29":18}},"ug":{"name":"UG / Einstellhalle (Richtwert)","s":{"20":8,"21":55,"22":3,"23":6,"24":5,"25":3,"26":0,"27":6,"28":4,"29":10}},"sanierung":{"name":"Sanierung / Umbau (Richtwert)","s":{"20":0,"21":15,"22":18,"23":9,"24":10,"25":14,"26":2,"27":12,"28":9,"29":11}}},"hauptgruppenDefaults":{"1":{"neubau":3,"umbau":8,"quelle":"BFS-Gewicht 2.1 % von BKP 2; ZIW 7.7 % inkl. Spezialtiefbau; Kt. NW 10.7 %"},"3":{"neubau":0,"quelle":"projektspezifisch; Kt. NW Werkstatt 2.6 %"},"4":{"neubau":4,"quelle":"BFS 3.7 %, ZIW 4.5 %, Kt. NW 5.1 % von BKP 2; alternativ BUF × 120 CHF/m² (aktiva.swiss)"},"5":{"neubau":6,"quelle":"aktiva.swiss: EFH 4–8 %, MFH 5–10 %, Büro 6–10 %, Gewerbe 4–7 %, Lager 4–6 % von BKP 2"},"9":{"neubau":0,"quelle":"projektspezifisch"}},"bkp":[["0","Grundstück"],["00","Vorstudien","0"],["01","Grundstücks- bzw. Baurechtserwerb","100"],["02","Nebenkosten zu Grundstücks- bzw. Baurechtserwerb","0"],["03","Abfindungen, Servitute, Beiträge","0"],["04","Finanzierung vor Baubeginn","0"],["05","Leitungen ausserhalb Grundstück","0"],["06","Verkehrsanlagen ausserhalb Grundstück","0"],["09","Honorare","0"],["1","Vorbereitungsarbeiten"],["10","Bestandsaufnahmen, Baugrunduntersuchungen","5"],["101","Bestandsaufnahmen","40"],["102","Baugrunduntersuchungen","50"],["103","Grundwasseruntersuchungen","0"],["104","Baugespann","10"],["11","Räumungen, Terrainvorbereitungen","30"],["111","Rodungen","5"],["112","Rückbau","80"],["113","Sanierung Altlasten","5"],["114","Erdbewegungen","10"],["12","Sicherungen, Provisorien","10"],["121","Sicherung vorhandener Anlagen","40"],["122","Provisorien","40"],["123","Unterfangungen","20"],["13","Gemeinsame Baustelleneinrichtung","20"],["131","Abschrankungen","15"],["132","Zufahrten, Plätze","20"],["133","Büro Bauleitung","15"],["134","Unterkünfte, Verpflegungseinrichtungen","10"],["135","Provisorische Installationen","15"],["136","Kosten für Energie, Wasser und dgl.","15"],["137","Provisorische Abschlüsse und Abdeckungen","5"],["138","Sortierung Bauabfälle","5"],["14","Anpassungen an bestehenden Bauten","5"],["15","Anpassungen an bestehenden Erschliessungsanlagen","5"],["16","Anpassungen an bestehenden Verkehrsanlagen","0"],["17","Spezialtiefbau","15"],["171","Pfähle","25"],["172","Baugrubenabschlüsse","30"],["173","Aussteifungen","10"],["174","Anker","10"],["175","Grundwasserabdichtungen","5"],["176","Wasserhaltung","10"],["177","Baugrundverbesserungen","5"],["178","Nebenarbeiten","5"],["19","Honorare","10"],["191","Architekt","60"],["192","Bauingenieur","25"],["193","Elektroingenieur","0"],["194","HLK-Ingenieur","0"],["195","Sanitäringenieur","0"],["197","Spezialisten 1","15"],["2","Gebäude"],["20","Baugrube","P"],["201","Baugrubenaushub","100"],["21","Rohbau 1","P"],["211","Baumeisterarbeiten","85"],["212","Montagebau in Beton, vorgefertigtem Mauerwerk","3"],["213","Montagebau in Stahl","2"],["214","Montagebau in Holz","5"],["215","Montagebau als Leichtkonstruktion","1"],["216","Natur- und Kunststeinarbeiten","2"],["217","Schutzraumabschlüsse","2"],["219","Übriges","0"],["22","Rohbau 2","P"],["221","Fenster, Aussentüren, Tore","42"],["222","Spenglerarbeiten","6"],["223","Blitzschutzanlagen","1"],["224","Bedachungsarbeiten","14"],["225","Spezielle Dichtungen und Dämmungen","9"],["226","Fassadenputze","14"],["227","Äussere Oberflächenbehandlungen","2"],["228","Äussere Abschlüsse, Sonnenschutzanlagen","12"],["229","Übriges","0"],["23","Elektroanlagen","P"],["231","Starkstromanlagen","8"],["232","Starkstrominstallationen","42"],["233","Leuchten und Lampen","10"],["234","Elektrogeräte","2"],["235","Schwachstromanlagen","6"],["236","Schwachstrominstallationen","18"],["237","Gebäudeautomations-Installationen","12"],["238","Provisorische Installationen","2"],["239","Übriges","0"],["24","HLK-Anlagen, Gebäudeautomation","P"],["242","Heizungsanlagen","58"],["244","Lufttechnische Anlagen","28"],["245","Rauch- und Wärmeabzugsanlagen","1"],["246","Kälteanlagen","3"],["247","Spezialanlagen","2"],["248","Gebäudeautomation","8"],["249","Übriges","0"],["25","Sanitäranlagen","P"],["251","Allgemeine Sanitärapparate","30"],["252","Spezielle Sanitärapparate","3"],["253","Versorgungs- und Entsorgungsapparate","6"],["254","Sanitärleitungen","28"],["255","Dämmungen","4"],["256","Sanitärinstallationselemente","8"],["257","Löschanlagen","0"],["258","Kücheneinrichtungen","21"],["259","Übriges","0"],["26","Transportanlagen, Lageranlagen","P"],["261","Aufzüge","100"],["262","Fahrtreppen, Fahrsteige","0"],["263","Fassadenreinigungsanlagen","0"],["264","Sonstige Förderanlagen","0"],["265","Hebeeinrichtungen","0"],["266","Parkieranlagen","0"],["269","Übriges","0"],["27","Ausbau 1","P"],["271","Gipserarbeiten","28"],["272","Metallbauarbeiten","25"],["273","Schreinerarbeiten","35"],["274","Innere Spezialverglasungen","2"],["275","Schliessanlagen","4"],["276","Innere Abschlüsse","3"],["277","Elementwände","2"],["278","Beschriftungen, Markierungen, Signaletik","1"],["279","Übriges","0"],["28","Ausbau 2","P"],["281","Bodenbeläge","48"],["282","Wandbeläge, Wandbekleidungen","14"],["283","Deckenbekleidungen","6"],["284","Hafnerarbeiten","0"],["285","Innere Oberflächenbehandlungen","20"],["286","Bautrocknung","2"],["287","Baureinigung","8"],["288","Gärtnerarbeiten (Gebäude)","2"],["289","Übriges","0"],["29","Honorare","P"],["291","Architekt","62"],["292","Bauingenieur","16"],["293","Elektroingenieur","5"],["294","HLK-Ingenieur","6"],["295","Sanitäringenieur","4"],["296","Landschaftsarchitekt","2"],["297","Spezialisten 1","5"],["298","Spezialisten 2","0"],["299","Übriges","0"],["3","Betriebseinrichtungen"],["30","Baugrube","0"],["31","Rohbau 1","20"],["32","Rohbau 2","0"],["33","Elektroanlagen","25"],["34","HLK-Anlagen, Gebäudeautomation","20"],["35","Sanitäranlagen","15"],["36","Transportanlagen, Lageranlagen","0"],["37","Ausbau 1","10"],["38","Ausbau 2","0"],["39","Honorare","10"],["4","Umgebung"],["40","Terraingestaltung","10"],["401","Erdbewegungen","100"],["41","Rohbau- und Ausbauarbeiten","15"],["411","Baumeisterarbeiten","100"],["42","Gartenanlagen","40"],["421","Gärtnerarbeiten","65"],["422","Einfriedungen","10"],["423","Ausstattungen, Geräte","10"],["424","Spiel- und Sportplätze","10"],["425","Stützmauern","5"],["44","Installationen","5"],["45","Leitungen innerhalb Grundstück","20"],["452","Kanalisationsleitungen","45"],["453","Elektroleitungen, Gebäudeautomation","15"],["454","Leitungen für HLK-Anlagen","10"],["455","Sanitärleitungen","20"],["456","Nebenarbeiten","10"],["46","Trassenbauten","5"],["461","Erd- und Unterbau","50"],["463","Oberbau","50"],["47","Kunstbauten","0"],["49","Honorare","5"],["5","Baunebenkosten"],["50","Wettbewerbskosten","0"],["51","Bewilligungen, Gebühren","25"],["511","Bewilligungen, Gebühren","60"],["512","Anschlussgebühren","40"],["52","Dokumentation und Präsentation","10"],["521","Muster, Materialprüfungen","30"],["522","Modelle","20"],["523","Fotos","5"],["524","Vervielfältigungen, Plandokumente","35"],["525","Dokumentation","10"],["53","Versicherungen","10"],["531","Bauzeitversicherungen","80"],["532","Spezialversicherungen","20"],["54","Finanzierung ab Baubeginn","45"],["541","Errichten von Hypotheken","10"],["543","Baukreditzinsen, Bankspesen","90"],["55","Bauherrenleistungen","0"],["56","Übrige Baunebenkosten","10"],["561","Bewachung durch Dritte","30"],["566","Grundsteinlegung, Aufrichte, Einweihung","40"],["568","Baureklame","30"],["9","Ausstattung"],["90","Möbel","60"],["91","Beleuchtungskörper","15"],["92","Textilien","10"],["93","Geräte, Apparate","10"],["94","Kleininventar","5"],["96","Transportmittel","0"],["97","Verbrauchsmaterial","0"],["98","Kunst am Bau","0"],["99","Honorare","0"]],"katalog":[{"bkp":"112","t":"Rückbau Gebäude (Mischwert)","u":"m³ GV","q":"gv","p":[30,40,50],"s":"aktiva","st":"Apr 2024"},{"bkp":"112","t":"Abbruch reiner Holzbau","u":"m³","p":[33,33,33],"s":"sz","st":"Apr 2023"},{"bkp":"112","t":"Abbruch Backsteinwände / Holzdecken","u":"m³","p":[36,36,36],"s":"sz","st":"Apr 2023"},{"bkp":"112","t":"Abbruch Backsteinwände / Eisenbetondecken","u":"m³","p":[41,41,41],"s":"sz","st":"Apr 2023"},{"bkp":"112","t":"Abbruch reiner Eisenbetonbau","u":"m³","p":[45,45,45],"s":"sz","st":"Apr 2023"},{"bkp":"112","t":"Abbruch Eisenbeton-Skelettbau","u":"m³","p":[36,36,36],"s":"sz","st":"Apr 2023"},{"bkp":"112","t":"Abbruch Stahlbau","u":"m³","p":[28,30,31],"s":"sz","st":"Apr 2023"},{"bkp":"112","t":"Abbruch Neubau-Szenario (Modellrechnung)","u":"m³ GV","q":"gv","p":[50,50,50],"s":"wp","st":"Apr 2023"},{"bkp":"171","t":"Pfählung Ø 60/90/150 cm","u":"m","p":[280,280,280],"s":"aktiva","st":"Apr 2024"},{"bkp":"211","t":"Baumeistereinrichtung","u":"m² GF","q":"gf","p":[15,15,15],"s":"aktiva","st":"Apr 2024"},{"bkp":"211","t":"Stahlbetondecke 26 cm","u":"m²","p":[160,160,160],"s":"aktiva","st":"Apr 2024"},{"bkp":"211","t":"Stahlbetondecke mit schwimmendem Unterlagsboden","u":"m²","p":[220,220,220],"s":"aktiva","st":"Apr 2024"},{"bkp":"211","t":"Betonwand","u":"m²","p":[160,160,160],"s":"aktiva","st":"Apr 2024"},{"bkp":"211","t":"Sichtmauerwerk","u":"m²","p":[165,165,165],"s":"aktiva","st":"Apr 2024"},{"bkp":"211","t":"Backsteinwand","u":"m²","p":[100,100,100],"s":"aktiva","st":"Apr 2024"},{"bkp":"211","t":"Kalksandsteinwand","u":"m²","p":[112,112,112],"s":"aktiva","st":"Apr 2024"},{"bkp":"211","t":"Zweischalenmauerwerk","u":"m²","p":[400,400,400],"s":"aktiva","st":"Apr 2024"},{"bkp":"211","t":"Mehrschalenmauerwerk hinterlüftet","u":"m²","p":[350,350,350],"s":"aktiva","st":"Apr 2024"},{"bkp":"211","t":"Natursteinmauerwerk","u":"m²","p":[1000,1000,1000],"s":"aktiva","st":"Apr 2024"},{"bkp":"211","t":"Grundstückserschliessung","u":"m² GSF","p":[70,85,100],"s":"aktiva","st":"Apr 2024"},{"bkp":"214","t":"Holzbalkendecke sichtbar","u":"m²","p":[120,120,120],"s":"aktiva","st":"Apr 2024"},{"bkp":"221","t":"Fenster Holz (Lichtmass)","u":"m²","q":"fenster","p":[550,650,650],"s":"aktiva","st":"Apr 2024"},{"bkp":"221","t":"Fenster Holz-Metall (Lichtmass)","u":"m²","q":"fenster","p":[750,750,750],"s":"aktiva","st":"Apr 2024"},{"bkp":"221","t":"Fenster Kunststoff (Lichtmass)","u":"m²","q":"fenster","p":[600,600,600],"s":"aktiva","st":"Apr 2024"},{"bkp":"221","t":"Hebe-Schiebe-Fensterfront","u":"m²","p":[900,900,900],"s":"aktiva","st":"Apr 2024"},{"bkp":"221","t":"Fenster Holz je 4.5-Zi-Wohnung","u":"Whg","q":"whg","p":[11000,11000,11000],"s":"aktiva","st":"Apr 2024"},{"bkp":"221","t":"Fenster Holz-Metall je 4.5-Zi-Wohnung","u":"Whg","q":"whg","p":[13000,13000,13000],"s":"aktiva","st":"Apr 2024"},{"bkp":"223","t":"Blitzschutz","u":"m² Dach","q":"dach","p":[7,7,7],"s":"aktiva","st":"Apr 2024"},{"bkp":"224","t":"Ziegeldeckung","u":"m² Dach","q":"dach","p":[60,80,100],"s":"aktiva","st":"Apr 2024"},{"bkp":"224","t":"Kupferdach","u":"m² Dach","q":"dach","p":[150,225,300],"s":"aktiva","st":"Apr 2024"},{"bkp":"224","t":"Natursteindach / Schiefer","u":"m² Dach","q":"dach","p":[700,700,700],"s":"aktiva","st":"Apr 2024"},{"bkp":"224","t":"Steildach mit Ausbau","u":"m² Dach","q":"dach","p":[160,180,200],"s":"aktiva","st":"Apr 2024"},{"bkp":"224","t":"Steildach ohne Ausbau","u":"m² Dach","q":"dach","p":[90,90,90],"s":"aktiva","st":"Apr 2024"},{"bkp":"224","t":"Lattung","u":"m² Dach","q":"dach","p":[5,5,5],"s":"aktiva","st":"Apr 2024"},{"bkp":"224","t":"Bedachung (Mischwert eBKP-H F)","u":"m² Dach","q":"dach","p":[196,203,209],"s":"nw","st":"Okt 2020"},{"bkp":"226","t":"Kompaktfassade (verputzte Aussenwärmedämmung)","u":"m² Fassade","q":"fassade","p":[280,280,280],"s":"aktiva","st":"Apr 2024"},{"bkp":"226","t":"Holzfassade hinterlüftet","u":"m² Fassade","q":"fassade","p":[380,380,380],"s":"aktiva","st":"Apr 2024"},{"bkp":"226","t":"Faserzementfassade hinterlüftet","u":"m² Fassade","q":"fassade","p":[400,400,400],"s":"aktiva","st":"Apr 2024"},{"bkp":"226","t":"Äussere Wandbekleidung (Mischwert eBKP-H E)","u":"m² Fassade","q":"fassade","p":[238,242,246],"s":"nw","st":"Okt 2020"},{"bkp":"228","t":"Lamellenstoren","u":"m²","q":"fenster","p":[150,150,150],"s":"aktiva","st":"Apr 2024"},{"bkp":"228","t":"Rollladen","u":"m²","q":"fenster","p":[250,325,400],"s":"aktiva","st":"Apr 2024"},{"bkp":"228","t":"Verbundraffstoren einbruchhemmend","u":"m²","p":[350,350,350],"s":"aktiva","st":"Apr 2024"},{"bkp":"228","t":"Markise","u":"Stk","p":[1500,1500,1500],"s":"aktiva","st":"Apr 2024"},{"bkp":"232","t":"Elektroanlagen Wohnen","u":"m² HNF","q":"hnf","p":[100,125,150],"s":"aktiva","st":"Apr 2024"},{"bkp":"232","t":"Elektroanlagen Wohnen je Wohnung","u":"Whg","q":"whg","p":[12000,12000,12000],"s":"aktiva","st":"Apr 2024"},{"bkp":"232","t":"Elektroanlagen Büro","u":"m² HNF","q":"hnf","p":[200,225,250],"s":"aktiva","st":"Apr 2024"},{"bkp":"232","t":"Elektroanlagen Gewerbe (eBKP-H D1–D4)","u":"m² GF","q":"gf","p":[180,196,212],"s":"nw","st":"Okt 2020"},{"bkp":"236","t":"Gegensprechanlage je Wohnung","u":"Whg","q":"whg","p":[600,700,800],"s":"aktiva","st":"Apr 2024"},{"bkp":"242","t":"Brenner und Kessel je Wohnung","u":"Whg","q":"whg","p":[2000,2500,3000],"s":"aktiva","st":"Apr 2024"},{"bkp":"242","t":"Wärmeanlagen Gewerbe (eBKP-H D5)","u":"m² GF","q":"gf","p":[40,52,64],"s":"nw","st":"Okt 2020"},{"bkp":"242","t":"Wärmeverteilung je Wohnung","u":"Whg","q":"whg","p":[7500,7500,7500],"s":"aktiva","st":"Apr 2024"},{"bkp":"242","t":"Thermostatventile","u":"Stk","p":[100,125,150],"s":"aktiva","st":"Apr 2024"},{"bkp":"244","t":"Lüftung Bad/Küche je Wohnung","u":"Whg","q":"whg","p":[1300,1400,1500],"s":"aktiva","st":"Apr 2024"},{"bkp":"254","t":"Sanitäranlagen Gewerbe (eBKP-H D8)","u":"m² GF","q":"gf","p":[91,120,150],"s":"nw","st":"Okt 2020"},{"bkp":"258","t":"Küche 2.5-Zi-Wohnung (Miete)","u":"Stk","p":[9000,9000,9000],"s":"aktiva","st":"Apr 2024"},{"bkp":"258","t":"Küche 2.5-Zi-Wohnung (Eigentum)","u":"Stk","p":[15000,15000,15000],"s":"aktiva","st":"Apr 2024"},{"bkp":"258","t":"Küche 4.5-Zi-Wohnung (Miete)","u":"Stk","q":"whg","p":[12000,12000,12000],"s":"aktiva","st":"Apr 2024"},{"bkp":"258","t":"Küche 4.5-Zi-Wohnung (Eigentum)","u":"Stk","p":[18000,18000,18000],"s":"aktiva","st":"Apr 2024"},{"bkp":"261","t":"Personenaufzug 630 kg, 1 m/s, je Geschoss","u":"Geschoss","q":"geschosse","p":[10000,10000,10000],"s":"aktiva","st":"Apr 2024"},{"bkp":"261","t":"Aufzug Grundpreis je Station","u":"Stk","p":[20000,20000,20000],"s":"aktiva","st":"Apr 2024"},{"bkp":"261","t":"Warenaufzug je Geschoss","u":"Geschoss","q":"geschosse","p":[15000,15000,15000],"s":"aktiva","st":"Apr 2024"},{"bkp":"271","t":"Grundputz","u":"m²","p":[25,25,25],"s":"aktiva","st":"Apr 2024"},{"bkp":"271","t":"Weissputz","u":"m²","p":[35,35,35],"s":"aktiva","st":"Apr 2024"},{"bkp":"271","t":"Abrieb","u":"m²","p":[25,25,25],"s":"aktiva","st":"Apr 2024"},{"bkp":"272","t":"Hauseingang Metallbau je Wohnung","u":"Whg","q":"whg","p":[6000,8000,10000],"s":"aktiva","st":"Apr 2024"},{"bkp":"272","t":"Briefkasten und Schliessanlage je Wohnung","u":"Whg","q":"whg","p":[400,600,800],"s":"aktiva","st":"Apr 2024"},{"bkp":"275","t":"Schliessanlage je Wohnung","u":"Whg","q":"whg","p":[250,250,250],"s":"aktiva","st":"Apr 2024"},{"bkp":"281","t":"Parkett","u":"m²","q":"hnf","p":[120,120,120],"s":"aktiva","st":"Apr 2024"},{"bkp":"281","t":"Parkett schleifen","u":"m²","p":[50,50,50],"s":"aktiva","st":"Apr 2024"},{"bkp":"281","t":"Teppich Kugelgarn","u":"m²","p":[80,80,80],"s":"aktiva","st":"Apr 2024"},{"bkp":"281","t":"Keramische Bodenplatten innen","u":"m²","p":[130,130,130],"s":"aktiva","st":"Apr 2024"},{"bkp":"281","t":"Keramische Bodenplatten aussen","u":"m²","p":[140,140,140],"s":"aktiva","st":"Apr 2024"},{"bkp":"282","t":"Keramische Wandplatten","u":"m²","p":[130,130,130],"s":"aktiva","st":"Apr 2024"},{"bkp":"285","t":"Malerarbeiten innen","u":"m²","p":[15,15,15],"s":"aktiva","st":"Apr 2024"},{"bkp":"287","t":"Baureinigung","u":"m² HNF","q":"hnf","p":[15,15,15],"s":"aktiva","st":"Apr 2024"},{"bkp":"421","t":"Umgebung Mischwert","u":"m² BUF","q":"buf","p":[120,120,120],"s":"aktiva","st":"Apr 2024"},{"bkp":"421","t":"Umgebung (Mischwert eBKP-H I)","u":"m² BUF","q":"buf","p":[128,130,131],"s":"nw","st":"Okt 2020"},{"bkp":"421","t":"Rasen","u":"m²","p":[25,38,50],"s":"aktiva","st":"Apr 2024"},{"bkp":"421","t":"Flächenbepflanzung","u":"m²","p":[60,60,60],"s":"aktiva","st":"Apr 2024"},{"bkp":"411","t":"Strassen, Plätze mit Leitungen und Mauern","u":"m²","p":[130,130,130],"s":"aktiva","st":"Apr 2024"},{"bkp":"411","t":"Verbundsteine / Betonplatten","u":"m²","p":[80,90,100],"s":"aktiva","st":"Apr 2024"},{"bkp":"411","t":"Asphaltbelag","u":"m²","p":[120,150,180],"s":"aktiva","st":"Apr 2024"},{"bkp":"411","t":"Stützmauer","u":"m","p":[330,330,330],"s":"aktiva","st":"Apr 2024"},{"bkp":"411","t":"Löffelsteinböschung","u":"m²","p":[330,330,330],"s":"aktiva","st":"Apr 2024"},{"bkp":"452","t":"Kanalisation tief inkl. Graben","u":"m","p":[1400,1400,1400],"s":"aktiva","st":"Apr 2024"},{"bkp":"452","t":"Kontrollschacht","u":"Stk","p":[1700,1850,2000],"s":"aktiva","st":"Apr 2024"},{"bkp":"455","t":"Werkleitungen mit kleinem Graben","u":"m","p":[300,300,300],"s":"aktiva","st":"Apr 2024"}],"quellen":{"aktiva":{"t":"AKTIVA AG, Kosten-Benchmarks Neubaukosten (Schätzerhandbuch, Wüest Partner, eigene Erhebungen), Stand 2023, aktualisiert 04/2026","u":"https://aktiva.swiss/immobilien-benchmarks/"},"sz":{"t":"Kanton Schwyz, Schätzungsanleitung Tabellen Wertbasis 2023","u":"https://www.sz.ch/public/upload/assets/82950/Anhang_Schaetzungsanleitung_Tabellen_Wertbasis_2023.pdf"},"wp":{"t":"Wüest Partner / Lignum, Holzbaukennzahlen für Investoren – Wohnbauten (2025), Kostenstand April 2023","u":"https://timberfinance.ch/wp-content/uploads/2025/07/202504-Abschlussbericht_Holzbaukennzahlen_Wust-Partner.pdf"},"nw":{"t":"Kanton Nidwalden, Hochbauamt: Kostenschätzung Ersatzneubau Werkstatt, Kostenstand April 2020","u":"https://www.nw.ch/_doc/258016"},"bfs":{"t":"BFS, Schweizerischer Baupreisindex Oktober 2025 (Medienmitteilung 18.12.2025)","u":"https://dam-api.bfs.admin.ch/hub/api/dam/assets/36262128/master"},"ziw":{"t":"Stadt Zürich, Methodenbericht Revision 2020 Zürcher Index der Wohnbaupreise","u":"https://www.stadt-zuerich.ch/content/dam/web/de/politik-verwaltung/statistik-und-daten/publikationen-dienstleistungen/publikationen/methodenberichte/ZIW_Methodenbericht.pdf"},"neho":{"t":"neho.ch, Baukosten in der Schweiz pro m³ (2026)","u":"https://neho.ch/de/blog/baukosten-schweiz-pro-m3"},"bern":{"t":"Stadt Bern, Hochbau: Weisung Kostenermittlung (Reserve BKP 581/583)","u":"https://www.bern.ch/politik-und-verwaltung/stadtverwaltung/prd/hochbau-stadt-bern/downloads-fur-planer/kostensteuerung-und-abrechnung/we-hsb-kostenermittlung-v1-0-20131212.pdf/download"},"weka":{"t":"WEKA: Kostenvoranschläge – SIA 102 Art. 4.32, Genauigkeit ±10 %","u":"https://www.weka.ch/themen/bau-immobilien/bau/werkabnahme-und-verguetung/article/kostenvoranschlaege-offerten-der-architekten-oder-ingenieure/"},"cash":{"t":"cash.ch / AWP: Baupreisindex April 2026 = 100.6 (Okt 2025 = 100)","u":"https://www.cash.ch/news/baupreise-im-wintersemester-um-06-prozent-gestiegen-946345"}}};
+const _kp={planId:null,plan:null,view:'plan',open:null,editing:null,showZero:false,saveT:null,pendingRemote:false};
+const KP_STD=['einfach','mittel','gehoben'];
+const KP_QL={gv:'GV m³ (SIA 416)',gf:'GF m² (SIA 416)',hnf:'HNF m²',fassade:'Fassadenfläche m²',dach:'Dachfläche m²',fenster:'Fensterfläche m²',buf:'Umgebungsfläche BUF m²',whg:'Wohnungen',geschosse:'Geschosse',ep:'Einstellplätze'};
+const KP_QU={gv:'m³ GV',gf:'m² GF',hnf:'m² HNF',fassade:'m² Fassade',dach:'m² Dach',fenster:'m² Fenster',buf:'m² BUF',whg:'Whg',geschosse:'Geschoss'};
+let _KPN=null,_KPROOTS=null;
+function _kpTree(){
+  if(_KPN)return;
+  _KPN={};_KPROOTS=[];
+  KP_DATA.bkp.forEach(r=>{const c=r[0];_KPN[c]={c,n:r[1],sh:r[2]||null,kids:[],lvl:c.length,par:c.length===1?null:(c.length===2?c[0]:c.slice(0,2))};});
+  Object.values(_KPN).forEach(n=>{if(n.par&&_KPN[n.par])_KPN[n.par].kids.push(n.c);else if(!n.par)_KPROOTS.push(n.c);});
+}
+const _kpArt=id=>KP_DATA.gebaeudearten.find(a=>a.id===id)||KP_DATA.gebaeudearten[0];
+const _kpPh=id=>KP_DATA.phasen.find(p=>p.id===id)||KP_DATA.phasen[1];
+const _kpIdxKeys=()=>Object.keys(KP_DATA.index.werte);
+const _kpIdxF=(from,to)=>(KP_DATA.index.werte[to]||1)/(KP_DATA.index.werte[from]||1);
+const _kpFmt=(v,d=0)=>(isFinite(v)?v:0).toLocaleString('de-CH',{minimumFractionDigits:d,maximumFractionDigits:d});
+const _kpChf=v=>_kpFmt(Math.round(v));
+const _kpNum=v=>{const x=parseFloat(String(v==null?'':v).replace(/[’' ]/g,'').replace(',','.'));return isFinite(x)?x:'';};
+
+function _kpDefaults(projName){
+  const k=_kpIdxKeys();
+  return {name:'Kostenplan',art:'mfh-miete',std:1,bauart:'neubau',bezug:'gv',profil:'',
+    q:{gv:'',gf:'',hnf:'',fassade:'',dach:'',fenster:'',buf:'',whg:'',geschosse:'',ep:''},
+    region:1,stand:KP_DATA.kennwertStand,ziel:k[k.length-1],kw:'',phase:'21',
+    hg:{'0':{m:'chf',v:0},'1':{m:'pct',v:KP_DATA.hauptgruppenDefaults['1'].neubau},'3':{m:'pct',v:0},'4':{m:'pct',v:KP_DATA.hauptgruppenDefaults['4'].neubau},'5':{m:'pct',v:_kpArt('mfh-miete').bkp5},'9':{m:'pct',v:0}},
+    rows:{},res:Object.fromEntries(KP_DATA.phasen.map(p=>[p.id,p.reserve])),snaps:[]};
+}
+
+/* ---------- Rechenkern ---------- */
+function _kpCalc(st,depth){
+  _kpTree();
+  const N=_KPN, a=_kpArt(st.art), reg=(+st.region||1), f=_kpIdxF(st.stand,st.ziel)*reg;
+  const kwv=(parseFloat(st.kw)>0?parseFloat(st.kw):a[st.bezug][st.std]);
+  const q=st.q||{};
+  const b2base=kwv*(+q[st.bezug]||0)*f + (+q.ep||0)*KP_DATA.einstellplatz.ep*_kpIdxF(KP_DATA.einstellplatz.stand,st.ziel)*reg;
+  const prof=(KP_DATA.profile[st.profil||a.profil]||KP_DATA.profile.wohnen).s;
+  const V={},SRC={};
+  const share=code=>{const n=N[code];if(n.par==='2'&&n.lvl===2)return +prof[code]||0;return parseFloat(n.sh)||0;};
+  function node(code,base,d){
+    const n=N[code],r=st.rows[code];
+    if(r&&n.lvl>1){
+      if(r.m==='chf'){V[code]=+r.v||0;SRC[code]='chf';if(n.lvl<d&&n.kids.length)fill(code,V[code],d,true);return V[code];}
+      if(r.m==='kw'){V[code]=(+r.v||0)*(+q[r.q||st.bezug]||0);SRC[code]='kw';if(n.lvl<d&&n.kids.length)fill(code,V[code],d,true);return V[code];}
+      if(r.m==='pos'&&n.lvl===3&&r.pos&&r.pos.length){V[code]=r.pos.reduce((s,p)=>s+(+p.m||0)*(+p.ep||0),0);SRC[code]='pos';return V[code];}
+    }
+    if(n.lvl<d&&n.kids.length){V[code]=fill(code,base,d,false);SRC[code]=SRC[code]||'auto';return V[code];}
+    V[code]=base;SRC[code]=SRC[code]||'auto';return base;
+  }
+  function fill(code,base,d,fixed){
+    const n=N[code];let tot=0;const sh=n.kids.map(share);const sum=sh.reduce((x,y)=>x+y,0);
+    n.kids.forEach((k,i)=>{
+      const r=st.rows[k];let b=sum>0?base*sh[i]/sum:(i===0?base:0);
+      if(!fixed&&r&&r.m==='pct')b=base*(+r.v||0)/100;
+      if(fixed){V[k]=b;SRC[k]='anteil';if(N[k].lvl<d&&N[k].kids.length)fill(k,b,d,true);}
+      else{const v=node(k,b,d);if(r&&r.m==='pct')SRC[k]='pct';tot+=v;}
+    });
+    return fixed?base:tot;
+  }
+  const B2=node('2',b2base,depth);SRC['2']='kw';
+  ['0','1','3','4','5','9'].forEach(h=>{
+    const g=st.hg[h]||{m:'pct',v:0};let base=0;
+    if(g.m==='pct')base=B2*(+g.v||0)/100;else if(g.m==='chf')base=+g.v||0;else if(g.m==='buf')base=(+q.buf||0)*(+g.v||0)*f;
+    node(h,base,depth);SRC[h]=g.m==='pct'?'pct':(g.m==='buf'?'kw':'chf');
+  });
+  const sub19=['1','2','3','4','5','9'].reduce((s,h)=>s+(V[h]||0),0);
+  const rate=+(st.res||{})[st.phase]||0, R=sub19*rate/100;
+  return {V,SRC,B2,b2base,kw:kwv,f,sub19,R,rate,total:(V['0']||0)+sub19+R,depth};
+}
+
+/* ---------- Speichern ---------- */
+function _kpSave(now){
+  const p=_kp.plan;if(!p)return;
+  p.updatedAt=nowISO();
+  clearTimeout(_kp.saveT);
+  const go=async()=>{try{await put('costplans',p);}catch(e){toast('Speichern fehlgeschlagen: '+e.message,false,true);}};
+  if(now)return go();
+  _kp.saveT=setTimeout(go,500);
+}
+function _kpBusy(){
+  const a=document.activeElement,root=document.getElementById('kpRoot');
+  if(a&&root&&root.contains(a)&&/^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName))return true;
+  const mr=document.getElementById('modalRoot');if(mr&&mr.innerHTML.trim())return true;
+  return false;
+}
+async function _kpOnRemote(table){
+  if(table!=='costplans'&&table!=='projects')return;
+  if(state.module!=='kosten')return;
+  if(_kpBusy()){_kp.pendingRemote=true;return;}
+  _kp.plan=null;await renderKostenplanung();
+}
+
+/* ---------- Stile ---------- */
+function _kpEnsureStyles(){
+  if(document.getElementById('kpStyles'))return;
+  const st=document.createElement('style');st.id='kpStyles';
+  st.textContent=`
+#kpRoot .mod-body{display:flex;flex-direction:column;gap:14px;overflow:auto}
+#kpRoot .mod-body>*{flex-shrink:0}
+.kp-num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.kp-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600}
+.kp-hint{font-size:12px;color:var(--muted);line-height:1.4}
+.kp-phases{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--paper)}
+.kp-ph{border-right:1px solid var(--line);text-align:left;padding:9px 13px;display:flex;flex-direction:column;gap:1px;min-width:0}
+.kp-ph:last-child{border-right:0}
+.kp-ph .pn{font:600 11.5px var(--mono);color:var(--muted)}
+.kp-ph .pt{font-weight:700;font-size:14.5px;overflow-wrap:anywhere}
+.kp-ph .pd{font-size:12px;color:var(--muted)}
+.kp-ph.on{background:var(--steel-light);box-shadow:inset 0 -3px 0 var(--ink)}
+.kp-ph.on .pn{color:var(--ink)}
+.kp-sum{display:grid;grid-template-columns:2fr repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.kp-sum>div{background:var(--paper);padding:11px 13px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.kp-sum .big{font:600 23px var(--mono)}
+.kp-sum .mid{font:600 16px var(--mono)}
+.kp-band{height:6px;border-radius:3px;background:var(--line-2);position:relative;margin-top:6px}
+.kp-band i{position:absolute;top:0;bottom:0;background:var(--ink);opacity:.25;border-radius:3px}
+.kp-band b{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink)}
+.kp-tabs{display:inline-flex;background:#f1f2f4;border-radius:9px;padding:3px;gap:2px}
+.kp-tabs button{padding:5px 12px;font-size:12.5px;border-radius:7px;color:#5c6168}
+.kp-tabs button.on{background:#fff;color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(16,24,40,.12)}
+.kp-main{display:grid;grid-template-columns:320px minmax(0,1fr);gap:14px;align-items:start}
+.kp-panel{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:13px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.kp-panel h3{font-size:14px;margin:0}
+.kp-fgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px 9px}
+.kp-f{display:flex;flex-direction:column;gap:3px;min-width:0}
+.kp-f.full{grid-column:1/-1}
+.kp-f label{font-size:11.5px;color:var(--muted);font-weight:600}
+#kpRoot input,#kpRoot select{border:1px solid var(--line);border-radius:6px;padding:6px 8px;background:#fff;color:var(--ink);width:100%;min-width:0;font-size:13.5px}
+#kpRoot input.n{font-family:var(--mono);text-align:right}
+#kpRoot input[type=checkbox]{width:auto}
+.kp-seg{display:flex;background:#f1f2f4;border-radius:8px;padding:3px;gap:2px}
+.kp-seg button{flex:1;padding:5px 4px;font-size:12.5px;border-radius:6px;color:#5c6168}
+.kp-seg button.on{background:#fff;color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(16,24,40,.12)}
+.kp-kw{background:#f6f7f8;border:1px solid var(--line-2);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
+.kp-tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+.kp-t{border-collapse:collapse;width:100%;font-size:13.5px}
+.kp-t th,.kp-t td{padding:6px 9px;border-bottom:1px solid var(--line-2);text-align:left;vertical-align:middle}
+.kp-t th{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;white-space:nowrap;background:var(--paper)}
+.kp-t .r{text-align:right}
+.kp-t td.code{font-family:var(--mono);white-space:nowrap}
+.kp-t tr.l1 td{background:#f4f5f6;font-weight:700}
+.kp-t tr.l2 td.code{padding-left:22px}
+.kp-t tr.l3 td.code{padding-left:40px;color:var(--muted)}
+.kp-t tr.l3 td{font-size:13px}
+.kp-t tr.zero td{color:var(--muted)}
+.kp-t tr.res td{background:#fbf7ea;font-weight:600}
+.kp-t tr.tot td{border-top:2px solid var(--ink);font-weight:700;font-size:14px}
+.kp-t tr.ed>td{background:#f6f7f8;padding:10px 12px}
+.kp-tog{width:18px;color:var(--muted);font:12px var(--mono)}
+.kp-b{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:1px;border:1px solid var(--line);color:var(--muted)}
+.kp-b.chf{border-color:#b7791f;color:#9a6512}.kp-b.pos{border-color:#2f7a4b;color:#2f7a4b}.kp-b.kw,.kp-b.pct{border-color:#3b5b7a;color:#3b5b7a}
+.kp-erow{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end}
+.kp-erow .kp-f{flex:1 1 150px}
+.kp-pt td,.kp-pt th{padding:4px 5px;font-size:12.5px;border-bottom:1px solid var(--line-2)}
+.kp-tool{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:space-between}
+.kp-tool .g{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.kp-dup{color:#b42318}.kp-ddn{color:#2f7a4b}
+.kp-db{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.kp-db .wide{grid-column:1/-1}
+@media (max-width:1100px){.kp-main{grid-template-columns:minmax(0,1fr)}.kp-sum{grid-template-columns:repeat(2,minmax(0,1fr))}.kp-sum>div:first-child{grid-column:1/-1}.kp-db{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:640px){.kp-phases{grid-template-columns:repeat(2,minmax(0,1fr))}.kp-ph:nth-child(2){border-right:0}.kp-ph:nth-child(-n+2){border-bottom:1px solid var(--line)}.kp-cw{display:none}}
+`;
+  document.head.appendChild(st);
+}
+
+/* ---------- Hauptansicht ---------- */
+async function renderKostenplanung(){
+  _kpEnsureStyles();_kpTree();
+  const stage=document.getElementById('stage');
+  if(!state.projectId){
+    stage.innerHTML=`<div class="module"><div class="mod-head"><div><h1>Kostenplanung</h1></div></div><div class="mod-body"><div class="empty"><div class="big">💰</div><h3>Kein Projekt gewählt</h3><p>Bitte zuerst ein Projekt eröffnen oder auswählen.</p></div></div></div>`;
+    return;
+  }
+  const plans=(await byProject('costplans')).sort((a,b)=>(a.createdAt||'').localeCompare(b.createdAt||''));
+  if(!plans.length){
+    _kp.plan=null;
+    stage.innerHTML=`<div class="module" id="kpRoot"><div class="mod-head"><div><h1>Kostenplanung</h1><div class="sub">Baukostenplan BKP · Kostenermittlung nach SIA 102</div></div><div class="spacer"></div><button class="btn btn-primary btn-sm" id="kpNew">＋ Neuer Kostenplan</button></div>
+      <div class="mod-body"><div class="empty"><div class="big">💰</div><h3>Noch kein Kostenplan</h3>
+      <p>Grobkostenschätzung, Kostenschätzung und Kostenvoranschlag nach BKP 1-, 2- und 3-stellig – mit Kennwerten je Gebäudeart, Richtpreisen, Teuerung nach BFS-Baupreisindex und Reserve.</p>
+      <button class="btn btn-primary" id="kpNew2" style="margin-top:14px">＋ Kostenplan erstellen</button></div></div></div>`;
+    document.getElementById('kpNew').onclick=()=>_kpNewDialog();
+    document.getElementById('kpNew2').onclick=()=>_kpNewDialog();
+    return;
+  }
+  let p=plans.find(x=>x.id===_kp.planId)||plans[0];
+  if(!_kp.plan||_kp.plan.id!==p.id){_kp.open=new Set(_KPROOTS);_kp.editing=null;}
+  if(!_kp.open)_kp.open=new Set(_KPROOTS);
+  _kp.planId=p.id;_kp.plan=p;_kp.pendingRemote=false;
+  const ph=_kpPh(p.phase);
+  stage.innerHTML=`<div class="module" id="kpRoot">
+    <div class="mod-head"><div><h1>Kostenplanung</h1><div class="sub">${esc(ph.art)} · BKP ${ph.tiefe}-stellig · Genauigkeit ±${ph.genauigkeit} % (SIA 102)</div></div><div class="spacer"></div>
+      <select id="kpSel" style="max-width:240px;padding:6px 8px;border:1px solid var(--line);border-radius:8px">${plans.map(x=>`<option value="${x.id}"${x.id===p.id?' selected':''}>${esc(x.name||'Kostenplan')}</option>`).join('')}</select>
+      <button class="btn btn-ghost btn-sm" id="kpXls">⬇ Excel</button>
+      <button class="btn btn-steel btn-sm" id="kpPdf">⬇ PDF</button>
+      <button class="btn btn-ghost btn-sm" id="kpMore">⋯ Mehr</button>
+      <button class="btn btn-primary btn-sm" id="kpNew">＋ Neu</button></div>
+    <div class="mod-body">
+      <div class="kp-phases" id="kpPhases"></div>
+      <div class="kp-sum" id="kpSum"></div>
+      <div class="kp-tool"><div class="kp-tabs" id="kpTabs">${[['plan','Kostenplan'],['vgl','Phasenvergleich'],['db','Kennwerte & Quellen']].map(([k,l])=>`<button data-kpv="${k}" class="${_kp.view===k?'on':''}">${l}</button>`).join('')}</div>
+        <div class="g" id="kpTools"></div></div>
+      <div id="kpView"></div>
+    </div></div>`;
+  document.getElementById('kpSel').onchange=e=>{_kp.planId=e.target.value;_kp.plan=null;renderKostenplanung();};
+  document.getElementById('kpNew').onclick=()=>_kpNewDialog();
+  document.getElementById('kpXls').onclick=()=>_kpExportXlsx();
+  document.getElementById('kpPdf').onclick=()=>_kpExportPDF();
+  document.getElementById('kpMore').onclick=e=>_kpMoreMenu(e.currentTarget);
+  const root=document.getElementById('kpRoot');
+  root.addEventListener('click',_kpOnClick);
+  root.addEventListener('change',_kpOnChange);
+  root.addEventListener('focusout',()=>{setTimeout(()=>{if(_kp.pendingRemote&&!_kpBusy()){_kp.pendingRemote=false;_kp.plan=null;renderKostenplanung();}},60);});
+  _kpRender();
+}
+function _kpRender(){
+  const p=_kp.plan;if(!p)return;
+  const C=_kpCalc(p,_kpPh(p.phase).tiefe);
+  document.getElementById('kpPhases').innerHTML=KP_DATA.phasen.map(x=>`<button class="kp-ph${p.phase===x.id?' on':''}" data-kpph="${x.id}"><span class="pn">Phase ${esc(x.phase)}</span><span class="pt">${esc(x.art)}</span><span class="pd">BKP ${x.tiefe}-stellig · ±${x.genauigkeit} %</span></button>`).join('');
+  _kpRenderSum(C);
+  document.querySelectorAll('#kpTabs button').forEach(b=>b.classList.toggle('on',b.dataset.kpv===_kp.view));
+  const tools=document.getElementById('kpTools');
+  tools.innerHTML=_kp.view==='plan'?`<button class="btn btn-ghost btn-sm" data-kpa="exp">Alle aufklappen</button><button class="btn btn-ghost btn-sm" data-kpa="col">Nur Hauptgruppen</button><label class="kp-hint" style="display:flex;gap:5px;align-items:center"><input type="checkbox" id="kpZero"${_kp.showZero?' checked':''}> Nullpositionen</label><button class="btn btn-ghost btn-sm" data-kpa="snap">📌 Stand dieser Phase festhalten</button>`:(_kp.view==='vgl'?`<button class="btn btn-ghost btn-sm" data-kpa="snap">📌 Stand dieser Phase festhalten</button>`:'');
+  const v=document.getElementById('kpView');
+  if(_kp.view==='plan'){v.innerHTML=`<div class="kp-main"><div class="kp-panel" id="kpProj">${_kpProjHtml(C)}</div><div style="display:flex;flex-direction:column;gap:8px;min-width:0"><div class="kp-tw"><table class="kp-t">${_kpTableHtml(C)}</table></div><div class="kp-hint">Beträge inkl. MwSt ${KP_DATA.mwst} %. Kennwerte sind Richtwerte aus öffentlichen Quellen (Register «Kennwerte & Quellen») und ersetzen keine eigenen Abrechnungswerte.</div></div></div>`;}
+  else if(_kp.view==='vgl')v.innerHTML=`<div class="kp-panel"><div class="kp-hint">Mit «Stand dieser Phase festhalten» wird der aktuelle Kostenplan eingefroren – so lassen sich Grobkostenschätzung, Kostenschätzung und Kostenvoranschlag nebeneinander vergleichen.</div><div class="kp-tw"><table class="kp-t">${_kpVglHtml()}</table></div></div>`;
+  else v.innerHTML=_kpDbHtml(p);
+}
+function _kpRenderSum(C){
+  const p=_kp.plan,ph=_kpPh(p.phase),g=ph.genauigkeit/100,q=p.q||{};
+  const mw=C.total*KP_DATA.mwst/(100+KP_DATA.mwst);
+  document.getElementById('kpSum').innerHTML=`<div><span class="kp-lbl">${esc(ph.art)} · Anlagekosten BKP 0–9 inkl. MwSt</span><span class="big">CHF ${_kpChf(C.total)}</span><span class="kp-hint kp-num">Bandbreite ±${ph.genauigkeit} %: ${_kpChf(C.total*(1-g))} – ${_kpChf(C.total*(1+g))}</span><div class="kp-band"><i style="left:${50-50*g/(1+g)}%;right:${50-50*g/(1+g)}%"></i><b style="left:50%"></b></div></div>
+   <div><span class="kp-lbl">BKP 2 Gebäude</span><span class="mid">${_kpChf(C.V['2'])}</span><span class="kp-hint kp-num">${q.gv?_kpChf(C.V['2']/q.gv)+' /m³ GV':''}${q.gf?' · '+_kpChf(C.V['2']/q.gf)+' /m² GF':''}</span></div>
+   <div><span class="kp-lbl">BKP 1–9 je Fläche</span><span class="mid">${q.gf?_kpChf(C.sub19/q.gf):'–'}</span><span class="kp-hint kp-num">CHF/m² GF · ${q.gv?_kpChf(C.sub19/q.gv):'–'} /m³ GV</span></div>
+   <div><span class="kp-lbl">Reserve BKP 583</span><span class="mid">${_kpChf(C.R)}</span><span class="kp-hint">${_kpFmt(C.rate,1)} % auf BKP 1–9</span></div>
+   <div><span class="kp-lbl">Kostenstand</span><span class="mid">${esc(p.ziel)}</span><span class="kp-hint kp-num">davon MwSt: ${_kpChf(mw)}</span></div>`;
+}
+const _kpOpt=(v,l,sel)=>`<option value="${esc(v)}"${String(v)===String(sel)?' selected':''}>${esc(l)}</option>`;
+function _kpProjHtml(C){
+  const p=_kp.plan,a=_kpArt(p.art),q=p.q||{},IK=_kpIdxKeys(),IV=KP_DATA.index.werte;
+  return `<h3>Projektdaten</h3>
+  <div class="kp-fgrid">
+   <div class="kp-f full"><label for="kp-name">Bezeichnung Kostenplan</label><input id="kp-name" data-kpk="name" value="${esc(p.name||'')}"></div>
+   <div class="kp-f full"><label for="kp-art">Gebäudeart</label><select id="kp-art" data-kpk="art">${KP_DATA.gebaeudearten.map(x=>_kpOpt(x.id,x.name,p.art)).join('')}</select></div>
+   <div class="kp-f full"><label>Standard</label><div class="kp-seg">${KP_STD.map((s,i)=>`<button data-kpstd="${i}" class="${p.std===i?'on':''}">${s}</button>`).join('')}</div></div>
+   <div class="kp-f full"><label>Bauart</label><div class="kp-seg">${['neubau','umbau'].map(b=>`<button data-kpba="${b}" class="${p.bauart===b?'on':''}">${b==='neubau'?'Neubau':'Umbau / Sanierung'}</button>`).join('')}</div></div>
+   <div class="kp-f full"><label>Bezugsgrösse Kennwert BKP 2</label><div class="kp-seg">${['gv','gf'].map(b=>`<button data-kpbz="${b}" class="${p.bezug===b?'on':''}">${b==='gv'?'CHF/m³ GV':'CHF/m² GF'}</button>`).join('')}</div></div>
+  </div>
+  <div class="kp-kw"><span class="kp-lbl">Kennwert BKP 2 · ${esc(a.name)} · ${KP_STD[p.std]}</span>
+   <span class="kp-num">${_kpChf(a[p.bezug][p.std])} CHF/${p.bezug==='gv'?'m³ GV':'m² GF'} <span class="kp-hint">(Stand ${esc(KP_DATA.kennwertStand)})</span></span>
+   <span class="kp-hint">Spanne ${a[p.bezug].map(_kpChf).join(' / ')} · ${esc(a.quelle)}</span>
+   <div class="kp-f" style="margin-top:6px"><label for="kp-kw">Eigener Kennwert (überschreibt Richtwert)</label><input class="n" id="kp-kw" data-kpk="kw" inputmode="decimal" placeholder="z. B. aus eigener Abrechnung" value="${esc(p.kw)}"></div></div>
+  <h3>Mengen</h3>
+  <div class="kp-fgrid">${Object.keys(KP_QL).map(k=>`<div class="kp-f"><label for="kp-q-${k}">${KP_QL[k]}</label><input class="n" id="kp-q-${k}" data-kpq="${k}" inputmode="decimal" value="${q[k]??''}"></div>`).join('')}</div>
+  <div class="kp-hint">Einstellplätze: CHF ${_kpChf(KP_DATA.einstellplatz.ep)} je Platz zu BKP 2 (${esc(KP_DATA.einstellplatz.quelle)}). Fassade, Dach, Fenster, HNF und Wohnungen dienen als Vorschlagsmengen im Kostenvoranschlag.</div>
+  <h3>Teuerung und Region</h3>
+  <div class="kp-fgrid">
+   <div class="kp-f"><label for="kp-stand">Kostenstand Kennwert</label><select id="kp-stand" data-kpk="stand">${IK.map(k=>_kpOpt(k,k+' · '+IV[k],p.stand)).join('')}</select></div>
+   <div class="kp-f"><label for="kp-ziel">Kostenstand Projekt</label><select id="kp-ziel" data-kpk="ziel">${IK.map(k=>_kpOpt(k,k+' · '+IV[k],p.ziel)).join('')}</select></div>
+   <div class="kp-f"><label for="kp-reg">Regionalfaktor</label><input class="n" id="kp-reg" data-kpk="region" inputmode="decimal" value="${p.region}"></div>
+   <div class="kp-f"><label>Teuerungsfaktor</label><input class="n" disabled value="${_kpFmt(_kpIdxF(p.stand,p.ziel),4)}"></div>
+  </div>
+  <div class="kp-hint">BFS-Baupreisindex Hochbau Schweiz (Okt 2020 = 100). Regionalfaktor 1.00 = Schweizer Mittel.</div>
+  <h3>Verteilung und Reserve</h3>
+  <div class="kp-f"><label for="kp-prof">Verteilschlüssel BKP 20–29</label><select id="kp-prof" data-kpk="profil">${_kpOpt('','Automatisch: '+KP_DATA.profile[a.profil].name,p.profil)}${Object.keys(KP_DATA.profile).map(k=>_kpOpt(k,KP_DATA.profile[k].name,p.profil)).join('')}</select></div>
+  <div class="kp-f"><label for="kp-res">Reserve BKP 583 in Phase ${esc(p.phase)} (%)</label><input class="n" id="kp-res" data-kpres="1" inputmode="decimal" value="${(p.res||{})[p.phase]??0}"></div>`;
+}
+const _kpBadge=s=>({chf:'<span class="kp-b chf">Pauschal</span>',pos:'<span class="kp-b pos">Menge × EP</span>',kw:'<span class="kp-b kw">Kennwert</span>',pct:'<span class="kp-b pct">%</span>'}[s]||'');
+function _kpTableHtml(C){
+  const p=_kp.plan,d=C.depth,q=p.q||{},sum=C.total||1,N=_KPN;
+  let h=`<thead><tr><th style="width:92px">BKP</th><th>Bezeichnung</th><th class="r">CHF</th><th class="r">%</th><th class="r kp-cw">CHF/m³ GV</th><th class="r kp-cw">CHF/m² GF</th><th></th></tr></thead><tbody>`;
+  const row=code=>{
+    const n=N[code],v=C.V[code]||0;if(n.lvl>d)return '';
+    if(!_kp.showZero&&n.lvl>1&&Math.abs(v)<0.5&&!p.rows[code])return '';
+    const hasK=n.lvl<d&&n.kids.length,op=_kp.open.has(code);
+    let r=`<tr class="l${n.lvl}${Math.abs(v)<0.5?' zero':''}"><td class="code">${hasK?`<button class="kp-tog" data-kptog="${code}" title="${op?'zuklappen':'aufklappen'}">${op?'▾':'▸'}</button>`:'<span style="display:inline-block;width:18px"></span>'}${code}</td>
+      <td>${esc(n.n)}${C.SRC[code]&&C.SRC[code]!=='auto'&&C.SRC[code]!=='anteil'?_kpBadge(C.SRC[code]):''}</td>
+      <td class="r kp-num">${_kpChf(v)}</td><td class="r kp-num">${_kpFmt(v/sum*100,1)}</td>
+      <td class="r kp-num kp-cw">${q.gv?_kpFmt(v/q.gv):'–'}</td><td class="r kp-num kp-cw">${q.gf?_kpFmt(v/q.gf):'–'}</td>
+      <td class="r"><button class="btn btn-ghost btn-sm" data-kped="${code}">${_kp.editing===code?'Schliessen':'Bearbeiten'}</button></td></tr>`;
+    if(_kp.editing===code)r+=`<tr class="ed"><td colspan="7">${_kpEditorHtml(code)}</td></tr>`;
+    if(hasK&&op)r+=n.kids.map(row).join('');
+    return r;
+  };
+  h+=_KPROOTS.map(row).join('');
+  h+=`<tr class="res"><td class="code"><span style="display:inline-block;width:18px"></span>583</td><td>Reserve für Unvorhergesehenes (${_kpFmt(C.rate,1)} % auf BKP 1–9)</td><td class="r kp-num">${_kpChf(C.R)}</td><td class="r kp-num">${_kpFmt(C.R/sum*100,1)}</td><td class="r kp-num kp-cw">${q.gv?_kpFmt(C.R/q.gv):''}</td><td class="r kp-num kp-cw">${q.gf?_kpFmt(C.R/q.gf):''}</td><td></td></tr>`;
+  h+=`<tr class="tot"><td></td><td>Total Anlagekosten BKP 0–9</td><td class="r kp-num">${_kpChf(C.total)}</td><td class="r kp-num">100.0</td><td class="r kp-num kp-cw">${q.gv?_kpFmt(C.total/q.gv):''}</td><td class="r kp-num kp-cw">${q.gf?_kpFmt(C.total/q.gf):''}</td><td></td></tr></tbody>`;
+  return h;
+}
+function _kpEditorHtml(code){
+  const p=_kp.plan,n=_KPN[code],r=p.rows[code]||{m:'auto'},q=p.q||{};
+  if(n.lvl===1){
+    if(code==='2')return `<div class="kp-hint">BKP 2 entsteht aus Kennwert × Bezugsgrösse (Projektdaten links). In Kostenschätzung und Kostenvoranschlag werden die Untergruppen einzeln bearbeitet.</div>`;
+    const g=p.hg[code]||{m:'pct',v:0},hint=(KP_DATA.hauptgruppenDefaults[code]||{}).quelle||'';
+    return `<div class="kp-erow"><div class="kp-f"><label>Ermittlung</label><select data-kphgm="${code}">${_kpOpt('pct','% von BKP 2',g.m)}${_kpOpt('chf','CHF pauschal',g.m)}${code==='4'?_kpOpt('buf','CHF/m² × Umgebungsfläche',g.m):''}</select></div>
+      <div class="kp-f"><label>${g.m==='pct'?'Prozent':(g.m==='buf'?'CHF/m² BUF':'CHF')}</label><input class="n" data-kphgv="${code}" inputmode="decimal" value="${g.v}"></div></div>${hint?`<div class="kp-hint" style="margin-top:6px">Richtwerte: ${esc(hint)}</div>`:''}`;
+  }
+  const a=_kpArt(p.art);
+  const base=n.lvl===2&&n.par==='2'?`Profilanteil ${_kpFmt(+((KP_DATA.profile[p.profil||a.profil]||{s:{}}).s[code]||0),1)} % von BKP 2`:`Verteilschlüssel ${_kpFmt(parseFloat(n.sh)||0,0)} % der Gruppe ${n.par}`;
+  let modes=_kpOpt('auto','Automatisch ('+base+')',r.m)+_kpOpt('pct','Anteil % der übergeordneten Gruppe',r.m)+_kpOpt('chf','CHF pauschal',r.m);
+  if(n.lvl===2)modes+=_kpOpt('kw','Kennwert CHF × Menge',r.m);
+  if(n.lvl===3)modes+=_kpOpt('pos','Positionen Menge × Einheitspreis',r.m);
+  let h=`<div class="kp-erow"><div class="kp-f" style="flex:2 1 260px"><label>Ermittlung</label><select data-kprm="${code}">${modes}</select></div>`;
+  if(r.m==='pct'||r.m==='chf'||r.m==='kw')h+=`<div class="kp-f"><label>${r.m==='pct'?'Prozent':(r.m==='kw'?'CHF je Einheit':'CHF')}</label><input class="n" data-kprv="${code}" inputmode="decimal" value="${r.v??''}"></div>`;
+  if(r.m==='kw')h+=`<div class="kp-f"><label>Bezugsmenge</label><select data-kprq="${code}">${Object.keys(KP_QU).map(k=>_kpOpt(k,KP_QU[k]+' ('+_kpFmt(+q[k]||0)+')',r.q||p.bezug)).join('')}</select></div>`;
+  h+=`</div>`;
+  if(n.lvl===3&&r.m==='pos'){
+    const pos=r.pos||[],kat=KP_DATA.katalog.map((k,i)=>[k,i]).filter(([k])=>k.bkp===code);
+    h+=`<table class="kp-pt" style="width:100%;margin-top:8px"><thead><tr><th>Position</th><th class="r">Menge</th><th>Einheit</th><th class="r">EP CHF</th><th class="r">CHF</th><th></th></tr></thead><tbody>`+
+      pos.map((x,i)=>`<tr><td><input data-kpp="${code}|${i}|t" value="${esc(x.t||'')}"></td><td><input class="n" data-kpp="${code}|${i}|m" inputmode="decimal" value="${x.m??''}" style="width:90px"></td><td><input data-kpp="${code}|${i}|u" value="${esc(x.u||'')}" style="width:90px"></td><td><input class="n" data-kpp="${code}|${i}|ep" inputmode="decimal" value="${x.ep??''}" style="width:100px"></td><td class="r kp-num">${_kpChf((+x.m||0)*(+x.ep||0))}</td><td><button class="btn btn-ghost btn-sm" data-kppdel="${code}|${i}" title="Position entfernen">✕</button></td></tr>`).join('')+
+      `</tbody></table><div class="kp-erow" style="margin-top:6px">${kat.length?`<div class="kp-f" style="flex:3 1 300px"><label>Richtpreis aus Datenbank (teuerungsbereinigt auf ${esc(p.ziel)})</label><select data-kpkat="${code}"><option value="">– wählen –</option>${kat.map(([k,i])=>`<option value="${i}">${esc(k.t)} · ${_kpChf(k.p[1])} CHF/${esc(k.u)} (${esc(k.st)})</option>`).join('')}</select></div>`:'<div class="kp-hint">Für diese Position sind noch keine Richtpreise hinterlegt.</div>'}<button class="btn btn-ghost btn-sm" data-kppadd="${code}">＋ Leere Position</button></div>`;
+    if(!pos.length)h+=`<div class="kp-hint" style="margin-top:6px">Solange keine Position erfasst ist, bleibt der automatisch verteilte Betrag stehen.</div>`;
+  }
+  return h;
+}
+function _kpVglHtml(){
+  const sn=_kp.plan.snaps||[],N=_KPN;
+  if(!sn.length)return '<tbody><tr><td class="kp-hint">Noch kein Stand festgehalten. Phase wählen und «Stand dieser Phase festhalten» drücken.</td></tr></tbody>';
+  const codes=_KPROOTS.flatMap(c=>[c,...N[c].kids]).filter(c=>sn.some(s=>Math.abs((s.vals||{})[c]||0)>0));
+  const dl=(a,b)=>{const d=b-a,pc=a?d/a*100:0;return `<td class="r kp-num ${d>0?'kp-dup':(d<0?'kp-ddn':'')}">${d>0?'+':''}${_kpChf(d)}<br><span class="kp-hint">${a?(d>0?'+':'')+_kpFmt(pc,1)+' %':''}</span></td>`;};
+  let h=`<thead><tr><th>BKP</th><th>Bezeichnung</th>${sn.map((s,i)=>`<th class="r">${esc(s.art)}<br><span class="kp-hint">${esc(s.date)} · ${esc(s.ziel)}</span> <button class="btn btn-ghost btn-sm" data-kpsdel="${i}" title="Stand entfernen">✕</button></th>`).join('')}${sn.length>1?'<th class="r">Δ erste → letzte</th>':''}</tr></thead><tbody>`;
+  codes.forEach(c=>{h+=`<tr class="l${N[c].lvl}"><td class="code">${c}</td><td>${esc(N[c].n)}</td>${sn.map(s=>`<td class="r kp-num">${(s.vals||{})[c]!=null?_kpChf(s.vals[c]):'–'}</td>`).join('')}${sn.length>1?dl(sn[0].vals[c]||0,sn[sn.length-1].vals[c]||0):''}</tr>`;});
+  h+=`<tr class="res"><td class="code">583</td><td>Reserve</td>${sn.map(s=>`<td class="r kp-num">${_kpChf(s.R)}</td>`).join('')}${sn.length>1?dl(sn[0].R,sn[sn.length-1].R):''}</tr>`;
+  h+=`<tr class="tot"><td></td><td>Total BKP 0–9</td>${sn.map(s=>`<td class="r kp-num">${_kpChf(s.total)}</td>`).join('')}${sn.length>1?dl(sn[0].total,sn[sn.length-1].total):''}</tr></tbody>`;
+  return h;
+}
+function _kpDbHtml(p){
+  const D=KP_DATA,Q=D.quellen,IK=_kpIdxKeys(),g2=Object.keys(D.profile.wohnen.s);
+  const src=k=>Q[k]?`<a href="${esc(Q[k].u)}" target="_blank" rel="noopener">${esc(k)}</a>`:esc(k);
+  return `<div class="kp-db">
+  <div class="kp-panel wide"><h3>Kennwerte BKP 2 je Gebäudeart <span class="kp-hint">inkl. MwSt · Stand ${esc(D.kennwertStand)}</span></h3>
+   <div class="kp-tw"><table class="kp-t"><thead><tr><th>Gebäudeart</th><th class="r">m³ GV einfach</th><th class="r">mittel</th><th class="r">gehoben</th><th class="r">m² GF einfach</th><th class="r">mittel</th><th class="r">gehoben</th><th class="r">BKP 5 %</th><th>Quelle</th></tr></thead><tbody>
+   ${D.gebaeudearten.map(a=>`<tr><td>${esc(a.name)}</td>${a.gv.map(v=>`<td class="r kp-num">${_kpChf(v)}</td>`).join('')}${a.gf.map(v=>`<td class="r kp-num">${_kpChf(v)}</td>`).join('')}<td class="r kp-num">${a.bkp5}</td><td class="kp-hint">${esc(a.quelle)}</td></tr>`).join('')}</tbody></table></div>
+   <div class="kp-hint">Spannen aus mehreren öffentlichen Quellen zusammengeführt (2020–2026). Für verbindliche Kostenvoranschläge mit eigenen Schlussabrechnungen kalibrieren («Eigener Kennwert»).</div></div>
+  <div class="kp-panel wide"><h3>Verteilschlüssel BKP 20–29 <span class="kp-hint">% von BKP 2</span></h3>
+   <div class="kp-tw"><table class="kp-t"><thead><tr><th>Profil</th>${g2.map(c=>`<th class="r">${c}</th>`).join('')}</tr></thead><tbody>
+   ${Object.keys(D.profile).map(k=>`<tr><td>${esc(D.profile[k].name)}</td>${g2.map(c=>`<td class="r kp-num">${_kpFmt(D.profile[k].s[c],1)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+   <div class="kp-hint">«Wohnen» aus den Gewichten des BFS-Baupreisindex Hochbau (Okt 2025), «MFH Zürich» aus dem Zürcher Index der Wohnbaupreise (Rev. 2020); übrige Profile und die 3-stelligen Schlüssel sind Richtwerte zur Kalibrierung.</div></div>
+  <div class="kp-panel"><h3>Hauptgruppen BKP 1, 3, 4, 5, 9</h3><div class="kp-tw"><table class="kp-t"><thead><tr><th>BKP</th><th class="r">Vorgabe %</th><th>Belege</th></tr></thead><tbody>
+   ${Object.entries(D.hauptgruppenDefaults).map(([k,v])=>`<tr><td class="code">${k}</td><td class="r kp-num">${v.neubau}${v.umbau!=null?' / '+v.umbau+' Umbau':''}</td><td class="kp-hint">${esc(v.quelle)}</td></tr>`).join('')}</tbody></table></div></div>
+  <div class="kp-panel"><h3>Phasen und Genauigkeit</h3><div class="kp-tw"><table class="kp-t"><thead><tr><th>SIA-Phase</th><th>Ermittlung</th><th class="r">BKP</th><th class="r">±</th><th class="r">Reserve</th></tr></thead><tbody>
+   ${D.phasen.map(x=>`<tr><td>${esc(x.phase)}</td><td>${esc(x.art)}</td><td class="r kp-num">${x.tiefe}-st.</td><td class="r kp-num">${x.genauigkeit} %</td><td class="r kp-num">${x.reserve}${x.reserveUmbau?' / '+x.reserveUmbau:''} %</td></tr>`).join('')}</tbody></table></div>
+   <div class="kp-hint">${D.phasen.map(x=>esc(x.phase+': '+x.quelle)).join('<br>')}</div></div>
+  <div class="kp-panel"><h3>Baupreisindex</h3><div class="kp-tw"><table class="kp-t"><thead><tr><th>Erhebung</th><th class="r">Index</th><th>Anmerkung</th></tr></thead><tbody>
+   ${IK.map(k=>`<tr><td>${k}</td><td class="r kp-num">${_kpFmt(D.index.werte[k],1)}</td><td class="kp-hint">${esc(D.index.anmerkungen[k]||'BFS')}</td></tr>`).join('')}</tbody></table></div><div class="kp-hint">${esc(D.index.name)}. MwSt ${D.mwst} %.</div></div>
+  <div class="kp-panel"><h3>Quellen</h3><ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:12.5px">${Object.entries(Q).map(([k,v])=>`<li><b>${esc(k)}</b> · <a href="${esc(v.u)}" target="_blank" rel="noopener">${esc(v.t)}</a></li>`).join('')}</ol><div class="kp-hint">${esc(D.hinweis)}</div></div>
+  <div class="kp-panel wide"><h3>Richtpreise 3-stellig <span class="kp-hint">${D.katalog.length} Positionen</span></h3>
+   <div class="kp-tw"><table class="kp-t"><thead><tr><th>BKP</th><th>Position</th><th>Einheit</th><th class="r">Quelle CHF</th><th class="r">Indexiert ${esc(p.ziel)}</th><th>Stand · Quelle</th></tr></thead><tbody>
+   ${D.katalog.map(k=>`<tr><td class="code">${k.bkp}</td><td>${esc(k.t)}</td><td>${esc(k.u)}</td><td class="r kp-num">${k.p[0]===k.p[2]?_kpChf(k.p[1]):_kpChf(k.p[0])+' – '+_kpChf(k.p[2])}</td><td class="r kp-num">${_kpChf(k.p[1]*_kpIdxF(k.st,p.ziel))}</td><td class="kp-hint">${esc(k.st)} · ${src(k.s)}</td></tr>`).join('')}</tbody></table></div></div>
+  </div>`;
+}
+
+/* ---------- Ereignisse ---------- */
+function _kpRerender(){_kpSave();_kpRender();}
+function _kpOnClick(e){
+  const t=e.target.closest('button');if(!t||!_kp.plan)return;const p=_kp.plan,ds=t.dataset;
+  if(ds.kpv){_kp.view=ds.kpv;_kpRender();return;}
+  if(ds.kpph){p.phase=ds.kpph;_kp.editing=null;_kpRerender();return;}
+  if(ds.kpstd){p.std=+ds.kpstd;_kpRerender();return;}
+  if(ds.kpba){p.bauart=ds.kpba;const u=ds.kpba==='umbau';p.hg['1'].v=u?KP_DATA.hauptgruppenDefaults['1'].umbau:KP_DATA.hauptgruppenDefaults['1'].neubau;KP_DATA.phasen.forEach(x=>{if(x.reserveUmbau)p.res[x.id]=u?x.reserveUmbau:x.reserve;});_kpRerender();return;}
+  if(ds.kpbz){p.bezug=ds.kpbz;_kpRerender();return;}
+  if(ds.kptog){const c=ds.kptog;_kp.open.has(c)?_kp.open.delete(c):_kp.open.add(c);_kpRender();return;}
+  if(ds.kped){_kp.editing=_kp.editing===ds.kped?null:ds.kped;_kpRender();return;}
+  if(ds.kppadd){const c=ds.kppadd,r=p.rows[c]=p.rows[c]||{m:'pos'};r.m='pos';(r.pos=r.pos||[]).push({t:'',m:'',u:'',ep:''});_kpRerender();return;}
+  if(ds.kppdel){const [c,i]=ds.kppdel.split('|');p.rows[c].pos.splice(+i,1);_kpRerender();return;}
+  if(ds.kpsdel!=null){p.snaps.splice(+ds.kpsdel,1);_kpRerender();return;}
+  if(ds.kpa==='exp'){Object.values(_KPN).forEach(n=>{if(n.kids.length)_kp.open.add(n.c);});_kpRender();return;}
+  if(ds.kpa==='col'){_kp.open.clear();_kpRender();return;}
+  if(ds.kpa==='snap'){_kpSnapshot();return;}
+}
+function _kpOnChange(e){
+  const t=e.target,ds=t.dataset,p=_kp.plan;if(!p)return;
+  if(t.id==='kpSel')return;
+  if(t.id==='kpZero'){_kp.showZero=t.checked;_kpRender();return;}
+  if(ds.kpres){p.res[p.phase]=_kpNum(t.value)||0;_kpRerender();return;}
+  if(ds.kpk){const k=ds.kpk;
+    if(k==='name'){p.name=t.value;_kpSave();const o=document.querySelector('#kpSel option[value="'+p.id+'"]');if(o)o.textContent=p.name||'Kostenplan';return;}
+    p[k]=k==='region'?(_kpNum(t.value)||1):(k==='kw'?_kpNum(t.value):t.value);
+    if(k==='art'){p.kw='';const a=_kpArt(p.art);p.hg['5'].v=a.bkp5;if(a.umbau&&p.bauart!=='umbau'){p.bauart='umbau';p.hg['1'].v=KP_DATA.hauptgruppenDefaults['1'].umbau;KP_DATA.phasen.forEach(x=>{if(x.reserveUmbau)p.res[x.id]=x.reserveUmbau;});}}
+    _kpRerender();return;}
+  if(ds.kpq){p.q[ds.kpq]=_kpNum(t.value);_kpRerender();return;}
+  if(ds.kphgm){p.hg[ds.kphgm].m=t.value;if(t.value==='buf')p.hg[ds.kphgm].v=120;_kpRerender();return;}
+  if(ds.kphgv){p.hg[ds.kphgv].v=_kpNum(t.value)||0;_kpRerender();return;}
+  if(ds.kprm){const c=ds.kprm;if(t.value==='auto')delete p.rows[c];else{const C=_kpCalc(p,_kpPh(p.phase).tiefe),cur=Math.round(C.V[c]||0),r=p.rows[c]=p.rows[c]||{};r.m=t.value;
+    if(r.m==='chf')r.v=cur;if(r.m==='pct'){const par=_KPN[c].par;r.v=+(C.V[par]?cur/C.V[par]*100:0).toFixed(2);}if(r.m==='kw'){r.q=p.bezug;r.v=p.q[p.bezug]?Math.round(cur/p.q[p.bezug]):0;}if(r.m==='pos')r.pos=r.pos||[];}
+    _kpRerender();return;}
+  if(ds.kprv){p.rows[ds.kprv].v=_kpNum(t.value)||0;_kpRerender();return;}
+  if(ds.kprq){p.rows[ds.kprq].q=t.value;_kpRerender();return;}
+  if(ds.kpkat){if(t.value==='')return;const k=KP_DATA.katalog[+t.value],c=ds.kpkat,r=p.rows[c]=p.rows[c]||{m:'pos'};r.m='pos';r.pos=r.pos||[];
+    r.pos.push({t:k.t,m:k.q?(p.q[k.q]||''):'',u:k.u,ep:Math.round(k.p[1]*_kpIdxF(k.st,p.ziel))});_kpRerender();return;}
+  if(ds.kpp){const [c,i,f]=ds.kpp.split('|');p.rows[c].pos[+i][f]=(f==='t'||f==='u')?t.value:_kpNum(t.value);_kpRerender();return;}
+}
+function _kpSnapshot(){
+  const p=_kp.plan,C=_kpCalc(p,_kpPh(p.phase).tiefe),vals={};
+  Object.keys(C.V).forEach(k=>{if(k.length<=2)vals[k]=Math.round(C.V[k]);});
+  (p.snaps=p.snaps||[]).push({phase:p.phase,art:_kpPh(p.phase).art,date:fmtDate(todayISO()),ziel:p.ziel,vals,R:Math.round(C.R),total:Math.round(C.total)});
+  _kp.view='vgl';_kpRerender();toast('Stand «'+_kpPh(p.phase).art+'» festgehalten',true);
+}
+
+/* ---------- Neu / Mehr ---------- */
+async function _kpNewDialog(){
+  const plans=await byProject('costplans');
+  modal(`<div class="modal-head"><h3>💰 Neuer Kostenplan</h3><p>Startet mit der Grobkostenschätzung (Phase 21). Mengen nach SIA 416 danach in den Projektdaten erfassen.</p></div>
+    <div class="modal-body">
+      <div class="field"><label>Bezeichnung</label><input id="kpn-name" value="${plans.length?'Variante '+(plans.length+1):'Kostenplan'}"></div>
+      <div class="field"><label>Gebäudeart</label><select id="kpn-art">${KP_DATA.gebaeudearten.map(a=>_kpOpt(a.id,a.name,'mfh-miete')).join('')}</select></div>
+      <div class="field-row"><div class="field"><label>GV m³ (SIA 416)</label><input id="kpn-gv" inputmode="decimal"></div><div class="field"><label>GF m² (SIA 416)</label><input id="kpn-gf" inputmode="decimal"></div></div>
+      ${plans.length?`<div class="field"><label>Übernehmen von</label><select id="kpn-copy"><option value="">– leer beginnen –</option>${plans.map(x=>_kpOpt(x.id,x.name||'Kostenplan','')).join('')}</select></div>`:''}
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal()">Abbrechen</button><button class="btn btn-primary" id="kpn-ok">Erstellen</button></div>`);
+  document.getElementById('kpn-ok').onclick=async()=>{
+    const cp=document.getElementById('kpn-copy'),src=cp&&cp.value?plans.find(x=>x.id===cp.value):null;
+    const base=src?JSON.parse(JSON.stringify(src)):_kpDefaults();
+    const p=Object.assign(base,{id:uid(),projectId:state.projectId,name:document.getElementById('kpn-name').value.trim()||'Kostenplan',createdAt:nowISO(),updatedAt:nowISO(),createdBy:(typeof CURRENT_USER!=='undefined'&&CURRENT_USER&&CURRENT_USER.name)||''});
+    if(!src){p.art=document.getElementById('kpn-art').value;p.hg['5'].v=_kpArt(p.art).bkp5;if(_kpArt(p.art).umbau){p.bauart='umbau';p.hg['1'].v=KP_DATA.hauptgruppenDefaults['1'].umbau;KP_DATA.phasen.forEach(x=>{if(x.reserveUmbau)p.res[x.id]=x.reserveUmbau;});}}
+    const gv=_kpNum(document.getElementById('kpn-gv').value),gf=_kpNum(document.getElementById('kpn-gf').value);
+    if(gv!=='')p.q.gv=gv; if(gf!=='')p.q.gf=gf; if(gv===''&&gf!=='')p.bezug='gf';
+    p.snaps=src?(p.snaps||[]):[];
+    await put('costplans',p);closeModal();_kp.planId=p.id;_kp.plan=null;_kp.view='plan';await renderKostenplanung();toast('Kostenplan erstellt',true);
+  };
+}
+function _kpMoreMenu(anchor){
+  const p=_kp.plan;if(!p)return;
+  document.querySelectorAll('.kp-menu').forEach(x=>x.remove());
+  const items=[
+    {l:'📌 Stand dieser Phase festhalten',fn:()=>_kpSnapshot()},
+    {l:'⧉ Kostenplan duplizieren (Variante)',fn:async()=>{const c=JSON.parse(JSON.stringify(p));c.id=uid();c.name=(p.name||'Kostenplan')+' (Kopie)';c.createdAt=nowISO();c.updatedAt=nowISO();await put('costplans',c);_kp.planId=c.id;_kp.plan=null;await renderKostenplanung();toast('Kopie erstellt',true);}},
+    {l:'↺ Alle Anpassungen der Positionen zurücksetzen',fn:()=>{p.rows={};_kp.editing=null;_kpRerender();toast('Positionen zurückgesetzt',true);}},
+    {l:'🗑 Kostenplan löschen',danger:true,fn:async()=>{const ok=await confirmDelete('costplans',p.id,p.name||'Kostenplan',null);if(ok){_kp.plan=null;_kp.planId=null;renderKostenplanung();}}}
+  ];
+  const m=document.createElement('div');m.className='kp-menu';
+  const r=anchor.getBoundingClientRect();
+  m.style.cssText=`position:fixed;top:${r.bottom+4}px;right:${Math.max(8,window.innerWidth-r.right)}px;z-index:900;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:5px;min-width:260px;display:flex;flex-direction:column`;
+  items.forEach(it=>{const b=document.createElement('button');b.textContent=it.l;b.style.cssText=`text-align:left;padding:8px 10px;border-radius:7px;font-size:13px;${it.danger?'color:#b42318':''}`;b.onmouseenter=()=>b.style.background='#f1f2f4';b.onmouseleave=()=>b.style.background='';b.onclick=()=>{m.remove();it.fn();};m.appendChild(b);});
+  document.body.appendChild(m);
+  setTimeout(()=>document.addEventListener('click',function h(ev){if(!m.contains(ev.target)){m.remove();document.removeEventListener('click',h);}}),0);
+}
+
+/* ---------- Export ---------- */
+function _kpRowsFor(p,C){
+  const out=[],d=C.depth;
+  (function walk(cs){cs.forEach(c=>{const n=_KPN[c];if(n.lvl>d)return;const v=C.V[c]||0;if(Math.abs(v)>=0.5||n.lvl===1)out.push({c,n:n.n,lvl:n.lvl,v,src:C.SRC[c]});walk(n.kids);});})(_KPROOTS);
+  return out;
+}
+async function _kpExportXlsx(){
+  const p=_kp.plan;if(!p)return;if(typeof XLSX==='undefined'){toast('Excel-Bibliothek nicht verfügbar',false,true);return;}
+  const proj=await get('projects',state.projectId),ph=_kpPh(p.phase),C=_kpCalc(p,ph.tiefe),q=p.q||{};
+  const rows=[['BKP','Bezeichnung','CHF','%','CHF/m³ GV','CHF/m² GF','Ermittlung']];
+  const SL={auto:'Kennwert/Verteilung',anteil:'Verteilung',pct:'Prozent',chf:'Pauschal',kw:'Kennwert',pos:'Menge × EP'};
+  _kpRowsFor(p,C).forEach(r=>rows.push([r.c,r.n,Math.round(r.v),+(r.v/(C.total||1)*100).toFixed(1),q.gv?Math.round(r.v/q.gv):'',q.gf?Math.round(r.v/q.gf):'',SL[r.src]||'']));
+  rows.push(['583','Reserve für Unvorhergesehenes ('+C.rate+' %)',Math.round(C.R),+(C.R/(C.total||1)*100).toFixed(1),'','','']);
+  rows.push(['','Total Anlagekosten BKP 0–9 inkl. MwSt',Math.round(C.total),100,q.gv?Math.round(C.total/q.gv):'',q.gf?Math.round(C.total/q.gf):'','']);
+  const pos=[['BKP','Position','Menge','Einheit','EP CHF','CHF']];
+  Object.entries(p.rows).forEach(([c,r])=>{if(r.m==='pos'&&r.pos)r.pos.forEach(x=>pos.push([c,x.t||'',x.m===''?'':+x.m,x.u||'',x.ep===''?'':+x.ep,Math.round((+x.m||0)*(+x.ep||0))]));});
+  const head=[[`${ph.art}: ${p.name||''} – ${proj?proj.name:''}`],[`Phase ${ph.phase} · BKP ${ph.tiefe}-stellig · Genauigkeit ±${ph.genauigkeit} % · Kostenstand ${p.ziel} · inkl. MwSt ${KP_DATA.mwst} %`],[`Bandbreite CHF ${_kpChf(C.total*(1-ph.genauigkeit/100))} – ${_kpChf(C.total*(1+ph.genauigkeit/100))}`],[]];
+  const ws=XLSX.utils.aoa_to_sheet([...head,...rows]);ws['!cols']=[{wch:7},{wch:46},{wch:14},{wch:7},{wch:11},{wch:11},{wch:18}];
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Kostenplan');
+  if(pos.length>1){const ws2=XLSX.utils.aoa_to_sheet(pos);ws2['!cols']=[{wch:7},{wch:44},{wch:10},{wch:12},{wch:11},{wch:13}];XLSX.utils.book_append_sheet(wb,ws2,'Positionen');}
+  const pd=[['Grösse','Wert'],...Object.keys(KP_QL).map(k=>[KP_QL[k],q[k]===''?'':+q[k]]),['Gebäudeart',_kpArt(p.art).name],['Standard',KP_STD[p.std]],['Kennwert BKP 2',C.kw+' CHF/'+(p.bezug==='gv'?'m³ GV':'m² GF')],['Kostenstand Kennwert',p.stand],['Teuerungsfaktor',+_kpIdxF(p.stand,p.ziel).toFixed(4)],['Regionalfaktor',p.region]];
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(pd),'Grundlagen');
+  XLSX.writeFile(wb,`${ph.art.replace(/[^\wäöüÄÖÜ\-]+/g,'_')}_${(proj&&proj.name||'Projekt').replace(/[^\w\-]+/g,'_').slice(0,40)}_${todayISO()}.xlsx`);
+  toast('Excel-Datei erstellt',true);
+}
+async function _kpExportPDF(){
+  const p=_kp.plan;if(!p)return;
+  try{
+    const proj=await get('projects',state.projectId),ph=_kpPh(p.phase),C=_kpCalc(p,ph.tiefe),q=p.q||{},a=_kpArt(p.art);
+    const {jsPDF}=window.jspdf;const doc=new jsPDF();registerEmbeddedFonts(doc,'kosten');
+    const g=ph.genauigkeit/100;
+    let y=pdfDocHead(doc,ph.art,[{l:proj?proj.name:'',proj:true},{l:`${p.name||''} · Phase ${ph.phase} · BKP ${ph.tiefe}-stellig · Genauigkeit ±${ph.genauigkeit} % (SIA 102)`},{l:`${a.name}, Standard ${KP_STD[p.std]}${q.gv?' · GV '+_kpChf(q.gv)+' m3':''}${q.gf?' · GF '+_kpChf(q.gf)+' m2':''} · Kostenstand ${p.ziel} (BFS-Baupreisindex)`}],'kosten');
+    const X={c:PDF.ML,n:PDF.ML+16,v:PDF.MR-52,pc:PDF.MR-38,m3:PDF.MR-19,m2:PDF.MR};
+    const headRow=yy=>{doc.setFontSize(7);doc.setTextColor(120);doc.setFont(undefined,'bold');doc.text('BKP',X.c,yy);doc.text('Bezeichnung',X.n,yy);doc.text('CHF',X.v,yy,{align:'right'});doc.text('%',X.pc,yy,{align:'right'});doc.text('CHF/m3 GV',X.m3,yy,{align:'right'});doc.text('CHF/m2 GF',X.m2,yy,{align:'right'});doc.setFont(undefined,'normal');doc.setDrawColor(180);doc.setLineWidth(0.3);doc.line(PDF.ML,yy+1.5,PDF.MR,yy+1.5);return yy+6;};
+    y=headRow(y+2);
+    const tot=C.total||1;
+    const line=(r,opt={})=>{
+      const lh=r.lvl===1?6:4.8;
+      if(y+lh>PDF.FOOT_LIMIT){doc.addPage();y=headRow(20);}
+      if(r.lvl===1||opt.fill){doc.setFillColor(...(opt.fill||[243,244,246]));doc.rect(PDF.ML,y-4,PDF.MR-PDF.ML,lh,'F');}
+      doc.setFontSize(r.lvl===1?9:(r.lvl===2?8.5:8));doc.setTextColor(r.lvl===3?90:26);doc.setFont(undefined,r.lvl===1||opt.bold?'bold':'normal');
+      const ind=r.lvl===2?2:(r.lvl===3?5:0);
+      doc.text(String(r.c),X.c+ind,y);
+      const nm=doc.splitTextToSize(String(r.n),X.v-X.n-26)[0];doc.text(nm,X.n+ind,y);
+      doc.text(_kpChf(r.v),X.v,y,{align:'right'});doc.text(_kpFmt(r.v/tot*100,1),X.pc,y,{align:'right'});
+      doc.text(q.gv?_kpFmt(r.v/q.gv):'',X.m3,y,{align:'right'});doc.text(q.gf?_kpFmt(r.v/q.gf):'',X.m2,y,{align:'right'});
+      doc.setFont(undefined,'normal');y+=lh;
+    };
+    _kpRowsFor(p,C).forEach(r=>line(r));
+    line({c:'583',n:`Reserve für Unvorhergesehenes (${_kpFmt(C.rate,1)} % auf BKP 1–9)`,lvl:2,v:C.R},{fill:[251,247,234],bold:true});
+    if(y+12>PDF.FOOT_LIMIT){doc.addPage();y=20;}
+    doc.setDrawColor(26);doc.setLineWidth(0.5);doc.line(PDF.ML,y-3,PDF.MR,y-3);
+    line({c:'',n:'Total Anlagekosten BKP 0–9 inkl. MwSt',lvl:1,v:C.total},{fill:[255,255,255],bold:true});
+    y+=3;if(y+30>PDF.FOOT_LIMIT){doc.addPage();y=20;}
+    doc.setFontSize(8.5);doc.setTextColor(40);
+    const mw=C.total*KP_DATA.mwst/(100+KP_DATA.mwst);
+    [`Bandbreite ±${ph.genauigkeit} %: CHF ${_kpChf(C.total*(1-g))} – ${_kpChf(C.total*(1+g))}`,
+     `davon Mehrwertsteuer ${KP_DATA.mwst} %: CHF ${_kpChf(mw)}`,
+     `Kennwerte: BKP 2 ${q.gv?_kpChf(C.V['2']/q.gv)+' CHF/m3 GV':''}${q.gf?' · '+_kpChf(C.V['2']/q.gf)+' CHF/m2 GF':''} · BKP 1–9 ${q.gf?_kpChf(C.sub19/q.gf)+' CHF/m2 GF':''}`
+    ].forEach(t=>{doc.text(t,PDF.ML,y);y+=4.6;});
+    y+=2;doc.setFontSize(7);doc.setTextColor(130);
+    const note=doc.splitTextToSize(`Grundlage: Kennwert ${_kpChf(C.kw)} CHF/${p.bezug==='gv'?'m3 GV':'m2 GF'} (Stand ${p.stand}), Teuerungsfaktor ${_kpFmt(_kpIdxF(p.stand,p.ziel),4)}, Regionalfaktor ${p.region}. Gliederung nach Baukostenplan BKP (SN 506 500). Genauigkeit gemäss SIA 102 für die Phase ${ph.phase}; nicht enthalten sind Kosten, die in den Projektgrundlagen nicht beschrieben sind.`,PDF.MR-PDF.ML);
+    doc.text(note,PDF.ML,y);
+    pdfFooterAllPages(doc);
+    _showPdfPreview(doc,`${ph.art.replace(/[^\wäöüÄÖÜ\-]+/g,'_')}_${(proj&&proj.name||'Projekt').replace(/[^\w\-]+/g,'_').slice(0,40)}_${todayISO()}.pdf`,'kosten');
+  }catch(e){console.error(e);toast('PDF-Fehler: '+e.message,false,true);}
+}
+
 /* ---------- Modules registry ---------- */
 const MODULES=[
   {id:'dashboard', label:'Übersicht', ic:'▦', tic:'ti-layout-dashboard', render:renderDashboard},
@@ -8991,6 +9506,7 @@ const MODULES=[
   {id:'contactsdb',label:'Firmenverzeichnis', ic:'🗄', tic:'ti-building', render:renderContactsDirectory},
   {id:'bkpkatalog',label:'BKP-Übersicht', ic:'📚', tic:'ti-books', render:renderBkpKatalog},
   {id:'honorar',   label:'Honorarofferte SIA 102', ic:'🧮', tic:'ti-calculator', render:renderHonorar},
+  {id:'kosten',    label:'Kostenplanung', ic:'💰', tic:'ti-coin', render:renderKostenplanung}, // seit 1.8.0
   {id:'baubeschrieb', label:'Baubeschrieb', ic:'📖', tic:'ti-book-2', render:renderBaubeschrieb},
   {id:'takeoff',   label:'Ausmass', ic:'📐', tic:'ti-ruler', render:renderTakeoff},
   {id:'gallery',   label:'Bildergalerie', ic:'🖼', tic:'ti-photo', render:renderGallery},
@@ -9003,7 +9519,7 @@ const MODULES=[
 ];
 
 const RAIL_GROUPS=[
-  {title:'', ids:['dashboard','plans','defects','journal','protocols','terminplan','welt3d','acceptance','honorar','baubeschrieb','takeoff','contacts','bkpkatalog','stats']},
+  {title:'', ids:['dashboard','plans','defects','journal','protocols','terminplan','welt3d','acceptance','honorar','kosten','baubeschrieb','takeoff','contacts','bkpkatalog','stats']},
   {title:'', ids:['trash','settings']}
 ];
 async function renderRail(){
@@ -9033,8 +9549,8 @@ async function renderRail(){
   await renderMobileNav();
 }
 // Untere Tableiste fürs Handy – kurze Labels, wichtigste Module zuerst
-const MOBILE_ORDER=['dashboard','plans','defects','journal','protocols','terminplan','welt3d','acceptance','contacts','bkpkatalog','honorar','baubeschrieb','takeoff','trash','settings'];
-const MOBILE_SHORT={terminplan:'Termine',welt3d:'3D',dashboard:'Start',plans:'Pläne',defects:'Mängel',pendenzen:'Pendenz',notes:'Notiz',journal:'Journal',protocols:'Protok.',acceptance:'Abnahme',checklists:'Prüfen',workorders:'Regie',contacts:'Unternehmer',contactsdb:'Firmen-DB',bkpkatalog:'BKP',honorar:'Honorar',baubeschrieb:'Baubeschrieb',takeoff:'Ausmass',gallery:'Bilder',stats:'Statistik',trash:'Papierkorb',settings:'Einstellungen'};
+const MOBILE_ORDER=['dashboard','plans','defects','journal','protocols','terminplan','welt3d','acceptance','contacts','bkpkatalog','honorar','kosten','baubeschrieb','takeoff','trash','settings'];
+const MOBILE_SHORT={kosten:'Kosten',terminplan:'Termine',welt3d:'3D',dashboard:'Start',plans:'Pläne',defects:'Mängel',pendenzen:'Pendenz',notes:'Notiz',journal:'Journal',protocols:'Protok.',acceptance:'Abnahme',checklists:'Prüfen',workorders:'Regie',contacts:'Unternehmer',contactsdb:'Firmen-DB',bkpkatalog:'BKP',honorar:'Honorar',baubeschrieb:'Baubeschrieb',takeoff:'Ausmass',gallery:'Bilder',stats:'Statistik',trash:'Papierkorb',settings:'Einstellungen'};
 async function renderMobileNav(){
   const wrap=document.getElementById('mnavScroll');
   if(!wrap)return;
@@ -9323,7 +9839,7 @@ async function openProjectEditor(existing){
   };
   if(!isNew)document.getElementById('prDel').onclick=async()=>{
     if(!confirm('Projekt „'+p.name+'" und ALLE zugehörigen Daten (Pläne, Mängel, Protokolle, Kontakte …) unwiderruflich löschen?'))return;
-    for(const store of ['plans','defects','contacts','protocols','acceptances','checklists','workorders','journal','notes','schedules']){
+    for(const store of ['plans','defects','contacts','protocols','acceptances','checklists','workorders','journal','notes','schedules','costplans']){
       const items=(await all(store)).filter(x=>x.projectId===p.id);
       for(const it of items)await del(store,it.id);
     }
@@ -18405,6 +18921,7 @@ async function renderDashboard(){
           <div class="card" data-go="protocols"><h4>📋 Protokoll erstellen</h4><div class="meta">Mängel als Pendenzen übernehmen</div></div>
           <div class="card" data-go="acceptance"><h4>✓ Abnahme SIA 118</h4><div class="meta">Abnahmen & Zustandsprotokolle mit Unterschrift</div></div>
           <div class="card" data-go="welt3d"><h4>🧊 3D-Baustelle</h4><div class="meta">Baustellen-Siedlung, Baustand nach Terminplan, Terminübersicht</div></div>
+          <div class="card" data-go="kosten"><h4>💰 Kostenplanung</h4><div class="meta">Grobkostenschätzung, Kostenschätzung, KV nach BKP und SIA 102</div></div>
         </div>
         <h3 style="font-size:14px;margin:8px 0 12px">Zuletzt erfasste Mängel</h3>
         ${recent.length?`<table class="tbl"><tbody>${recent.map(d=>`<tr class="click" data-def="${d.id}"><td style="width:60px"><b>#${String(d.num).padStart(3,'0')}</b></td><td>${esc(d.title||'—')}</td><td>${esc(d.assignee||'—')}</td><td style="text-align:right"><span class="status-tag status-${statusKey(d.status)}">${d.status}</span></td></tr>`).join('')}</tbody></table>`:'<p style="color:var(--muted);font-size:13px">Noch keine Mängel erfasst.</p>'}
@@ -18943,6 +19460,7 @@ function _onRemoteChange(table){
       const m=MODULES.find(x=>x.id===state.module);
       // Terminplan: nicht mitten in einer Eingabe/Verschiebung neu aufbauen (siehe _tpOnRemote)
       if(state.module==='terminplan'){ if(typeof _tpOnRemote==='function') await _tpOnRemote(table); }
+      else if(state.module==='kosten'){ if(typeof _kpOnRemote==='function') await _kpOnRemote(table); }
       else if(m && state.module!=='plans'){ await navigate(state.module); }
       // Neue/geänderte Planversion von einem anderen Gerät synchronisiert -> aktives Projekt
       // automatisch nachladen, damit sie beim Öffnen sofort lokal bereitliegt.
