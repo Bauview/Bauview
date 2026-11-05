@@ -4323,8 +4323,8 @@ let CURRENT_USER={name:'', initials:'?', email:'', role:''};
 // Sichtbare Build-Version – bei jeder Auslieferung hochzählen. Zeigt sich in der Kopfzeile und
 // auf dem Anmeldebildschirm, damit sich auf jedem Gerät sofort prüfen lässt, ob wirklich der
 // aktuelle Stand geladen wurde (statt bei "unterschiedlichem Stand"-Problemen zu raten).
-const BUILD_VERSION='2026-11-05.2';
-const APP_VERSION='1.8.7'; // Versionsnummer wie Installer/Mobile (unauffällig unten in der Seitenleiste angezeigt)
+const BUILD_VERSION='2026-11-05.3';
+const APP_VERSION='1.8.8'; // Versionsnummer wie Installer/Mobile (unauffällig unten in der Seitenleiste angezeigt)
 let CURRENT_AUTH=null; // aktueller Cloud-Login (Auth-User), null = nicht eingeloggt
 const BKP_CRB2017=[['0','Grundstück','H'],['00','Vorstudien','G'],['000','Übergangsposition','P'],['001','Grundstücksbeurteilung, Machbarkeitsstudien','P'],['002','Vermessung, Vermarkung','P'],['003','Geotechnische und weitere Gutachten','P'],['003.1','Baugrund','S'],['003.2','Grundwasser','S'],['003.3','Altlasten','S'],['003.4','Weitere Gutachten','S'],['004','Quartierplankosten, Richtplankosten','P'],['006','Umweltverträglichkeitsprüfung','P'],['009','Übriges','P'],['01','Grundstücks- bzw. Baurechtserwerb','G'],['010','Übergangsposition','P'],['011','Grundstückserwerb','P'],['012','Baurechtserwerb','P'],['013','Brandmauereinkauf','P'],['018','Sanierung Altlasten','P'],['019','Übriges','P'],['02','Nebenkosten zu Grundstücks- bzw. Baurechtserwerb','G'],['020','Übergangsposition','P'],['021','Handänderungssteuer','P'],['022','Notariatskosten','P'],['023','Grundbuchgebühren','P'],['024','Anwaltskosten, Gerichtskosten','P'],['025','Vermittlungsprovisionen','P'],['029','Übriges','P'],['03','Abfindungen, Servitute, Beiträge','G'],['030','Übergangsposition','P'],['031','Abfindungen an Mieter und Pächter','P'],['032','Inkonvenienzentschädigungen','P'],['033','Errichtung von Servituten','P'],['034','Ablösung von Servituten','P'],['035','Wirtschaftspatente','P'],['036','Beiträge Melioration','P'],['037','Beiträge Güterzusammenlegung','P'],['038','Perimeterbeiträge','P'],['039','Übriges','P'],['04','Finanzierung vor Baubeginn','G'],['040','Übergangsposition','P'],['041','Errichten von Hypotheken auf Grundstück','P'],['042','Hypothekarzinsen','P'],['043','Baurechtszinsen','P'],['044','Darlehenszinsen','P'],['045','Eigenkapitalzinsen','P'],['046','Grundstücksteuern','P'],['048','Versicherungen bis Baubeginn','P'],['049','Übriges','P'],['05','Leitungen ausserhalb Grundstück','G'],['050','Übergangsposition','P'],['051','Erdarbeiten','P'],['052','Kanalisationsleitungen','P'],['053','Elektroleitungen, Gebäudeautomation','P'],['054','Leitungen für HLK-Anlagen','P'],['055','Sanitärleitungen','P'],['056','Nebenarbeiten','P'],['059','Übriges','P'],['06','Verkehrsanlagen ausserhalb Grundstück','G'],['060','Übergangsposition','P'],['061','Strassen','P'],['062','Bahnen','P'],['063','Wasserwege','P'],['069','Übriges','P'],['09','Honorare','G'],['090','Übergangsposition','P'],['091','Architekt','P'],['092','Bauingenieur','P'],['093','Elektroingenieur','P'],['094','HLK-Ingenieur','P'],['095','Sanitäringenieur','P'],['096','Landschaftsarchitekt','P'],['097','Spezialisten 1','P'],['097.0','Geometer','S'],['097.1','Geologe, Geotechniker','S'],['098','Spezialisten 2','P'],['098.2','Bauökonom','S'],['098.6','Verkaufsaufwendungen','S'],['099','Übriges','P'],['1','Vorbereitungsarbeiten','H'],['10','Bestandsaufnahmen, Baugrunduntersuchungen','G'],['100','Übergangsposition','P'],['101','Bestandsaufnahmen','P'],['101.1','Planaufnahmen','S'],['101.2','Schadstoffuntersuchungen','S'],['101.3','Erschütterungsmessungen','S'],['101.4','Rissprotokolle','S'],['101.5','Bestandsaufnahmen Bausubstanz','S'],['101.6','Bestandsaufnahmen Gebäudetechnik','S'],['101.7','Weitere Aufnahmen','S'],['102','Baugrunduntersuchungen','P'],['103','Grundwasseruntersuchungen','P'],['104','Baugespann','P'],['109','Übriges','P'],['11','Räumungen, Terrainvorbereitungen','G'],['110','Übergangsposition','P'],['111','Rodungen','P'],['112','Rückbau','P'],['112.0','Demontagen','S'],['112.1','Abbrüche','S'],['112.2','Entsorgung spezieller Bauteile','S'],['113','Sanierung Altlasten','P'],['114','Erdbewegungen','P'],['114.0','Baustelleneinrichtung','S'],['114.1','Erdarbeiten','S'],['119','Übriges','P'],['12','Sicherungen, Provisorien','G'],['120','Übergangsposition','P'],['121','Sicherung vorhandener Anlagen','P'],['122','Provisorien','P'],['123','Unterfangungen','P'],['123.0','Baustelleneinrichtungen','S'],['123.1','Gerüste','S'],['123.2','Spezielle Unterfangungsarbeiten','S'],['123.3','Erdarbeiten','S'],['123.4','Kanalisationen','S'],['123.5','Beton- und Stahlbetonarbeiten','S'],['123.6','Mauerarbeiten','S'],['129','Übriges','P'],['13','Gemeinsame Baustelleneinrichtung','G'],['130','Übergangsposition','P'],['131','Abschrankungen','P'],['132','Zufahrten, Plätze','P'],['133','Büro Bauleitung','P'],['134','Unterkünfte, Verpflegungseinrichtungen','P'],['135','Provisorische Installationen','P'],['135.0','Kanalisationen','S'],['135.1','Elektro','S'],['135.2','HLK-Anlagen, Gebäudeautomation','S'],['135.3','Wasser','S'],['135.4','Telekommunikation','S'],['136','Kosten für Energie, Wasser und dgl.','P'],['137','Provisorische Abschlüsse und Abdeckungen','P'],['138','Sortierung Bauabfälle','P'],['139','Übriges','P'],['14','Anpassungen an bestehenden Bauten','G'],['140','Übergangsposition','P'],['141','Terraingestaltung, Rohbau 1','P'],['141.0','Erdarbeiten','S'],['141.1','Baumeisterarbeiten','S'],['141.2','Montagebau in Beton, vorgefertigtem Mauerwerk','S'],['141.3','Montagebau in Stahl','S'],['141.4','Montagebau in Holz','S'],['141.5','Montagebau als Leichtkonstruktion','S'],['141.6','Natur- und Kunststeinarbeiten','S'],['142','Rohbau 2','P'],['142.1','Fenster, Aussentüren, Tore','S'],['142.2','Spenglerarbeiten','S'],['142.3','Blitzschutzinstallationen','S'],['142.4','Bedachungsarbeiten','S'],['142.5','Spezielle Dichtungen und Dämmungen','S'],['142.6','Fassadenputze','S'],['142.7','Äussere Oberflächenbehandlungen','S'],['142.8','Äussere Abschlüsse, Sonnenschutzanlagen','S'],['143','Elektroanlagen','P'],['144','HLK-Anlagen, Gebäudeautomation','P'],['145','Sanitäranlagen','P'],['146','Transportanlagen, Lageranlagen','P'],['147','Ausbau 1','P'],['147.1','Gipserarbeiten','S'],['147.2','Metallbauarbeiten','S'],['147.3','Schreinerarbeiten','S'],['147.4','Innere Spezialverglasungen','S'],['147.5','Schliessanlagen','S'],['147.6','Innere Abschlüsse','S'],['147.7','Elementwände','S'],['148','Ausbau 2','P'],['148.1','Bodenbeläge','S'],['148.2','Wandbeläge, Wandbekleidungen','S'],['148.3','Deckenbekleidungen','S'],['148.4','Hafnerarbeiten','S'],['148.5','Innere Oberflächenbehandlungen','S'],['148.6','Bautrocknung','S'],['148.7','Baureinigung','S'],['148.8','Gärtnerarbeiten','S'],['149','Übriges','P'],['15','Anpassungen an bestehenden Erschliessungsanlagen','G'],['150','Übergangsposition','P'],['151','Erdarbeiten','P'],['152','Kanalisationsleitungen','P'],['153','Elektroleitungen, Gebäudeautomation','P'],['154','Leitungen für HLK-Anlagen','P'],['155','Sanitärleitungen','P'],['156','Nebenarbeiten','P'],['159','Übriges','P'],['16','Anpassungen an bestehenden Verkehrsanlagen','G'],['160','Übergangsposition','P'],['161','Strassen','P'],['162','Bahnen','P'],['163','Wasserwege','P'],['169','Übriges','P'],['17','Spezialtiefbau','G'],['170','Übergangsposition','P'],['171','Pfähle','P'],['172','Baugrubenabschlüsse','P'],['173','Aussteifungen','P'],['174','Anker','P'],['175','Grundwasserabdichtungen','P'],['176','Wasserhaltung','P'],['176.0','Offene Wasserhaltung','S'],['176.1','Grundwasserabsenkungen','S'],['177','Baugrundverbesserungen','P'],['178','Nebenarbeiten','P'],['179','Übriges','P'],['19','Honorare','G'],['190','Übergangsposition','P'],['191','Architekt','P'],['192','Bauingenieur','P'],['193','Elektroingenieur','P'],['194','HLK-Ingenieur','P'],['195','Sanitäringenieur','P'],['196','Landschaftsarchitekt','P'],['197','Spezialisten 1','P'],['197.0','Geometer','S'],['197.1','Geologe, Geotechniker','S'],['197.2','Fachkoordinator','S'],['197.6','Gebäudeautomationsingenieur','S'],['198','Spezialisten 2','P'],['198.2','Bauökonom','S'],['198.5','Brandschutzingenieur','S'],['199','Übriges','P'],['2','Gebäude','H'],['20','Baugrube','G'],['200','Übergangsposition','P'],['201','Baugrubenaushub','P'],['201.0','Baustelleneinrichtung','S'],['201.1','Erdarbeiten','S'],['201.2','Kontaminiertes Material','S'],['209','Übriges','P'],['21','Rohbau 1','G'],['210','Übergangsposition','P'],['211','Baumeisterarbeiten','P'],['211.0','Baustelleneinrichtung','S'],['211.1','Gerüste','S'],['211.3','Baumeisteraushub','S'],['211.4','Kanalisationen im Gebäude','S'],['211.5','Beton- und Stahlbetonarbeiten','S'],['211.6','Mauerarbeiten','S'],['211.7','Instandsetzungsarbeiten','S'],['211.8','Witterungsbedingte Massnahmen','S'],['212','Montagebau in Beton, vorgefertigtem Mauerwerk','P'],['212.0','Baustelleneinrichtung','S'],['212.1','Gerüste','S'],['212.2','Elemente aus Beton','S'],['212.3','Elemente aus vorgefertigtem Mauerwerk','S'],['212.4','Elemente aus Porenbeton','S'],['213','Montagebau in Stahl','P'],['213.0','Baustelleneinrichtung','S'],['213.1','Gerüste','S'],['213.2','Stahlkonstruktionen','S'],['213.5','Äussere Bekleidungen','S'],['214','Montagebau in Holz','P'],['214.0','Baustelleneinrichtung','S'],['214.1','Zimmerarbeiten','S'],['214.2','Ingenieurholzbau','S'],['214.3','Holzelementbau','S'],['214.4','Äussere Bekleidungen, Gesimse, Treppen','S'],['214.5','Gerüste','S'],['214.6','Geneigte Dächer, Unterkonstruktionen','S'],['215','Montagebau als Leichtkonstruktion','P'],['215.0','Baustelleneinrichtung','S'],['215.1','Gerüste','S'],['215.2','Fassadenbau','S'],['215.4','Traggerippe','S'],['215.5','Äussere Bekleidungen','S'],['216','Natur- und Kunststeinarbeiten','P'],['216.0','Natursteinarbeiten','S'],['216.1','Kunststeinarbeiten','S'],['217','Schutzraumabschlüsse','P'],['219','Übriges','P'],['22','Rohbau 2','G'],['220','Übergangsposition','P'],['221','Fenster, Aussentüren, Tore','P'],['221.0','Fenster aus Holz-Metall','S'],['221.1','Fenster aus Holz','S'],['221.2','Fenster aus Kunststoff','S'],['221.3','Fenster aus Stahl','S'],['221.4','Fenster aus Aluminium','S'],['221.5','Aussentüren, Tore aus Holz','S'],['221.6','Aussentüren, Tore aus Metall','S'],['221.7','Schaufensteranlagen','S'],['221.8','Spezielle äussere lichtdurchlässige Bauteile','S'],['221.9','Metallbaufertigteile','S'],['222','Spenglerarbeiten','P'],['223','Bedachungsarbeiten','P'],['224','Deckungen','P'],['224.0','Deckungen geneigte Dächer','S'],['224.1','Dichtungsbeläge Flachdächer','S'],['224.2','Glaseinbauten in geneigten Dächern','S'],['224.3','Gerüste','S'],['224.4','Spezielle Dichtungen und Dämmungen','S'],['225','Fugendichtungen','P'],['225.0','Fugendichtungen','S'],['225.1','Spezielle Dämmungen','S'],['225.2','Spezielle Feuchtigkeitsabdichtungen','S'],['225.3','Brandschutzbekleidungen und dgl.','S'],['225.4','Fassadenputze','S'],['226','Gerüste','P'],['226.0','Aussenputze','S'],['226.1','Verputzte Aussenwärmedämmungen','S'],['226.2','Äussere Oberflächenbehandlungen','S'],['227','Äussere Oberflächenbehandlungen','P'],['227.0','Gerüste','S'],['227.1','Äussere Malerarbeiten','S'],['227.2','Äussere Holzschutzarbeiten','S'],['227.3','Äussere Holzbehandlungsarbeiten','S'],['228','Äussere Abschlüsse, Sonnenschutzanlagen','P'],['228.0','Fenster- und Fenstertürläden','S'],['228.1','Rollläden','S'],['228.2','Lamellenstoren (Raffstoren)','S'],['228.3','Markisen','S'],['228.4','Blendschutzanlagen','S'],['228.5','Insektenschutz','S'],['228.6','Äussere bewegliche Gitterabschlüsse','S'],['229','Übriges','P'],['23','Elektroanlagen','G'],['230','Übergangsposition','P'],['231','Starkstromanlagen','P'],['231.0','Netzersatzanlagen','S'],['231.1','Hoch- und Mittelspannungsanlagen','S'],['231.2','Schaltgerätekombinationen','S'],['231.3','Blindstromkompensations-Anlagen','S'],['231.4','Sicherheitsanlagen','S'],['231.5','Energieerzeugungsanlagen','S'],['231.9','Übriges','S'],['232','Starkstrominstallationen','P'],['232.0','Erschliessungen','S'],['232.1','Erdungen und Schutzpotenzialausgleich','S'],['232.2','Rohranlagen','S'],['232.3','Installationssysteme','S'],['232.4','Haupt- und Steigleitungen','S'],['232.5','Lichtinstallationen','S'],['232.6','Kraftinstallationen','S'],['232.7','HLKS-Installationen','S'],['232.9','Übriges','S'],['233','Leuchten und Lampen','P'],['233.0','Lieferung','S'],['233.1','Montage','S'],['234','Elektrogeräte','P'],['235','Schwachstromanlagen','P'],['235.0','Telekommunikationsanlagen','S'],['235.1','Radio- und Fernsehanlagen','S'],['235.2','Multimediaanlagen','S'],['235.3','Informatikanlagen','S'],['235.4','Kommunikationsanlagen','S'],['235.8','Sicherheitsanlagen','S'],['235.9','Übriges','S'],['236','Schwachstrominstallationen','P'],['236.1','Installationen zu Telekommunikationsanlagen','S'],['236.2','Radio- und Fernsehanlagen','S'],['236.3','Multimedia-Installationen','S'],['236.4','UKV-Installationen','S'],['236.5','Installationen zu Kommunikationsanlagen','S'],['236.6','Audio-, Video- und Uhreninstallationen','S'],['236.7','Sicherheitsinstallationen','S'],['236.8','Brandschutzinstallationen','S'],['236.9','Übriges','S'],['237','Gebäudeautomations-Installationen','P'],['238','Provisorische Installationen','P'],['239','Übriges','P'],['24','HLK-Anlagen, Gebäudeautomation','G'],['240','Übergangsposition','P'],['242','Heizungsanlagen','P'],['242.0','Apparate','S'],['242.1','Leitungen','S'],['242.2','Armaturen, Instrumente','S'],['242.3','Regelung','S'],['242.4','Schaltgerätekombinationen','S'],['242.5','Transport, Montage','S'],['242.6','Dämmungen','S'],['242.7','Unternehmerdienstleistungen','S'],['244','Lufttechnische Anlagen','P'],['244.0','Apparate','S'],['244.1','Leitungen','S'],['244.2','Armaturen, Instrumente','S'],['244.3','Regelung','S'],['244.4','Schaltgerätekombinationen','S'],['244.5','Transport, Montage','S'],['244.6','Dämmungen','S'],['244.7','Unternehmerdienstleistungen','S'],['245','Rauch- und Wärmeabzugsanlagen','P'],['245.0','Apparate','S'],['245.1','Leitungen','S'],['245.2','Armaturen, Instrumente','S'],['245.3','Regelung','S'],['245.4','Schaltgerätekombinationen','S'],['245.5','Transport, Montage','S'],['245.6','Dämmungen','S'],['245.7','Unternehmerdienstleistungen','S'],['246','Kälteanlagen','P'],['246.0','Apparate','S'],['246.1','Leitungen','S'],['246.2','Armaturen, Instrumente','S'],['246.3','Regelung','S'],['246.4','Schaltgerätekombinationen','S'],['246.5','Transport, Montage','S'],['246.6','Dämmungen','S'],['246.7','Unternehmerdienstleistungen','S'],['247','Spezialanlagen','P'],['247.4','Schutzraumbelüftungen','S'],['247.5','Thermische Solaranlagen','S'],['247.6','Spezielle Energieerzeugung','S'],['247.7','Staubsaugeranlagen','S'],['248','Gebäudeautomation','P'],['248.1','Managementebene','S'],['248.2','Automationsebene','S'],['248.3','Feldebene','S'],['248.4','Raumautomation','S'],['248.5','Automationsnetzwerk','S'],['248.6','Schaltgerätekombinationen','S'],['248.7','Integration','S'],['249','Übriges','P'],['25','Sanitäranlagen','G'],['250','Übergangsposition','P'],['251','Allgemeine Sanitärapparate','P'],['251.0','Lieferung','S'],['251.1','Montage','S'],['252','Spezielle Sanitärapparate','P'],['252.0','Lieferung','S'],['252.1','Montage','S'],['253','Versorgungs- und Entsorgungsapparate','P'],['253.0','Wassernachbehandlung','S'],['253.1','Wassererwärmer','S'],['253.2','Abwasserhebeanlagen','S'],['253.3','Druckluftzeuger','S'],['253.6','Thermische Solaranlagen','S'],['254','Sanitärleitungen','P'],['254.1','Kaltwasserleitungen','S'],['254.2','Warmwasserleitungen','S'],['254.3','Drucklufttleitungen','S'],['254.4','Gasleitungen','S'],['254.5','Löschleitungen','S'],['254.6','Leitungen für thermische Solaranlagen','S'],['254.7','Schmutzwasserleitungen','S'],['254.8','Regenwasserleitungen','S'],['254.9','Grundleitungen','S'],['255','Dämmungen','P'],['256','Sanitärinstallationselemente','P'],['256.0','Lieferung','S'],['256.1','Montage','S'],['257','Löschanlagen','P'],['257.1','Sprinkleranlagen','S'],['257.2','Feuerlöschposten','S'],['258','Kücheneinrichtungen','P'],['259','Übriges','P'],['26','Transportanlagen, Lageranlagen','G'],['260','Übergangsposition','P'],['261','Aufzüge','P'],['262','Fahrtreppen, Fahrstei ge','P'],['263','Fassadenreinigungsanlagen','P'],['264','Sonstige Förderanlagen','P'],['265','Hebeeinrichtungen','P'],['266','Parkieranlagen','P'],['269','Übriges','P'],['27','Ausbau 1','G'],['270','Übergangsposition','P'],['271','Gipserarbeiten','P'],['271.0','Innenputze','S'],['271.1','Trockenbauarbeiten','S'],['271.2','Gerüste','S'],['272','Metallbauarbeiten','P'],['272.0','Innentüren aus Metall','S'],['272.1','Metallbaufertigteile','S'],['272.2','Allgemeine Metallbauarbeiten','S'],['272.3','Innere Verglasungen','S'],['272.4','Schutzraumteile','S'],['273','Schreinerarbeiten','P'],['273.0','Innentüren','S'],['273.1','Wandschränke, Gestelle und dgl.','S'],['273.2','Innere Verglasungen','S'],['273.3','Allgemeine Schreinerarbeiten','S'],['274','Innere Spezialverglasungen','P'],['275','Schliessanlagen','P'],['276','Innere Abschlüsse','P'],['276.0','Verdunkelungseinrichtungen','S'],['276.1','Innere bewegliche Gitterabschlüsse','S'],['276.2','Vorhangsysteme','S'],['277','Elementwände','P'],['277.0','Versetzbare Elementwände','S'],['277.1','Schiebe- und Faltwände','S'],['277.2','Fest stehende Elementwände','S'],['278','Beschriftungen, Markierungen, Signaletik','P'],['279','Übriges','P'],['28','Ausbau 2','G'],['280','Übergangsposition','P'],['281','Bodenbeläge','P'],['281.0','Estriche (Unterlagsböden)','S'],['281.1','Fugenlose Bodenbeläge','S'],['281.2','Bodenbeläge aus Kunststoffen, Textilien und dgl.','S'],['281.4','Bodenbeläge aus Naturstein','S'],['281.5','Bodenbeläge aus Kunststein','S'],['281.6','Bodenbeläge aus Holz','S'],['281.7','Bodenbeläge aus Platten','S'],['281.8','Doppelböden','S'],['281.9','Sockel','S'],['282','Wandbeläge, Wandbekleidungen','P'],['282.0','Fugenlose Wandbeläge','S'],['282.1','Tapeziererarbeiten','S'],['282.2','Wandbekleidungen aus Naturstein','S'],['282.3','Wandbekleidungen aus Kunststein','S'],['282.4','Wandbeläge aus Platten','S'],['282.5','Wandbekleidungen aus Holz und Holzwerkstoffen','S'],['282.6','Wandbekleidungen aus Kunststoffen, Textilien und dgl.','S'],['282.7','Gerüste','S'],['283','Deckenbekleidungen','P'],['283.0','Gerüste','S'],['283.1','Deckenbekleidungen aus Metall','S'],['283.2','Deckenbekleidungen aus Gips','S'],['283.3','Deckenbekleidungen aus Mineralfasern','S'],['283.4','Deckenbekleidungen aus Holz und Holzwerkstoffen','S'],['283.5','Deckenbekleidungen aus Kunststoffen, Textilien und dgl.','S'],['284','Hafnerarbeiten','P'],['285','Innere Oberflächenbehandlungen','P'],['285.0','Gerüste','S'],['285.1','Innere Malerarbeiten','S'],['285.2','Innere Holzschutzarbeiten','S'],['285.3','Innere Holzbehandlungsarbeiten','S'],['286','Bautrocknung','P'],['287','Baureinigung','P'],['288','Gärtnerarbeiten (Gebäude)','P'],['289','Übriges','P'],['29','Honorare','G'],['290','Übergangsposition','P'],['291','Architekt','P'],['292','Bauingenieur','P'],['293','Elektroingenieur','P'],['294','HLK-Ingenieur','P'],['295','Sanitäringenieur','P'],['296','Landschaftsarchitekt','P'],['297','Spezialisten 1','P'],['297.0','Geometer','S'],['297.1','Geologe, Geotechniker','S'],['297.2','Innenarchitekt','S'],['297.3','Bauphysiker','S'],['297.4','Akustiker','S'],['297.5','Fachkoordinator','S'],['297.6','Gebäudeautomationsingenieur','S'],['297.7','Fassadeningenieur','S'],['298','Spezialisten 2','P'],['298.2','Bauökonom','S'],['298.3','Prüfingenieur','S'],['298.4','Umweltingenieur','S'],['298.5','Brandschutzingenieur','S'],['299','Übriges','P'],['3','Betriebseinrichtungen','H'],['30','Baugrube','G'],['300','Übergangsposition','P'],['301','Baugruben aushub','P'],['309','Übriges','P'],['31','Rohbau 1','G'],['311','Baumeisterarbeiten','P'],['312','Montagebau in Beton, vorgefertigtem Mauerwerk','P'],['313','Montagebau in Stahl','P'],['314','Montagebau in Holz','P'],['315','Montagebau als Leichtkonstruktion','P'],['316','Natur- und Kunststeinarbeiten','P'],['317','Schutzraumabschlüsse','P'],['319','Übriges','P'],['32','Rohbau 2','G'],['320','Übergangsposition','P'],['321','Fenster, Aussentüren, Tore','P'],['322','Spenglerarbeiten','P'],['323','Blitzschutzanlagen','P'],['324','Bedachungsarbeiten','P'],['325','Spezielle Dichtungen und Dämmungen','P'],['326','Fassadenputze','P'],['327','Äussere Oberflächenbehandlungen','P'],['328','Äussere Abschlüsse, Sonnenschutzanlagen','P'],['329','Übriges','P'],['33','Elektroanlagen','G'],['330','Übergangsposition','P'],['331','Starkstromapparate','P'],['332','Starkstrominstallationen','P'],['333','Leuchten und Lampen','P'],['334','Elektrogeräte','P'],['335','Schwachstromapparate','P'],['336','Schwachstrominstallationen','P'],['337','Gebäudeautomations-Installationen','P'],['338','Provisorische Installationen','P'],['339','Übriges','P'],['34','HLK-Anlagen, Gebäudeautomation','G'],['340','Übergangsposition','P'],['342','Heizungsanlagen','P'],['344','Lufttechnische Anlagen','P'],['345','Rauch- und Wärmeabzugsanlagen','P'],['346','Kälteanlagen','P'],['347','Spezialanlagen','P'],['348','Gebäudeautomation','P'],['349','Übriges','P'],['35','Sanitäranlagen','G'],['350','Übergangsposition','P'],['351','Allgemeine Sanitärapparate','P'],['351.0','Lieferung','S'],['351.1','Montage','S'],['352','Spezielle Sanitärapparate','P'],['352.0','Lieferung','S'],['352.1','Montage','S'],['353','Versorgungs- und Entsorgungsapparate','P'],['353.0','Wassernachbehandlung','S'],['353.1','Wassererwärmer','S'],['353.2','Abwasserhebeanlagen','S'],['353.3','Druckluftzeuger','S'],['353.6','Thermische Solaranlagen','S'],['354','Sanitärleitungen','P'],['354.1','Kaltwasserleitungen','S'],['354.2','Warmwasserleitungen','S'],['354.3','Drucklufttleitungen','S'],['354.4','Gasleitungen','S'],['354.5','Löschleitungen','S'],['354.6','Leitungen für thermische Solaranlagen','S'],['354.7','Schmutzwasserleitungen','S'],['354.8','Regenwasserleitungen','S'],['354.9','Grundleitungen','S'],['355','Dämmungen','P'],['356','Sanitärinstallationselemente','P'],['356.0','Lieferung','S'],['356.1','Montage','S'],['357','Löschanlagen','P'],['357.1','Sprinkleranlagen','S'],['357.2','Feuerlöschposten','S'],['358','Kücheneinrichtungen','P'],['359','Übriges','P'],['36','Transportanlagen, Lageranlagen','G'],['360','Übergangsposition','P'],['361','Aufzüge','P'],['362','Fahrtreppen, Fahrstei ge','P'],['364','Sonstige Förderanlagen','P'],['365','Hebeeinrichtungen','P'],['366','Parkieranlagen','P'],['369','Übriges','P'],['37','Ausbau 1','G'],['370','Übergangsposition','P'],['371','Gipserarbeiten','P'],['372','Metallbauarbeiten','P'],['373','Schreinerarbeiten','P'],['374','Innere Spezialverglasungen','P'],['375','Schliessanlagen','P'],['376','Innere Abschlüsse','P'],['377','Elementwände','P'],['378','Beschriftungen, Markierungen, Signaletik','P'],['379','Übriges','P'],['38','Ausbau 2','G'],['380','Übergangsposition','P'],['381','Bodenbeläge','P'],['382','Wandbeläge, Wandbekleidungen','P'],['383','Deckenbekleidungen','P'],['384','Hafnerarbeiten','P'],['385','Innere Oberflächenbehandlungen','P'],['386','Bautrocknung','P'],['387','Baureinigung','P'],['39','Honorare','G'],['390','Übergangsposition','P'],['391','Architekt','P'],['392','Bauingenieur','P'],['393','Elektroingenieur','P'],['394','HLK-Ingenieur','P'],['395','Sanitäringenieur','P'],['396','Landschaftsarchitekt','P'],['397','Spezialisten 1','P'],['397.0','Geometer','S'],['397.1','Geologe, Geotechniker','S'],['397.2','Innenarchitekt','S'],['397.3','Bauphysiker','S'],['397.4','Akustiker','S'],['397.5','Fachkoordinator','S'],['397.6','Gebäudeautomationsingenieur','S'],['397.7','Fassadeningenieur','S'],['398','Spezialisten 2','P'],['398.2','Bauökonom','S'],['398.3','Prüfingenieur','S'],['398.4','Umweltingenieur','S'],['398.5','Brandschutzingenieur','S'],['399','Übriges','P'],['4','Umgebung','H'],['40','Terraingestaltung','G'],['400','Übergangsposition','P'],['401','Erdbewegungen','P'],['401.0','Baustelleneinrichtung','S'],['401.1','Erdarbeiten','S'],['409','Übriges','P'],['41','Rohbau- und Ausbauarbeiten','G'],['410','Übergangsposition','P'],['411','Baumeisterarbeiten','P'],['411.0','Baustelleneinrichtung','S'],['411.1','Gerüste','S'],['411.2','Böschungs- und Uferverbaungen','S'],['411.3','Baumeisteraushub','S'],['411.4','Kanalisationen ausserhalb Gebäude','S'],['411.5','Beton- und Stahlbetonarbeiten','S'],['411.6','Maurerarbeiten','S'],['411.7','Instandsetzungsarbeiten','S'],['411.8','Witterungsbedingte Massnahmen','S'],['413','Übriger Rohbau 1','P'],['413.2','Montagebau in Beton, vorgefertigtem Mauerwerk','S'],['413.3','Montagebau in Stahl','S'],['413.4','Montagebau in Holz','S'],['413.5','Montagebau als Leichtkonstruktion','S'],['413.6','Natur- und Kunststeinarbeiten','S'],['414','Rohbau 2','P'],['414.1','Fenster, Aussentüren, Tore','S'],['414.2','Spenglerarbeiten','S'],['414.3','Blitzschutzanlagen','S'],['414.4','Bedachungsarbeiten','S'],['414.5','Spezielle Dichtungen und Dämmungen','S'],['414.6','Fassadenputze','S'],['414.7','Äussere Oberflächenbehandlungen','S'],['414.8','Äussere Abschlüsse, Sonnenschutzanlagen','S'],['414.9','Arealabschlüsse','S'],['415','Ausbau 1','P'],['416','Ausbau 2','P'],['419','Übriges','P'],['42','Gartenanlagen','G'],['420','Übergangsposition','P'],['421','Gärtnerarbeiten','P'],['422','Einfriedungen','P'],['423','Ausstattungen, Geräte','P'],['424','Spiel- und Sportplätze','P'],['425','Stützmauern','P'],['429','Übriges','P'],['44','Installationen','G'],['440','Übergangsposition','P'],['442','Elektroanlagen','P'],['443','HLK-Anlagen, Gebäudeautomation','P'],['444','Sanitäranlagen','P'],['446','Transportanlagen','P'],['449','Übriges','P'],['45','Leitungen innerhalb Grundstück','G'],['450','Übergangsposition','P'],['452','Kanalisationsleitungen','P'],['453','Elektroleitungen, Gebäudeautomation','P'],['454','Leitungen für HLK-Anlagen','P'],['455','Sanitärleitungen','P'],['456','Nebenarbeiten','P'],['459','Übriges','P'],['46','Trassenbauten','G'],['460','Übergangsposition','P'],['461','Erd- und Unterbau','P'],['463','Oberbau','P'],['464','Entwässerung','P'],['465','Werkleitungen und Kanalisationen','P'],['468','Ausbau','P'],['47','Kunstbauten','G'],['470','Übergangsposition','P'],['471','Baugrube','P'],['472','Tragkonstruktionen','P'],['473','Oberbau','P'],['474','Entwässerung','P'],['475','Werkleitungen und Kanalisationen','P'],['477','Transportanlagen','P'],['478','Ausbau','P'],['48','Untertagbauten','G'],['480','Übergangsposition','P'],['481','Vortrieb','P'],['482','Auskleidungen, Gewölbe','P'],['483','Oberbau','P'],['484','Entwässerung und Wasserversorgung','P'],['485','Werkleitungen und Kanalisationen','P'],['487','Transportanlagen','P'],['488','Ausbau','P'],['49','Honorare','G'],['490','Übergangsposition','P'],['491','Architekt','P'],['492','Bauingenieur','P'],['493','Elektroingenieur','P'],['494','HLK-Ingenieur','P'],['495','Sanitäringenieur','P'],['496','Landschaftsarchitekt','P'],['497','Spezialisten 1','P'],['497.1','Geologie, Geotechniker','S'],['497.2','Innenarchitekt','S'],['497.3','Bauphysiker','S'],['497.4','Akustiker','S'],['497.5','Fachkoordinator','S'],['498','Spezialisten 2','P'],['498.2','Bauökonom','S'],['498.4','Umweltingenieur','S'],['499','Übriges','P'],['5','Baunebenkosten','H'],['50','Wettbewerbskosten','G'],['500','Übergangsposition','P'],['501','Wettbewerbe','P'],['509','Übriges','P'],['51','Bewilligungen, Gebühren','G'],['510','Übergangsposition','P'],['511','Bewilligungen, Gebühren','P'],['512','Anschlussgebühren','P'],['512.0','Kanalisation','S'],['512.1','Elektrizität','S'],['512.2','Kommunikation','S'],['512.3','Gas','S'],['512.4','Wasser','S'],['512.5','Fernheizung','S'],['512.6','Radio, Fernsehen','S'],['519','Übriges','P'],['52','Dokumentation und Präsentation','G'],['520','Übergangsposition','P'],['521','Muster, Materialprüfungen','P'],['521.0','Muster','S'],['521.1','Materialprüfungen','S'],['522','Modelle','P'],['523','Fotos','P'],['524','Vervielfältigungen, Plandokumente','P'],['525','Dokumentation','P'],['529','Übriges','P'],['53','Versicherungen','G'],['530','Übergangsposition','P'],['531','Bauzeitversicherungen','P'],['532','Spezialversicherungen','P'],['533','Selbstbehalt in Schadenfällen während der Bauzeit','P'],['539','Übriges','P'],['54','Finanzierung ab Baubeginn','G'],['540','Übergangsposition','P'],['541','Errichten von Hypotheken auf','P'],['543','Baukreditzinsen, Bankspesen','P'],['544','Baurechtszinsen','P'],['545','Eigenkapitalzinsen','P'],['546','Liegenschaftssteuer während der Bauzeit','P'],['548','Rückvergütungen','P'],['549','Übriges','P'],['55','Bauherrenleistungen','G'],['550','Übergangsposition','P'],['557','Betriebsplanung','P'],['558','Projektleitung, Projektbegleitung','P'],['559','Übriges','P'],['56','Übrige Baunebenkosten','G'],['560','Übergangsposition','P'],['561','Bewachung durch Dritte','P'],['562','Entschädigungen, Nutzerkosten, Ersatzabgaben','P'],['562.1','Nachbar- und Mieterentschädigungen','S'],['562.2','Einkauf Schutzraum','S'],['562.3','Ersatzabgabe Parkplätze','S'],['562.9','Übriges','S'],['563','Miete von fremdem Grund','P'],['564','Gutachten','P'],['565','Reisespesen','P'],['566','Grundsteinlegung, Aufrichte, Einweihung','P'],['567','Anwaltskosten, Gerichtskosten','P'],['568','Baureklame','P'],['569','Übriges','P'],['57','Mehrwertsteuer (MWST)','G'],['570','Übergangsposition (MWST)','P'],['571','Grundstück (MWST)','P'],['572','Vorbereitungsarbeiten (MWST)','P'],['573','Gebäude (MWST)','P'],['574','Betriebseinrichtungen (MWST)','P'],['575','Umgebung (MWST)','P'],['576','Baunebenkosten (MWST)','P'],['579','Ausstattung (MWST)','P'],['58','Rückstellungen und Reserven','G'],['580','Übergangsposition','P'],['581','Rückstellungen für zu erwartende Kosten','P'],['582','Rückstellungen für Teuerung','P'],['583','Reserven für Unvorhergesehenes','P'],['589','Übriges','P'],['59','Übergangskonten für Honorare','G'],['590','Übergangsposition','P'],['598','Spezialisten','P'],['598.0','Bauherrenberater','S'],['598.1','FM-Berater','S'],['598.6','Verkaufsaufwendungen','S'],['599','Übriges','P'],['6','Reserve','H'],['7','Reserve','H'],['8','Reserve','H'],['9','Ausstattung','H'],['90','Möbel','G'],['900','Übergangsposition','P'],['902','Garderobeneinrichtungen, Gestelle und dgl.','P'],['908','Sporteinrichtungen','P'],['909','Übriges','P'],['91','Beleuchtungskörper','G'],['910','Übergangsposition','P'],['919','Übriges','P'],['92','Textilien','G'],['920','Übergangsposition','P'],['921','Vorhänge und Innendekorationsarbeiten','P'],['929','Übriges','P'],['93','Geräte, Apparate','G'],['930','Übergangsposition','P'],['939','Übriges','P'],['94','Kleininventar','G'],['940','Übergangsposition','P'],['949','Übriges','P'],['96','Transportmittel','G'],['960','Übergangsposition','P'],['969','Übriges','P'],['97','Verbrauchsmaterial','G'],['970','Übergangsposition','P'],['979','Übriges','P'],['98','Kunst am Bau','G'],['980','Übergangsposition','P'],['989','Übriges','P'],['99','Honorare','G'],['990','Übergangsposition','P'],['991','Architekt','P'],['992','Bauingenieur','P'],['993','Elektroingenieur','P'],['994','HLK-Ingenieur','P'],['995','Sanitäringenieur','P'],['996','Landschaftsarchitekt','P'],['997','Spezialisten 1','P'],['997.0','Geometer','S'],['997.2','Innenarchitekt','S'],['997.3','Bauphysiker','S'],['997.4','Akustiker','S'],['998','Spezialisten 2','P'],['998.2','Bauökonom','S'],['999','Übriges','P']];
 // BKP_CRB2017: [Nummer, Bezeichnung, Ebene] – Ebene: H=Hauptgruppe, G=Gruppe, P=Position, S=Sub-Position.
@@ -16344,27 +16344,372 @@ const BAUBESCHRIEB_SUGGESTIONS={
     'Briefkastenanlage und Aussenmöblierung (Sitzbänke) im Eingangsbereich.'
   ]
 };
-// Findet die passenden Textvorschläge zu einem (auch frei umbenannten) Kapiteltitel via Schlagwort-Suche.
+// --- Erweiterung 11/2026: Praxis-Formulierungen aus realen Baubeschrieben (TU-Baubeschrieb MFH, Baugesuch MFH Steildach/Holzschindel) ---
+(function(){
+  const add=(k,arr)=>{ BAUBESCHRIEB_SUGGESTIONS[k]=(BAUBESCHRIEB_SUGGESTIONS[k]||[]).concat(arr.filter(t=>!(BAUBESCHRIEB_SUGGESTIONS[k]||[]).includes(t))); };
+  add('baugrube',[
+    'Baugrubenabschluss als Böschungssicherung nach Angaben Bauingenieur, Grundlage geologischer Bericht [Verfasser, Datum].',
+    'Aushub inkl. Abhumusieren bis UK Magerbeton, Böschungen mit Folien abgedeckt, Abtransport und Deponiegebühren.',
+    'Sickerleitungen für Hangwasser nach Angaben Bauingenieur, Hinterfüllung mit setzungsfreiem Material.',
+    'Offene Wasserhaltung mit Absetzbecken für die Dauer des Rohbaus.',
+    'Grundwasserabdichtung gemäss Abdichtungskonzept Bauingenieur.'
+  ]);
+  add('rohbau',[
+    'Untergeschoss in Stahlbeton, Dichtigkeitsklasse 2 (gelbe Wanne) gemäss Bauingenieur.',
+    'Baustelleneinrichtung Rohbau inkl. Kran (Vorhaltung bis 3 Monate über Rohbauende) und Fassadengerüst.',
+    'Treppen und Lichtschächte als Betonfertigteile inkl. Montage.',
+    'Satteldach mit Fuss-, Mittel- und Firstpfetten, Sparrenlage und Unterdach gemäss Holzbauer.',
+    'Dachgauben und Dachfenster gemäss Baueingabeplänen, Dämmung gemäss Energienachweis.',
+    'Kanalisationsleitungen inkl. Grabarbeiten und Schächten unter der Bodenplatte.'
+  ]);
+  add('fassade',[
+    'Hinterlüftete Holzschindelfassade Fichte (naturbelassen hell / dunkel) auf Unterkonstruktion, Dämmung gemäss Energienachweis.',
+    'Sockel mit verputzter Aussenwärmedämmung (XPS im Spritzwasserbereich), Vollabrieb gestrichen, Farbton [NCS …].',
+    'Verputzte Aussenwärmedämmung EPS/Steinwolle, Sockel Feinputz 0.5 mm, übrige Fassade Korn 3–5 mm, mineralischer Anstrich.',
+    'Kranzgesimse zwischen den Geschossen in Kupfer.',
+    'Fenstereinfassungen in Feinputz oder Strukturputz, Fensterbänke aus Faserzement oder Metall.',
+    'Fugendichtungen, Brandschutzdämmungen und spezielle Dämmungen gemäss Bauphysik.'
+  ]);
+  add('dach',[
+    'Steildach mit Flachschiebeziegeln Ton, graphitgrau, inkl. Lattung, Konterlattung und Unterdach.',
+    'Spenglerarbeiten in Kupfer: Dachrinnen, Ablaufrohre, Einfassungen und Gaubenanschlüsse.',
+    'Blechabschlüsse und Dacheinfassungen aus Uginox- oder Kupferblech.',
+    'Blitzschutzanlage gemäss VKF-Vorgaben (insbesondere bei Photovoltaikanlage).',
+    'Decke Tiefgarage erdüberdeckt: Abdichtung, Schutzschicht und Überdeckung gemäss Umgebungsplan.',
+    'Dachterrassen mit Abdichtung, Dämmung und keramischen Platten.'
+  ]);
+  add('fenster',[
+    'Holz-Metall-Fenster aussen RAL 7016 Anthrazitgrau, 3-fach verglast, mind. ein Dreh-/Kippflügel pro Raum.',
+    'Haustüre aus Metall mit Sicherheitszylinder, Oberfläche gemäss Farbkonzept.',
+    'Garagentor Einstellhalle motorisiert mit Fernbedienung und Lüftungsgitter.'
+  ]);
+  add('storen',[
+    'Rafflamellenstoren Aluminium [RAL 9006], motorisiert, zentrale Steuerung mit Wetterstation, Lamellen 70 oder 90 mm.',
+    'Markisen bei Sitzplätzen/Loggias mit Gelenkkurbel, einheitlich gemäss Farbkonzept.'
+  ]);
+  add('elektro',[
+    'Glasfaser bis zum Wohnungsverteiler, Multimedia-/Kombidosen in allen Zimmern und im Wohnzimmer, Gegensprechanlage.',
+    'Deckenspots in Korridor, Treppenhaus, Wohn-/Essbereich, Küche und Nasszellen; Lampen in Nebenräumen und Umgebung.',
+    'Photovoltaik als Indach-System inkl. Wechselrichter, Zusammenschluss zum Eigenverbrauch (ZEV) [ja/nein].',
+    'E-Mobilität Einstellhalle: Grundinstallation für Ladestationen, Ladestation optional pro Abstellplatz.',
+    'Vollständige, betriebsbereite Installation gemäss geltenden Normen; Konzept und Pläne Elektroplaner.'
+  ]);
+  add('heizung',[
+    'Wärmepumpe [Luft/Wasser | Erdsonden], Aufstellung im Technikraum UG, inkl. Speicher und Warmwasserboiler.',
+    'Fussbodenheizung inkl. Verteilung und Steigleitungen, Einzelraumregulierung, Wärmezählung pro Wohnung.',
+    'Mechanische Abluft für innenliegende Nasszellen und Reduits, Küchenabluft im Umluftbetrieb.',
+    'Tiefgaragenlüftung gemäss Konzept Haustechnik.'
+  ]);
+  add('sanitär',[
+    'Sanitärapparate gemäss Apparateliste, Budget Apparate CHF [ … ] pro Wohnung.',
+    'Echtglas-Duschtrennwände, Spiegelschränke, Waschtisch mit Unterbaumöbel inkl. Massaufnahme und Montage.',
+    'Waschmaschine/Tumbler je Wohnung, Fabrikat [Miele | V-ZUG | Electrolux].',
+    'Trocknungsraum im UG mit Raumluftwäschetrockner (Secomat).',
+    'Liegenschaftsentwässerung im Trennsystem mit Retention Meteorwasser gemäss Kanalisationsplan.',
+    'Kalt-, Warm- und Schmutzwasserleitungen komplett, Apparatemontage an gedämmten Installationselementen.'
+  ]);
+  add('küche',[
+    'Küchen gemäss Plangrundlagen, Richtwert CHF [ … ] pro Wohnung, Geräte [Miele | V-ZUG | Electrolux].',
+    'Wohnküche mit Kochinsel gemäss Grundriss, Richtwerte je Wohnungstyp gemäss Budgetliste.'
+  ]);
+  add('wandbeläge',[
+    'Innenwände mineralischer Abrieb 1.0 mm, weiss gestrichen, weitere Farben optional.',
+    'Feinsteinzeug-Wandplatten 60x120 cm im Spritzbereich und an Vorwandelementen, Richtwert Material CHF [ … ]/m².'
+  ]);
+  add('bodenbeläge',[
+    'Feinsteinzeug 60x60 cm in Nasszellen und Reduits, Richtwert Material CHF [ … ]/m².',
+    'Parkett Landhausdielen Eiche in Wohn-/Essbereich, Zimmern und Korridor, Richtwert Material CHF [ … ]/m².',
+    'Hartbetonbelag in Technik- und Nebenräumen; Tiefgarage fugenlos mit max. 2 % Gefälle.',
+    'Schwimmender Unterlagsboden Zement/Anhydrit inkl. Fussbodenheizung, Dämmung gemäss Energienachweis.'
+  ]);
+  add('decken',[
+    'Decken Weissputz (nicht streiflichtfrei), weiss; eingelegte Vorhangschienen 2 Stk. pro Fenster.',
+    'Innere Malerarbeiten auf Wänden, Decken, Türzargen und Bauteilen, Dispersion.'
+  ]);
+  add('innentüren',[
+    'Innentüren aus Holz, Türblatt zum Streichen, mit Metallzargen.',
+    'Garderobenschränke Budget CHF [ … ] pro Wohnung, Oberflächen Kunstharz belegt.',
+    'Fenstersimse Oberfläche nach Wahl bei Fenstern mit Brüstung, sonst Weissputz abwaschbar.'
+  ]);
+  add('aussenanlagen',[
+    'Gemeinsame Umgebung mit Containerplatz, Velounterstand, Erholungsfläche, Wegen und Bepflanzung gemäss Umgebungsplan.',
+    'Kofferung, Humusierung und Ansaat Rasen inkl. 1. Schnitt; Pflanzbudget CHF [ … ].',
+    'Spielplatz mit Sandkasten, Trampolin und Federwippen gemäss Umgebungsplan.',
+    'Sitzplätze mit keramischen Platten 60x60 cm, hellgrau.',
+    'Stützmauern und Autounterstand in Ortbeton.',
+    'Zaun bis max. 2.00 m und Staketengeländer gemäss Umgebungsplan; Sichtzone mit Bepflanzungsverbot.',
+    'Elektroanschlüsse für Gartenbeleuchtung.'
+  ]);
+  add('vorbereitung',[
+    'Rissprotokolle der Nachbarliegenschaften inkl. Gebäude, Zufahrtsstrasse und Stützmauern vor Baubeginn.',
+    'Kanal-TV-Aufnahme der bestehenden Kanalisation.',
+    'Rodungen und Räumungen der Umgebung, Schutz der erhaltenswerten Bäume.',
+    'Abbruch des bestehenden Gebäudes inkl. Fundamente und fachgerechter Entsorgung.',
+    'Schadstoffsanierung gemäss Gebäudeschadstoffbericht; Entsorgungsrisiko beim Unternehmer.',
+    'Kontrolle der geschützten Bauteile und angrenzenden Anlagen während der gesamten Bauzeit.',
+    'Anpassen der Werkleitungen Kanalisation, Wasser, Elektro und Telekom; nicht benötigte Anschlüsse stilllegen.'
+  ]);
+  add('baustelle',[
+    'Umzäunung des Baustellenbereichs mit Bauzäunen und Rotweiss-Latten inkl. Beleuchtung.',
+    'Erstellen und Unterhalt der Zufahrten und des Installationsplatzes.',
+    'Provisorische Strom-, Wasser- und Abwasseranschlüsse.',
+    'Strom- und Wasserkosten während der gesamten Bauzeit.',
+    'Mulden für Bauabfälle, welche nicht von den Unternehmern entsorgt werden.'
+  ]);
+  add('lift',[
+    'Personenaufzug für min. 4–6 Personen ohne Unterfahrt, Kabinenausstattung gemäss Auswahl Lieferant.',
+    'Rollstuhlgängiger Personenaufzug mit Haltestellen [UG–DG] gemäss SIA 500.'
+  ]);
+  add('ausbau',[
+    'Verputzarbeiten an Wänden und Decken inkl. aller Vorbereitungsarbeiten.',
+    'Metallbauteile pulverbeschichtet bzw. einbrennlackiert; Absturzsicherungen bei Fenstern gemäss Fassadenplänen.',
+    'Staketengeländer auf Sitzplätzen, Terrassen und Balkonen gemäss Farbkonzept; Handläufe innen aus Holz.',
+    'Briefkastenanlage für [ … ] Parteien; Lieferung der Container für die Abfallentsorgung.',
+    'Schliessanlage für alle Aussen-, Wohnungs- und Nebenraumtüren.',
+    'Kellerabteile mit Trennwänden [Holzlattung | Mauerwerk]; Veloständer im Veloraum.',
+    'Bauaustrocknung mittels provisorischer Heizung, Lüftungselementen und Bautrocknern.',
+    'Grobreinigung während der Ausführung, Endreinigung vor Übergabe.'
+  ]);
+  add('nebenkosten',[
+    'Erstellung der Baueingabedokumente, Auflagenbereinigung bis zur Baufreigabe, Abnahmen und Bezugsbewilligung.',
+    'Schutzraumersatzabgaben pro Wohnung.',
+    'Anschlussgebühren Wasser, Kanalisation und Elektro gemäss Reglementen der Gemeinde [ … ].',
+    'Plankopien, Vervielfältigungen und Schlussdokumentation nach Bauübergabe.',
+    'Bauwesen- und Bauherrenhaftpflichtversicherung während der ganzen Bauzeit.',
+    'Erfüllungsgarantie 10 % der Werksumme bis 4 Monate nach Übergabe; Gewährleistungsgarantie 10 % während 2 Jahren (SIA 118).',
+    'Zumietung fremden Grundes für Parkplätze und Installationsplatz.'
+  ]);
+  add('honorare',[
+    'Architekt: Leistungen gemäss SIA 102, Teilphasen [31–53].',
+    'Bauingenieur: Leistungen gemäss SIA 103, Teilphasen [31–53].',
+    'Elektro- und HLKS-Planung: Leistungen gemäss SIA 108, Teilphasen [31–53].',
+    'Spezialisten: Bauphysik, Geologe (Begleitung Baugrube), Brandschutz, Fachbauleitungen.',
+    'Bauleitung: Ausschreibung, örtliche Bauleitung, Kostenkontrolle, Inbetriebnahme.',
+    'Projektmanagement: Bauherrenbetreuung, Vertrags-/Kostenmanagement, Gesamtprojektleitung.'
+  ]);
+})();
+
+// BKP-Vorlage (ausführlich, Gliederung nach BKP SN 506 500) – Platzhalter in [eckigen Klammern] projektbezogen ergänzen.
+const BAUBESCHRIEB_BKP_TEMPLATE=[
+  {title:'BKP 10 Bestandesaufnahmen', content:
+`BKP 101 Bestandesaufnahmen / Rissprotokolle
+- Rissprotokolle der Nachbarliegenschaften inkl. Gebäude, Zufahrtsstrasse und Stützmauern vor Baubeginn
+- Kanal-TV-Aufnahme der bestehenden Kanalisation`},
+  {title:'BKP 11 Räumungen, Terrainvorbereitungen', content:
+`BKP 111 Rodungen
+- Rodungen und Räumungen der Umgebung, Schutz der erhaltenswerten Bäume
+BKP 112 Abbruch
+- Abbruch des bestehenden [Gebäudes] inkl. Fundamente und Werkleitungen, fachgerechte Trennung und Entsorgung
+BKP 113 Schadstoffsanierung
+- Schadstoffsanierung gemäss Gebäudeschadstoffbericht [vorhanden / wird erstellt]`},
+  {title:'BKP 12 Sicherungen, Provisorien', content:
+`BKP 121 Sicherung vorhandener Anlagen
+- Schutz und Kontrolle angrenzender Bauten, Strassen und Werkleitungen während der gesamten Bauzeit`},
+  {title:'BKP 13 Gemeinsame Baustelleneinrichtung', content:
+`BKP 131 Abschrankungen
+- Umzäunung des Baustellenbereichs mit Bauzäunen inkl. Signalisation und Beleuchtung
+BKP 132 Zufahrten, Plätze
+- Erstellen und Unterhalt der Zufahrten und des Installationsplatzes
+BKP 135 Provisorische Installationen
+- Provisorische Strom-, Wasser- und Abwasseranschlüsse
+BKP 136 Kosten für Energie und Wasser
+- Strom- und Wasserkosten während der gesamten Bauzeit
+BKP 138 Bauabfälle
+- Mulden für Bauabfälle, welche nicht von den Unternehmern entsorgt werden`},
+  {title:'BKP 15 Anpassungen an bestehende Erschliessungsleitungen', content:
+`BKP 151 Werkleitungen
+- Anpassen bzw. Erneuern der Hausanschlüsse Kanalisation, Wasser, Elektro und Telekom
+- Stilllegen nicht mehr benötigter Anschlussleitungen gemäss Kanalisationsplan`},
+  {title:'BKP 17 Spezielle Fundationen, Baugrubensicherung', content:
+`BKP 172 Baugrubenabschlüsse
+- Baugrubensicherung nach Angaben Bauingenieur, Grundlage geologischer Bericht [Verfasser, Datum]
+BKP 175 Grundwasserabdichtung
+- Abdichtungskonzept nach Angaben Bauingenieur
+BKP 176 Wasserhaltung
+- Offene Wasserhaltung mit Absetzbecken für die Dauer des Rohbaus`},
+  {title:'BKP 20 Baugrube', content:
+`BKP 201 Baugrubenaushub
+- Abhumusieren und Aushub bis UK Magerbeton der Bodenplatte
+- Böschungen für baggerfähiges Material inkl. Abdecken mit Folien, Abtransport und Deponiegebühren
+- Sickerleitungen für Hangwasser nach Angaben Bauingenieur, Hinterfüllung mit setzungsfreiem Material`},
+  {title:'BKP 21 Rohbau 1', content:
+`BKP 211 Baumeisterarbeiten
+- Baustelleneinrichtung inkl. Kran (Vorhaltung bis [3] Monate über Rohbauende) und Fassadengerüst
+- Grundleitungen der Kanalisation inkl. Schächte unter der Bodenplatte (Trennsystem)
+- Untergeschoss in Stahlbeton, Dichtigkeitsklasse [2 (gelbe Wanne) | 1 (weisse Wanne)], Dämmung gegen Erdreich gemäss Energienachweis
+- Decken, Treppenhaus- und Liftkern in Stahlbeton; Wände Obergeschosse [Beton/Mauerwerk | Holzbau]
+- Mauerwerk inkl. An- und Abschlüsse, Stürze, Spitz- und Bohrarbeiten
+BKP 212 Montagebau in Beton
+- Treppen und Lichtschächte als Betonfertigteile inkl. Montage
+BKP 214 Montagebau in Holz
+- [Satteldach | Flachdach] mit Sparrenlage und Unterdach, Dachgauben und Dachfenster gemäss Baueingabeplänen
+- Dämmung Dach gemäss Energienachweis`},
+  {title:'BKP 22 Rohbau 2', content:
+`BKP 221 Fenster, Aussentüren, Tore
+- Fenster in [Holz-Metall | Kunststoff-Metall], 3-fach-Isolierverglasung, aussen [RAL …], mind. ein Dreh-/Kippflügel pro Raum
+- Haustüre aus Metall mit Sicherheitszylinder, Oberfläche gemäss Farbkonzept
+- Garagentor Einstellhalle motorisiert mit Lüftungsgitter
+BKP 222 Spenglerarbeiten
+- Dachrinnen, Ablaufrohre und Einfassungen in [Kupfer | Uginox]
+BKP 223 Blitzschutz
+- Blitzschutzanlage [erforderlich gemäss VKF / nicht erforderlich]
+BKP 224 Bedachungsarbeiten
+- [Steildach mit Tonziegeln, Farbe … | Flachdach mit Abdichtung, Dämmung und extensiver Begrünung]
+- Photovoltaik [Indach-System | Aufdach], Lage gemäss Fassadenplänen
+BKP 225 Spezielle Dichtungen und Dämmungen
+- Fugendichtungen, Brandschutzdämmungen, spezielle Dämmungen
+BKP 226 Fassade
+- [Verputzte Aussenwärmedämmung, Farbton … | Hinterlüftete Fassade …], Dämmung gemäss Energienachweis
+- Sockel verputzt, im Spritzwasserbereich XPS; Fensterbänke [Metall | Faserzement]
+BKP 227 Äussere Malerarbeiten
+- Anstriche gemäss Farbkonzept, Untersicht Dach gemäss Farbkonzept
+BKP 228 Äussere Abschlüsse, Sonnenschutz
+- Rafflamellenstoren Aluminium [RAL …], [motorisiert mit zentraler Steuerung und Wetterstation]
+- Sitzplätze / Balkone: [Markisen mit Gelenkkurbel | keine]`},
+  {title:'BKP 23 Elektroanlagen', content:
+`BKP 230 Elektroanlagen
+- Glasfaser bis Wohnungsverteiler, Multimediadosen in Wohnen und allen Zimmern, Gegensprechanlage [mit Video]
+- Deckenspots in Korridor, Treppenhaus, Wohn-/Essbereich, Küche und Nasszellen; Lampen in Nebenräumen und Umgebung
+- Photovoltaikanlage inkl. Wechselrichter [ZEV / Speicher]
+- E-Mobilität: [Grundinstallation | Ladestationen] in der Einstellhalle
+- Vollständige, betriebsbereite Installation gemäss geltenden Normen`},
+  {title:'BKP 24 Heizungs-, Lüftungs- und Klimaanlagen', content:
+`BKP 240 Heizungsanlagen
+- Wärmeerzeugung mit Wärmepumpe [Luft/Wasser | Erdsonden], inkl. Speicher und Warmwasserboiler
+- Fussbodenheizung inkl. Verteilung und Steigleitungen, Einzelraumregulierung
+BKP 244 Lüftungsanlagen
+- Mechanische Abluft für Räume ohne Fenster, Küchenabluft im Umluftbetrieb
+- Wohnungslüftung [Komfortlüftung | keine]; Tiefgaragenlüftung gemäss Konzept Haustechnik`},
+  {title:'BKP 25 Sanitäranlagen', content:
+`BKP 250 Sanitäranlagen
+- Apparate gemäss Apparateliste, Budget CHF [ … ] pro Wohnung
+- Badewannen bzw. bodenebene Duschen, WC-Anlagen, Armaturen, Spiegelschränke, Waschtische mit Unterbau, Glas-Duschtrennwände
+- Kalt-, Warm- und Schmutzwasserleitungen komplett
+BKP 251 Liegenschaftsentwässerung
+- Trennsystem Schmutz-/Meteorwasser, Retention gemäss Kanalisationsplan [Volumen m³]
+BKP 252 Waschmaschinen / Tumbler
+- [ … ] Stk. Waschmaschine/Tumbler, Fabrikat [Miele | V-ZUG | Electrolux]; Trocknungsraum mit Secomat
+BKP 258 Kücheneinrichtungen
+- [ … ] Küchen gemäss Grundrissen, Richtwert CHF [ … ] pro Wohnung, Geräte [Miele | V-ZUG | Electrolux]`},
+  {title:'BKP 26 Transportanlagen', content:
+`BKP 261 Aufzüge
+- Personenaufzug [Fabrikat], rollstuhlgängig, Haltestellen [UG–DG], Kabinenausstattung gemäss Auswahl`},
+  {title:'BKP 27 Ausbau 1', content:
+`BKP 271 Gipserarbeiten
+- Innenwände mineralischer Abrieb 1.0 mm weiss gestrichen; Decken Weissputz; Vorhangschienen 2 Stk. pro Fenster
+BKP 272 Metallbauarbeiten
+- Staketengeländer und Absturzsicherungen gemäss Fassadenplänen, [feuerverzinkt | pulverbeschichtet]
+- Handläufe innen aus [Holz | Metall]; Briefkastenanlage für [ … ] Parteien
+BKP 273 Schreinerarbeiten
+- Wohnungseingangstüren mit Sicherheitszylinder; Innentüren Holz gestrichen mit Metallzargen
+- Fenstersimse [Material]; Garderobenschränke Budget CHF [ … ] pro Wohnung
+- Kellerabteile [Holzlattung | Mauerwerk]
+BKP 275 Schliessanlage
+- Schliessanlage für alle Aussen-, Wohnungs- und Nebenraumtüren`},
+  {title:'BKP 28 Ausbau 2', content:
+`BKP 281 Bodenbeläge
+- Unterlagsboden Zement/Anhydrit schwimmend inkl. Fussbodenheizung
+- Wohnen/Zimmer: Parkett Eiche, Richtwert Material CHF [ … ]/m²
+- Nasszellen: Feinsteinzeug 60x60 cm, Wandplatten 60x120 cm im Spritzbereich, Richtwert Material CHF [ … ]/m²
+- Technik-/Nebenräume und Tiefgarage: Hartbetonbelag
+BKP 285 Innere Malerarbeiten
+- Anstriche Wände, Decken, Zargen, Dispersion
+BKP 286 Bauaustrocknung
+- Provisorische Heizung, Lüftungselemente und Bautrockner
+BKP 287 Baureinigung
+- Grobreinigung während der Ausführung, Endreinigung vor Übergabe`},
+  {title:'BKP 41 Roh- und Ausbauarbeiten Umgebung', content:
+`BKP 411 Baumeisterarbeiten
+- Zufahrten und Parkplätze [asphaltiert], Stützmauern in Ortbeton gemäss Umgebungsplan`},
+  {title:'BKP 42 Gartenanlagen', content:
+`BKP 421 Gärtnerarbeiten
+- Umgebung mit Containerplatz, Velounterstand, Wegen und Bepflanzung gemäss Umgebungsplan
+- Kofferung, Humusierung und Ansaat Rasen; Pflanzbudget CHF [ … ]
+- Spielplatz [Ausstattung gemäss Umgebungsplan]; Sitzplätze [Belag]
+- Elektroanschlüsse für Gartenbeleuchtung`},
+  {title:'BKP 51 Bewilligungen, Gebühren', content:
+`BKP 511 Bewilligungen
+- Baueingabe, Auflagenbereinigung bis zur Baufreigabe, Abnahmen, Bezugsbewilligung
+- Schutzraum: [Ersatzabgabe | eigener Schutzraum]
+BKP 512 Anschlussgebühren
+- Wasser, Kanalisation und Elektro gemäss Reglementen der Gemeinde [ … ]`},
+  {title:'BKP 52 Muster, Modelle, Vervielfältigungen', content:
+`BKP 524 Vervielfältigungen
+- Plankopien und Vervielfältigungen
+BKP 525 Dokumentation
+- Schlussdokumentation nach Bauübergabe`},
+  {title:'BKP 53 Versicherungen, Garantien', content:
+`BKP 531 Bauzeitversicherungen
+- Bauwesen- und Bauherrenhaftpflichtversicherung während der ganzen Bauzeit
+BKP 533 Garantien
+- Erfüllungsgarantie 10 % der Werksumme bis [4] Monate nach Übergabe
+- Gewährleistungsgarantie 10 % der Werksumme während 2 Jahren ab Abnahme (SIA 118)`},
+  {title:'BKP 69 Honorare', content:
+`BKP 691 Architekt
+- Leistungen gemäss SIA 102, Teilphasen [31–53]
+BKP 692 Bauingenieur
+- Leistungen gemäss SIA 103
+BKP 693/694 Elektro- und HLKS-Planung
+- Leistungen gemäss SIA 108
+BKP 695 Spezialisten
+- Bauphysik, Geologie, Brandschutz [weitere]
+BKP 697 Bauleitung
+- Ausschreibung, örtliche Bauleitung, Kostenkontrolle, Inbetriebnahme [durch …]`}
+];
+const BAUBESCHRIEB_VORLAGEN={
+  kompakt:{label:'Kompakt – 15 Kapitel (Wohnbau)', sections:()=>BAUBESCHRIEB_SECTIONS_DEFAULT},
+  bkp:{label:'Ausführlich – nach BKP (Vorbereitung bis Honorare)', sections:()=>BAUBESCHRIEB_BKP_TEMPLATE}
+};
+// Offene Platzhalter [ … ] zählen (für Übersicht und Hinweis im Editor)
+function _bbOpenPlaceholders(bb){
+  let n=0; (bb.sections||[]).forEach(s=>{ const m=String(s.content||'').match(/\[[^\]\n]{0,60}\]/g); if(m)n+=m.length; }); return n;
+}
+
+// Findet die passenden Textvorschläge zu einem (auch frei umbenannten) Kapiteltitel via BKP-Nummer oder Schlagwort-Suche.
 function _bbSuggestionsFor(title){
   const t=(title||'').toLowerCase();
+  const S=k=>BAUBESCHRIEB_SUGGESTIONS[k]||[];
+  const uniq=a=>[...new Set(a)];
+  // 1) BKP-Nummer im Titel („BKP 22 Rohbau 2“, „BKP 228 Storen“)
+  const m=t.match(/bkp\s*(\d{2,3})/);
+  if(m){
+    const c=m[1];
+    const by3={'221':'fenster','222':'dach','223':'dach','224':'dach','225':'fassade','226':'fassade','227':'fassade','228':'storen',
+      '258':'küche','271':'wandbeläge','281':'bodenbeläge','285':'decken','273':'innentüren'};
+    if(c.length===3&&by3[c]) return S(by3[c]);
+    const by2={'10':['vorbereitung'],'11':['vorbereitung'],'12':['vorbereitung'],'13':['baustelle'],'15':['vorbereitung'],
+      '16':['vorbereitung'],'17':['baugrube'],'20':['baugrube'],'21':['rohbau'],'22':['fenster','dach','fassade','storen'],
+      '23':['elektro'],'24':['heizung'],'25':['sanitär','küche'],'26':['lift'],'27':['wandbeläge','decken','innentüren','ausbau'],
+      '28':['bodenbeläge','decken','ausbau'],'29':['honorare'],'41':['aussenanlagen'],'42':['aussenanlagen'],'44':['aussenanlagen'],'46':['aussenanlagen'],
+      '50':['nebenkosten'],'51':['nebenkosten'],'52':['nebenkosten'],'53':['nebenkosten'],'55':['nebenkosten'],'56':['nebenkosten'],
+      '60':['honorare'],'69':['honorare']};
+    const k=by2[c.slice(0,2)]; if(k) return uniq(k.flatMap(S));
+  }
+  // 2) Schlagworte
   const map=[
-    ['baugrube',['baugrube','fundament','fundation']],
-    ['rohbau',['rohbau','konstruktion','tragwerk']],
+    ['vorbereitung',['bestandesaufnahme','bestandsaufnahme','abbruch','rückbau','räumung','werkleitung','erschliessung']],
+    ['baustelle',['baustelleneinrichtung','installation']],
+    ['baugrube',['baugrube','fundament','fundation','aushub']],
+    ['rohbau',['rohbau','konstruktion','tragwerk','baumeister']],
     ['fassade',['fassade']],
-    ['dach',['dach','bedachung']],
+    ['dach',['dach','bedachung','spengler','blitzschutz']],
     ['fenster',['fenster','aussentür']],
     ['bodenbeläge',['boden']],
-    ['wandbeläge',['wandbelag','wandbeläge']],
+    ['wandbeläge',['wandbelag','wandbeläge','gipser']],
     ['decken',['decke','malerarbeit']],
-    ['innentüren',['innentür','zimmertür']],
+    ['innentüren',['innentür','zimmertür','schreiner']],
     ['küche',['küche']],
-    ['sanitär',['sanitär','bad','dusche','wc']],
+    ['sanitär',['sanitär','bad','dusche','wc','entwässerung','kanalisation']],
     ['elektro',['elektro','strom']],
     ['heizung',['heizung','lüftung','klima']],
     ['storen',['store','sonnenschutz','markise','rollladen','rollläden']],
-    ['aussenanlagen',['aussenanlage','garten','umgebung']]
+    ['lift',['lift','aufzug','transportanlage']],
+    ['ausbau',['metallbau','schliess','ausbau','reinigung','austrocknung']],
+    ['aussenanlagen',['aussenanlage','garten','umgebung']],
+    ['nebenkosten',['bewilligung','gebühr','versicherung','garantie','nebenkosten']],
+    ['honorare',['honorar','planer','bauleitung']]
   ];
-  for(const [key,words] of map){ if(words.some(w=>t.includes(w))) return BAUBESCHRIEB_SUGGESTIONS[key]; }
+  for(const [key,words] of map){ if(words.some(w=>t.includes(w))) return S(key); }
   return null;
 }
 const BAUBESCHRIEB_NOTES_DEFAULT=[
@@ -16387,7 +16732,7 @@ async function renderBaubeschrieb(){
   const list=(await byProject('baubeschriebe')).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   stage.innerHTML=`
     <div class="module">
-      <div class="mod-head"><div><h1>Baubeschrieb</h1><div class="sub">Kapitel frei bearbeit- und ergänzbar · Hinweise auf der letzten Seite</div></div>
+      <div class="mod-head"><div><h1>Baubeschrieb</h1><div class="sub">Vorlage kompakt oder nach BKP · Kapitel frei bearbeit- und ergänzbar · Hinweise auf der letzten Seite</div></div>
         <div class="spacer"></div><button class="btn btn-primary btn-sm" id="newBbBtn">＋ Neuer Baubeschrieb</button></div>
       <div class="mod-body">
         ${list.length?_genSelToolbar('baubeschriebe'):''}
@@ -16396,8 +16741,8 @@ async function renderBaubeschrieb(){
           <button class="card-del" data-del="${bb.id}" title="Baubeschrieb löschen">×</button>
           <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-right:30px;padding-left:26px"><b style="font-size:15px">${esc(bb.object||'Ohne Bezeichnung')}</b><span style="margin-left:auto;font-size:12px;color:var(--muted)">${fmtDate(bb.date)}</span></div>
           <div style="margin-top:6px;font-size:13px;color:var(--muted)">${esc(bb.bauherr||'—')}</div>
-          <div style="margin-top:8px;font-size:12px;color:var(--muted)">${(bb.sections||[]).filter(s=>s.content&&s.content.trim()).length} von ${(bb.sections||[]).length} Kapiteln ausgefüllt</div>
-        </div>`).join(''):`<div class="empty"><div class="big">📖</div><h3>Kein Baubeschrieb</h3><p>Erstelle einen Baubeschrieb mit den üblichen Kapiteln – Rohbau, Fassade, Böden, Küche, Sanitär, Elektro und mehr.</p></div>`}
+          <div style="margin-top:8px;font-size:12px;color:var(--muted)">${(bb.sections||[]).filter(s=>s.content&&s.content.trim()).length} von ${(bb.sections||[]).length} Kapiteln ausgefüllt${_bbOpenPlaceholders(bb)?` · <span style="color:var(--brand-red)">${_bbOpenPlaceholders(bb)} offene Platzhalter</span>`:''}</div>
+        </div>`).join(''):`<div class="empty"><div class="big">📖</div><h3>Kein Baubeschrieb</h3><p>Erstelle einen Baubeschrieb mit den üblichen Kapiteln – Rohbau, Fassade, Böden, Küche, Sanitär, Elektro und mehr. Im Editor wählbar: kompakte Vorlage oder ausführliche Vorlage nach BKP.</p></div>`}
       </div>
     </div>`;
   document.getElementById('newBbBtn').onclick=()=>openBaubeschriebEditor();
@@ -16436,8 +16781,18 @@ async function openBaubeschriebEditor(bb){
 
       <div class="field" style="border-top:1px solid var(--line);padding-top:12px;margin-top:6px">
         <label>Kapitel</label>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:2px 0 10px">
+          <select id="bbTplLoad" style="font-size:12.5px;max-width:100%">
+            <option value="">📋 Vorlage laden…</option>
+            ${Object.entries(BAUBESCHRIEB_VORLAGEN).map(([k,v])=>`<option value="${k}">${esc(v.label)}</option>`).join('')}
+          </select>
+          <span id="bbOpenInfo"></span>
+        </div>
         <div id="bbSections" style="display:flex;flex-direction:column;gap:10px"></div>
-        <button class="btn btn-ghost btn-sm" id="addSectionBtn" type="button" style="margin-top:8px">＋ Kapitel</button>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px">
+          <button class="btn btn-ghost btn-sm" id="addSectionBtn" type="button">＋ Kapitel</button>
+          <select id="bbAddFromTpl" style="font-size:12.5px;max-width:100%"></select>
+        </div>
       </div>
 
       <div class="field" style="margin-top:14px"><label>Hinweise <span style="font-weight:400;color:var(--muted);font-size:12px">(erscheinen im PDF auf der letzten Seite – je Zeile ein Punkt)</span></label>
@@ -16490,7 +16845,7 @@ async function openBaubeschriebEditor(bb){
           <input data-k="title" data-i="${i}" value="${esc(s.title)}" placeholder="Kapitelname" style="flex:1;border:none;background:transparent;font-weight:700">
           <button class="row-del" data-rmsec="${i}" type="button" title="Kapitel entfernen">×</button>
         </div>
-        <textarea data-k="content" data-i="${i}" placeholder="Beschreibung / Ausführung…" style="width:100%;min-height:56px;border:1px solid var(--line);border-radius:6px;padding:7px;background:var(--paper);font-size:12.5px">${esc(s.content||'')}</textarea>
+        <textarea data-k="content" data-i="${i}" rows="${Math.min(14,Math.max(3,String(s.content||'').split('\n').length+1))}" placeholder="Beschreibung / Ausführung…" style="width:100%;min-height:56px;border:1px solid var(--line);border-radius:6px;padding:7px;background:var(--paper);font-size:12.5px">${esc(s.content||'')}</textarea>
         ${sugg?`<select data-suggest="${i}" style="margin-top:6px;font-size:12px;max-width:100%">
           <option value="">💡 Marktüblichen Vorschlag einfügen…</option>
           ${sugg.map((txt,si)=>`<option value="${si}">${esc(txt.length>90?txt.slice(0,90)+'…':txt)}</option>`).join('')}
@@ -16514,6 +16869,31 @@ async function openBaubeschriebEditor(bb){
   }
   drawSections();
   document.getElementById('addSectionBtn').onclick=()=>{bb.sections.push({id:uid(),title:'Neues Kapitel',content:''});drawSections();saveDraftDebounced();};
+  // Vorlagen: ganze Vorlage laden bzw. einzelne BKP-Kapitel ergänzen (in BKP-Reihenfolge einsortiert)
+  const _bkpNo=t=>{const m=String(t||'').match(/BKP\s*(\d{2,3})/i);return m?+m[1].padEnd(3,'0'):null;};
+  function updOpen(){ const el=document.getElementById('bbOpenInfo'); if(!el)return; const n=_bbOpenPlaceholders(bb);
+    el.innerHTML=n?`<span style="font-size:12px;color:var(--brand-red)" title="Platzhalter in [eckigen Klammern] projektbezogen ersetzen">${n} offene Platzhalter [ … ]</span>`:''; }
+  function fillAddTpl(){ const sel=document.getElementById('bbAddFromTpl'); if(!sel)return; const have=new Set(bb.sections.map(s=>(s.title||'').trim()));
+    sel.innerHTML='<option value="">＋ Kapitel aus BKP-Vorlage…</option>'+BAUBESCHRIEB_BKP_TEMPLATE.map((s,i)=>have.has(s.title)?'':`<option value="${i}">${esc(s.title)}</option>`).join(''); }
+  document.getElementById('bbTplLoad').onchange=e=>{
+    const sel=e.target, v=sel.value; if(!v||!BAUBESCHRIEB_VORLAGEN[v])return;
+    const filled=bb.sections.some(s=>s.content&&s.content.trim());
+    if(filled&&!confirm(`Vorlage „${BAUBESCHRIEB_VORLAGEN[v].label}" laden?\n\nDie bestehenden Kapitel und Texte werden ersetzt.`)){sel.value='';return;}
+    bb.sections=JSON.parse(JSON.stringify(BAUBESCHRIEB_VORLAGEN[v].sections())).map(s=>({...s,id:uid()}));
+    bb.template=v; sel.value=''; drawSections(); fillAddTpl(); updOpen(); saveDraftDebounced();
+  };
+  const addTplSel=document.getElementById('bbAddFromTpl');
+  addTplSel.onfocus=fillAddTpl; addTplSel.onmousedown=fillAddTpl;
+  addTplSel.onchange=()=>{
+    const i=addTplSel.value; if(i==='')return; const s=BAUBESCHRIEB_BKP_TEMPLATE[+i]; if(!s)return;
+    const no=_bkpNo(s.title); let at=bb.sections.length;
+    if(no!=null){ const j=bb.sections.findIndex(x=>{const n=_bkpNo(x.title);return n!=null&&n>no;}); if(j>=0)at=j; }
+    bb.sections.splice(at,0,{id:uid(),title:s.title,content:s.content});
+    drawSections(); fillAddTpl(); updOpen(); saveDraftDebounced();
+  };
+  fillAddTpl(); updOpen();
+  document.querySelector('.modal-body').addEventListener('input',updOpen);
+  document.querySelector('.modal-body').addEventListener('click',e=>{ if(e.target.closest('[data-rmsec]')) setTimeout(()=>{fillAddTpl();updOpen();},0); });
 
   document.getElementById('bbSave').onclick=async()=>{saveDraftDebounced.cancel();collect();await put('baubeschriebe',bb);_draftClear('bb',draftKeyId);closeModal();toast('Baubeschrieb gespeichert',true);renderBaubeschrieb();};
   document.getElementById('bbPdf').onclick=()=>{collect();saveDraftDebounced();exportBaubeschriebPDF(bb,proj);};
