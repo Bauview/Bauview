@@ -4323,8 +4323,8 @@ let CURRENT_USER={name:'', initials:'?', email:'', role:''};
 // Sichtbare Build-Version – bei jeder Auslieferung hochzählen. Zeigt sich in der Kopfzeile und
 // auf dem Anmeldebildschirm, damit sich auf jedem Gerät sofort prüfen lässt, ob wirklich der
 // aktuelle Stand geladen wurde (statt bei "unterschiedlichem Stand"-Problemen zu raten).
-const BUILD_VERSION='2026-11-05.1';
-const APP_VERSION='1.8.6'; // Versionsnummer wie Installer/Mobile (unauffällig unten in der Seitenleiste angezeigt)
+const BUILD_VERSION='2026-11-05.2';
+const APP_VERSION='1.8.7'; // Versionsnummer wie Installer/Mobile (unauffällig unten in der Seitenleiste angezeigt)
 let CURRENT_AUTH=null; // aktueller Cloud-Login (Auth-User), null = nicht eingeloggt
 const BKP_CRB2017=[['0','Grundstück','H'],['00','Vorstudien','G'],['000','Übergangsposition','P'],['001','Grundstücksbeurteilung, Machbarkeitsstudien','P'],['002','Vermessung, Vermarkung','P'],['003','Geotechnische und weitere Gutachten','P'],['003.1','Baugrund','S'],['003.2','Grundwasser','S'],['003.3','Altlasten','S'],['003.4','Weitere Gutachten','S'],['004','Quartierplankosten, Richtplankosten','P'],['006','Umweltverträglichkeitsprüfung','P'],['009','Übriges','P'],['01','Grundstücks- bzw. Baurechtserwerb','G'],['010','Übergangsposition','P'],['011','Grundstückserwerb','P'],['012','Baurechtserwerb','P'],['013','Brandmauereinkauf','P'],['018','Sanierung Altlasten','P'],['019','Übriges','P'],['02','Nebenkosten zu Grundstücks- bzw. Baurechtserwerb','G'],['020','Übergangsposition','P'],['021','Handänderungssteuer','P'],['022','Notariatskosten','P'],['023','Grundbuchgebühren','P'],['024','Anwaltskosten, Gerichtskosten','P'],['025','Vermittlungsprovisionen','P'],['029','Übriges','P'],['03','Abfindungen, Servitute, Beiträge','G'],['030','Übergangsposition','P'],['031','Abfindungen an Mieter und Pächter','P'],['032','Inkonvenienzentschädigungen','P'],['033','Errichtung von Servituten','P'],['034','Ablösung von Servituten','P'],['035','Wirtschaftspatente','P'],['036','Beiträge Melioration','P'],['037','Beiträge Güterzusammenlegung','P'],['038','Perimeterbeiträge','P'],['039','Übriges','P'],['04','Finanzierung vor Baubeginn','G'],['040','Übergangsposition','P'],['041','Errichten von Hypotheken auf Grundstück','P'],['042','Hypothekarzinsen','P'],['043','Baurechtszinsen','P'],['044','Darlehenszinsen','P'],['045','Eigenkapitalzinsen','P'],['046','Grundstücksteuern','P'],['048','Versicherungen bis Baubeginn','P'],['049','Übriges','P'],['05','Leitungen ausserhalb Grundstück','G'],['050','Übergangsposition','P'],['051','Erdarbeiten','P'],['052','Kanalisationsleitungen','P'],['053','Elektroleitungen, Gebäudeautomation','P'],['054','Leitungen für HLK-Anlagen','P'],['055','Sanitärleitungen','P'],['056','Nebenarbeiten','P'],['059','Übriges','P'],['06','Verkehrsanlagen ausserhalb Grundstück','G'],['060','Übergangsposition','P'],['061','Strassen','P'],['062','Bahnen','P'],['063','Wasserwege','P'],['069','Übriges','P'],['09','Honorare','G'],['090','Übergangsposition','P'],['091','Architekt','P'],['092','Bauingenieur','P'],['093','Elektroingenieur','P'],['094','HLK-Ingenieur','P'],['095','Sanitäringenieur','P'],['096','Landschaftsarchitekt','P'],['097','Spezialisten 1','P'],['097.0','Geometer','S'],['097.1','Geologe, Geotechniker','S'],['098','Spezialisten 2','P'],['098.2','Bauökonom','S'],['098.6','Verkaufsaufwendungen','S'],['099','Übriges','P'],['1','Vorbereitungsarbeiten','H'],['10','Bestandsaufnahmen, Baugrunduntersuchungen','G'],['100','Übergangsposition','P'],['101','Bestandsaufnahmen','P'],['101.1','Planaufnahmen','S'],['101.2','Schadstoffuntersuchungen','S'],['101.3','Erschütterungsmessungen','S'],['101.4','Rissprotokolle','S'],['101.5','Bestandsaufnahmen Bausubstanz','S'],['101.6','Bestandsaufnahmen Gebäudetechnik','S'],['101.7','Weitere Aufnahmen','S'],['102','Baugrunduntersuchungen','P'],['103','Grundwasseruntersuchungen','P'],['104','Baugespann','P'],['109','Übriges','P'],['11','Räumungen, Terrainvorbereitungen','G'],['110','Übergangsposition','P'],['111','Rodungen','P'],['112','Rückbau','P'],['112.0','Demontagen','S'],['112.1','Abbrüche','S'],['112.2','Entsorgung spezieller Bauteile','S'],['113','Sanierung Altlasten','P'],['114','Erdbewegungen','P'],['114.0','Baustelleneinrichtung','S'],['114.1','Erdarbeiten','S'],['119','Übriges','P'],['12','Sicherungen, Provisorien','G'],['120','Übergangsposition','P'],['121','Sicherung vorhandener Anlagen','P'],['122','Provisorien','P'],['123','Unterfangungen','P'],['123.0','Baustelleneinrichtungen','S'],['123.1','Gerüste','S'],['123.2','Spezielle Unterfangungsarbeiten','S'],['123.3','Erdarbeiten','S'],['123.4','Kanalisationen','S'],['123.5','Beton- und Stahlbetonarbeiten','S'],['123.6','Mauerarbeiten','S'],['129','Übriges','P'],['13','Gemeinsame Baustelleneinrichtung','G'],['130','Übergangsposition','P'],['131','Abschrankungen','P'],['132','Zufahrten, Plätze','P'],['133','Büro Bauleitung','P'],['134','Unterkünfte, Verpflegungseinrichtungen','P'],['135','Provisorische Installationen','P'],['135.0','Kanalisationen','S'],['135.1','Elektro','S'],['135.2','HLK-Anlagen, Gebäudeautomation','S'],['135.3','Wasser','S'],['135.4','Telekommunikation','S'],['136','Kosten für Energie, Wasser und dgl.','P'],['137','Provisorische Abschlüsse und Abdeckungen','P'],['138','Sortierung Bauabfälle','P'],['139','Übriges','P'],['14','Anpassungen an bestehenden Bauten','G'],['140','Übergangsposition','P'],['141','Terraingestaltung, Rohbau 1','P'],['141.0','Erdarbeiten','S'],['141.1','Baumeisterarbeiten','S'],['141.2','Montagebau in Beton, vorgefertigtem Mauerwerk','S'],['141.3','Montagebau in Stahl','S'],['141.4','Montagebau in Holz','S'],['141.5','Montagebau als Leichtkonstruktion','S'],['141.6','Natur- und Kunststeinarbeiten','S'],['142','Rohbau 2','P'],['142.1','Fenster, Aussentüren, Tore','S'],['142.2','Spenglerarbeiten','S'],['142.3','Blitzschutzinstallationen','S'],['142.4','Bedachungsarbeiten','S'],['142.5','Spezielle Dichtungen und Dämmungen','S'],['142.6','Fassadenputze','S'],['142.7','Äussere Oberflächenbehandlungen','S'],['142.8','Äussere Abschlüsse, Sonnenschutzanlagen','S'],['143','Elektroanlagen','P'],['144','HLK-Anlagen, Gebäudeautomation','P'],['145','Sanitäranlagen','P'],['146','Transportanlagen, Lageranlagen','P'],['147','Ausbau 1','P'],['147.1','Gipserarbeiten','S'],['147.2','Metallbauarbeiten','S'],['147.3','Schreinerarbeiten','S'],['147.4','Innere Spezialverglasungen','S'],['147.5','Schliessanlagen','S'],['147.6','Innere Abschlüsse','S'],['147.7','Elementwände','S'],['148','Ausbau 2','P'],['148.1','Bodenbeläge','S'],['148.2','Wandbeläge, Wandbekleidungen','S'],['148.3','Deckenbekleidungen','S'],['148.4','Hafnerarbeiten','S'],['148.5','Innere Oberflächenbehandlungen','S'],['148.6','Bautrocknung','S'],['148.7','Baureinigung','S'],['148.8','Gärtnerarbeiten','S'],['149','Übriges','P'],['15','Anpassungen an bestehenden Erschliessungsanlagen','G'],['150','Übergangsposition','P'],['151','Erdarbeiten','P'],['152','Kanalisationsleitungen','P'],['153','Elektroleitungen, Gebäudeautomation','P'],['154','Leitungen für HLK-Anlagen','P'],['155','Sanitärleitungen','P'],['156','Nebenarbeiten','P'],['159','Übriges','P'],['16','Anpassungen an bestehenden Verkehrsanlagen','G'],['160','Übergangsposition','P'],['161','Strassen','P'],['162','Bahnen','P'],['163','Wasserwege','P'],['169','Übriges','P'],['17','Spezialtiefbau','G'],['170','Übergangsposition','P'],['171','Pfähle','P'],['172','Baugrubenabschlüsse','P'],['173','Aussteifungen','P'],['174','Anker','P'],['175','Grundwasserabdichtungen','P'],['176','Wasserhaltung','P'],['176.0','Offene Wasserhaltung','S'],['176.1','Grundwasserabsenkungen','S'],['177','Baugrundverbesserungen','P'],['178','Nebenarbeiten','P'],['179','Übriges','P'],['19','Honorare','G'],['190','Übergangsposition','P'],['191','Architekt','P'],['192','Bauingenieur','P'],['193','Elektroingenieur','P'],['194','HLK-Ingenieur','P'],['195','Sanitäringenieur','P'],['196','Landschaftsarchitekt','P'],['197','Spezialisten 1','P'],['197.0','Geometer','S'],['197.1','Geologe, Geotechniker','S'],['197.2','Fachkoordinator','S'],['197.6','Gebäudeautomationsingenieur','S'],['198','Spezialisten 2','P'],['198.2','Bauökonom','S'],['198.5','Brandschutzingenieur','S'],['199','Übriges','P'],['2','Gebäude','H'],['20','Baugrube','G'],['200','Übergangsposition','P'],['201','Baugrubenaushub','P'],['201.0','Baustelleneinrichtung','S'],['201.1','Erdarbeiten','S'],['201.2','Kontaminiertes Material','S'],['209','Übriges','P'],['21','Rohbau 1','G'],['210','Übergangsposition','P'],['211','Baumeisterarbeiten','P'],['211.0','Baustelleneinrichtung','S'],['211.1','Gerüste','S'],['211.3','Baumeisteraushub','S'],['211.4','Kanalisationen im Gebäude','S'],['211.5','Beton- und Stahlbetonarbeiten','S'],['211.6','Mauerarbeiten','S'],['211.7','Instandsetzungsarbeiten','S'],['211.8','Witterungsbedingte Massnahmen','S'],['212','Montagebau in Beton, vorgefertigtem Mauerwerk','P'],['212.0','Baustelleneinrichtung','S'],['212.1','Gerüste','S'],['212.2','Elemente aus Beton','S'],['212.3','Elemente aus vorgefertigtem Mauerwerk','S'],['212.4','Elemente aus Porenbeton','S'],['213','Montagebau in Stahl','P'],['213.0','Baustelleneinrichtung','S'],['213.1','Gerüste','S'],['213.2','Stahlkonstruktionen','S'],['213.5','Äussere Bekleidungen','S'],['214','Montagebau in Holz','P'],['214.0','Baustelleneinrichtung','S'],['214.1','Zimmerarbeiten','S'],['214.2','Ingenieurholzbau','S'],['214.3','Holzelementbau','S'],['214.4','Äussere Bekleidungen, Gesimse, Treppen','S'],['214.5','Gerüste','S'],['214.6','Geneigte Dächer, Unterkonstruktionen','S'],['215','Montagebau als Leichtkonstruktion','P'],['215.0','Baustelleneinrichtung','S'],['215.1','Gerüste','S'],['215.2','Fassadenbau','S'],['215.4','Traggerippe','S'],['215.5','Äussere Bekleidungen','S'],['216','Natur- und Kunststeinarbeiten','P'],['216.0','Natursteinarbeiten','S'],['216.1','Kunststeinarbeiten','S'],['217','Schutzraumabschlüsse','P'],['219','Übriges','P'],['22','Rohbau 2','G'],['220','Übergangsposition','P'],['221','Fenster, Aussentüren, Tore','P'],['221.0','Fenster aus Holz-Metall','S'],['221.1','Fenster aus Holz','S'],['221.2','Fenster aus Kunststoff','S'],['221.3','Fenster aus Stahl','S'],['221.4','Fenster aus Aluminium','S'],['221.5','Aussentüren, Tore aus Holz','S'],['221.6','Aussentüren, Tore aus Metall','S'],['221.7','Schaufensteranlagen','S'],['221.8','Spezielle äussere lichtdurchlässige Bauteile','S'],['221.9','Metallbaufertigteile','S'],['222','Spenglerarbeiten','P'],['223','Bedachungsarbeiten','P'],['224','Deckungen','P'],['224.0','Deckungen geneigte Dächer','S'],['224.1','Dichtungsbeläge Flachdächer','S'],['224.2','Glaseinbauten in geneigten Dächern','S'],['224.3','Gerüste','S'],['224.4','Spezielle Dichtungen und Dämmungen','S'],['225','Fugendichtungen','P'],['225.0','Fugendichtungen','S'],['225.1','Spezielle Dämmungen','S'],['225.2','Spezielle Feuchtigkeitsabdichtungen','S'],['225.3','Brandschutzbekleidungen und dgl.','S'],['225.4','Fassadenputze','S'],['226','Gerüste','P'],['226.0','Aussenputze','S'],['226.1','Verputzte Aussenwärmedämmungen','S'],['226.2','Äussere Oberflächenbehandlungen','S'],['227','Äussere Oberflächenbehandlungen','P'],['227.0','Gerüste','S'],['227.1','Äussere Malerarbeiten','S'],['227.2','Äussere Holzschutzarbeiten','S'],['227.3','Äussere Holzbehandlungsarbeiten','S'],['228','Äussere Abschlüsse, Sonnenschutzanlagen','P'],['228.0','Fenster- und Fenstertürläden','S'],['228.1','Rollläden','S'],['228.2','Lamellenstoren (Raffstoren)','S'],['228.3','Markisen','S'],['228.4','Blendschutzanlagen','S'],['228.5','Insektenschutz','S'],['228.6','Äussere bewegliche Gitterabschlüsse','S'],['229','Übriges','P'],['23','Elektroanlagen','G'],['230','Übergangsposition','P'],['231','Starkstromanlagen','P'],['231.0','Netzersatzanlagen','S'],['231.1','Hoch- und Mittelspannungsanlagen','S'],['231.2','Schaltgerätekombinationen','S'],['231.3','Blindstromkompensations-Anlagen','S'],['231.4','Sicherheitsanlagen','S'],['231.5','Energieerzeugungsanlagen','S'],['231.9','Übriges','S'],['232','Starkstrominstallationen','P'],['232.0','Erschliessungen','S'],['232.1','Erdungen und Schutzpotenzialausgleich','S'],['232.2','Rohranlagen','S'],['232.3','Installationssysteme','S'],['232.4','Haupt- und Steigleitungen','S'],['232.5','Lichtinstallationen','S'],['232.6','Kraftinstallationen','S'],['232.7','HLKS-Installationen','S'],['232.9','Übriges','S'],['233','Leuchten und Lampen','P'],['233.0','Lieferung','S'],['233.1','Montage','S'],['234','Elektrogeräte','P'],['235','Schwachstromanlagen','P'],['235.0','Telekommunikationsanlagen','S'],['235.1','Radio- und Fernsehanlagen','S'],['235.2','Multimediaanlagen','S'],['235.3','Informatikanlagen','S'],['235.4','Kommunikationsanlagen','S'],['235.8','Sicherheitsanlagen','S'],['235.9','Übriges','S'],['236','Schwachstrominstallationen','P'],['236.1','Installationen zu Telekommunikationsanlagen','S'],['236.2','Radio- und Fernsehanlagen','S'],['236.3','Multimedia-Installationen','S'],['236.4','UKV-Installationen','S'],['236.5','Installationen zu Kommunikationsanlagen','S'],['236.6','Audio-, Video- und Uhreninstallationen','S'],['236.7','Sicherheitsinstallationen','S'],['236.8','Brandschutzinstallationen','S'],['236.9','Übriges','S'],['237','Gebäudeautomations-Installationen','P'],['238','Provisorische Installationen','P'],['239','Übriges','P'],['24','HLK-Anlagen, Gebäudeautomation','G'],['240','Übergangsposition','P'],['242','Heizungsanlagen','P'],['242.0','Apparate','S'],['242.1','Leitungen','S'],['242.2','Armaturen, Instrumente','S'],['242.3','Regelung','S'],['242.4','Schaltgerätekombinationen','S'],['242.5','Transport, Montage','S'],['242.6','Dämmungen','S'],['242.7','Unternehmerdienstleistungen','S'],['244','Lufttechnische Anlagen','P'],['244.0','Apparate','S'],['244.1','Leitungen','S'],['244.2','Armaturen, Instrumente','S'],['244.3','Regelung','S'],['244.4','Schaltgerätekombinationen','S'],['244.5','Transport, Montage','S'],['244.6','Dämmungen','S'],['244.7','Unternehmerdienstleistungen','S'],['245','Rauch- und Wärmeabzugsanlagen','P'],['245.0','Apparate','S'],['245.1','Leitungen','S'],['245.2','Armaturen, Instrumente','S'],['245.3','Regelung','S'],['245.4','Schaltgerätekombinationen','S'],['245.5','Transport, Montage','S'],['245.6','Dämmungen','S'],['245.7','Unternehmerdienstleistungen','S'],['246','Kälteanlagen','P'],['246.0','Apparate','S'],['246.1','Leitungen','S'],['246.2','Armaturen, Instrumente','S'],['246.3','Regelung','S'],['246.4','Schaltgerätekombinationen','S'],['246.5','Transport, Montage','S'],['246.6','Dämmungen','S'],['246.7','Unternehmerdienstleistungen','S'],['247','Spezialanlagen','P'],['247.4','Schutzraumbelüftungen','S'],['247.5','Thermische Solaranlagen','S'],['247.6','Spezielle Energieerzeugung','S'],['247.7','Staubsaugeranlagen','S'],['248','Gebäudeautomation','P'],['248.1','Managementebene','S'],['248.2','Automationsebene','S'],['248.3','Feldebene','S'],['248.4','Raumautomation','S'],['248.5','Automationsnetzwerk','S'],['248.6','Schaltgerätekombinationen','S'],['248.7','Integration','S'],['249','Übriges','P'],['25','Sanitäranlagen','G'],['250','Übergangsposition','P'],['251','Allgemeine Sanitärapparate','P'],['251.0','Lieferung','S'],['251.1','Montage','S'],['252','Spezielle Sanitärapparate','P'],['252.0','Lieferung','S'],['252.1','Montage','S'],['253','Versorgungs- und Entsorgungsapparate','P'],['253.0','Wassernachbehandlung','S'],['253.1','Wassererwärmer','S'],['253.2','Abwasserhebeanlagen','S'],['253.3','Druckluftzeuger','S'],['253.6','Thermische Solaranlagen','S'],['254','Sanitärleitungen','P'],['254.1','Kaltwasserleitungen','S'],['254.2','Warmwasserleitungen','S'],['254.3','Drucklufttleitungen','S'],['254.4','Gasleitungen','S'],['254.5','Löschleitungen','S'],['254.6','Leitungen für thermische Solaranlagen','S'],['254.7','Schmutzwasserleitungen','S'],['254.8','Regenwasserleitungen','S'],['254.9','Grundleitungen','S'],['255','Dämmungen','P'],['256','Sanitärinstallationselemente','P'],['256.0','Lieferung','S'],['256.1','Montage','S'],['257','Löschanlagen','P'],['257.1','Sprinkleranlagen','S'],['257.2','Feuerlöschposten','S'],['258','Kücheneinrichtungen','P'],['259','Übriges','P'],['26','Transportanlagen, Lageranlagen','G'],['260','Übergangsposition','P'],['261','Aufzüge','P'],['262','Fahrtreppen, Fahrstei ge','P'],['263','Fassadenreinigungsanlagen','P'],['264','Sonstige Förderanlagen','P'],['265','Hebeeinrichtungen','P'],['266','Parkieranlagen','P'],['269','Übriges','P'],['27','Ausbau 1','G'],['270','Übergangsposition','P'],['271','Gipserarbeiten','P'],['271.0','Innenputze','S'],['271.1','Trockenbauarbeiten','S'],['271.2','Gerüste','S'],['272','Metallbauarbeiten','P'],['272.0','Innentüren aus Metall','S'],['272.1','Metallbaufertigteile','S'],['272.2','Allgemeine Metallbauarbeiten','S'],['272.3','Innere Verglasungen','S'],['272.4','Schutzraumteile','S'],['273','Schreinerarbeiten','P'],['273.0','Innentüren','S'],['273.1','Wandschränke, Gestelle und dgl.','S'],['273.2','Innere Verglasungen','S'],['273.3','Allgemeine Schreinerarbeiten','S'],['274','Innere Spezialverglasungen','P'],['275','Schliessanlagen','P'],['276','Innere Abschlüsse','P'],['276.0','Verdunkelungseinrichtungen','S'],['276.1','Innere bewegliche Gitterabschlüsse','S'],['276.2','Vorhangsysteme','S'],['277','Elementwände','P'],['277.0','Versetzbare Elementwände','S'],['277.1','Schiebe- und Faltwände','S'],['277.2','Fest stehende Elementwände','S'],['278','Beschriftungen, Markierungen, Signaletik','P'],['279','Übriges','P'],['28','Ausbau 2','G'],['280','Übergangsposition','P'],['281','Bodenbeläge','P'],['281.0','Estriche (Unterlagsböden)','S'],['281.1','Fugenlose Bodenbeläge','S'],['281.2','Bodenbeläge aus Kunststoffen, Textilien und dgl.','S'],['281.4','Bodenbeläge aus Naturstein','S'],['281.5','Bodenbeläge aus Kunststein','S'],['281.6','Bodenbeläge aus Holz','S'],['281.7','Bodenbeläge aus Platten','S'],['281.8','Doppelböden','S'],['281.9','Sockel','S'],['282','Wandbeläge, Wandbekleidungen','P'],['282.0','Fugenlose Wandbeläge','S'],['282.1','Tapeziererarbeiten','S'],['282.2','Wandbekleidungen aus Naturstein','S'],['282.3','Wandbekleidungen aus Kunststein','S'],['282.4','Wandbeläge aus Platten','S'],['282.5','Wandbekleidungen aus Holz und Holzwerkstoffen','S'],['282.6','Wandbekleidungen aus Kunststoffen, Textilien und dgl.','S'],['282.7','Gerüste','S'],['283','Deckenbekleidungen','P'],['283.0','Gerüste','S'],['283.1','Deckenbekleidungen aus Metall','S'],['283.2','Deckenbekleidungen aus Gips','S'],['283.3','Deckenbekleidungen aus Mineralfasern','S'],['283.4','Deckenbekleidungen aus Holz und Holzwerkstoffen','S'],['283.5','Deckenbekleidungen aus Kunststoffen, Textilien und dgl.','S'],['284','Hafnerarbeiten','P'],['285','Innere Oberflächenbehandlungen','P'],['285.0','Gerüste','S'],['285.1','Innere Malerarbeiten','S'],['285.2','Innere Holzschutzarbeiten','S'],['285.3','Innere Holzbehandlungsarbeiten','S'],['286','Bautrocknung','P'],['287','Baureinigung','P'],['288','Gärtnerarbeiten (Gebäude)','P'],['289','Übriges','P'],['29','Honorare','G'],['290','Übergangsposition','P'],['291','Architekt','P'],['292','Bauingenieur','P'],['293','Elektroingenieur','P'],['294','HLK-Ingenieur','P'],['295','Sanitäringenieur','P'],['296','Landschaftsarchitekt','P'],['297','Spezialisten 1','P'],['297.0','Geometer','S'],['297.1','Geologe, Geotechniker','S'],['297.2','Innenarchitekt','S'],['297.3','Bauphysiker','S'],['297.4','Akustiker','S'],['297.5','Fachkoordinator','S'],['297.6','Gebäudeautomationsingenieur','S'],['297.7','Fassadeningenieur','S'],['298','Spezialisten 2','P'],['298.2','Bauökonom','S'],['298.3','Prüfingenieur','S'],['298.4','Umweltingenieur','S'],['298.5','Brandschutzingenieur','S'],['299','Übriges','P'],['3','Betriebseinrichtungen','H'],['30','Baugrube','G'],['300','Übergangsposition','P'],['301','Baugruben aushub','P'],['309','Übriges','P'],['31','Rohbau 1','G'],['311','Baumeisterarbeiten','P'],['312','Montagebau in Beton, vorgefertigtem Mauerwerk','P'],['313','Montagebau in Stahl','P'],['314','Montagebau in Holz','P'],['315','Montagebau als Leichtkonstruktion','P'],['316','Natur- und Kunststeinarbeiten','P'],['317','Schutzraumabschlüsse','P'],['319','Übriges','P'],['32','Rohbau 2','G'],['320','Übergangsposition','P'],['321','Fenster, Aussentüren, Tore','P'],['322','Spenglerarbeiten','P'],['323','Blitzschutzanlagen','P'],['324','Bedachungsarbeiten','P'],['325','Spezielle Dichtungen und Dämmungen','P'],['326','Fassadenputze','P'],['327','Äussere Oberflächenbehandlungen','P'],['328','Äussere Abschlüsse, Sonnenschutzanlagen','P'],['329','Übriges','P'],['33','Elektroanlagen','G'],['330','Übergangsposition','P'],['331','Starkstromapparate','P'],['332','Starkstrominstallationen','P'],['333','Leuchten und Lampen','P'],['334','Elektrogeräte','P'],['335','Schwachstromapparate','P'],['336','Schwachstrominstallationen','P'],['337','Gebäudeautomations-Installationen','P'],['338','Provisorische Installationen','P'],['339','Übriges','P'],['34','HLK-Anlagen, Gebäudeautomation','G'],['340','Übergangsposition','P'],['342','Heizungsanlagen','P'],['344','Lufttechnische Anlagen','P'],['345','Rauch- und Wärmeabzugsanlagen','P'],['346','Kälteanlagen','P'],['347','Spezialanlagen','P'],['348','Gebäudeautomation','P'],['349','Übriges','P'],['35','Sanitäranlagen','G'],['350','Übergangsposition','P'],['351','Allgemeine Sanitärapparate','P'],['351.0','Lieferung','S'],['351.1','Montage','S'],['352','Spezielle Sanitärapparate','P'],['352.0','Lieferung','S'],['352.1','Montage','S'],['353','Versorgungs- und Entsorgungsapparate','P'],['353.0','Wassernachbehandlung','S'],['353.1','Wassererwärmer','S'],['353.2','Abwasserhebeanlagen','S'],['353.3','Druckluftzeuger','S'],['353.6','Thermische Solaranlagen','S'],['354','Sanitärleitungen','P'],['354.1','Kaltwasserleitungen','S'],['354.2','Warmwasserleitungen','S'],['354.3','Drucklufttleitungen','S'],['354.4','Gasleitungen','S'],['354.5','Löschleitungen','S'],['354.6','Leitungen für thermische Solaranlagen','S'],['354.7','Schmutzwasserleitungen','S'],['354.8','Regenwasserleitungen','S'],['354.9','Grundleitungen','S'],['355','Dämmungen','P'],['356','Sanitärinstallationselemente','P'],['356.0','Lieferung','S'],['356.1','Montage','S'],['357','Löschanlagen','P'],['357.1','Sprinkleranlagen','S'],['357.2','Feuerlöschposten','S'],['358','Kücheneinrichtungen','P'],['359','Übriges','P'],['36','Transportanlagen, Lageranlagen','G'],['360','Übergangsposition','P'],['361','Aufzüge','P'],['362','Fahrtreppen, Fahrstei ge','P'],['364','Sonstige Förderanlagen','P'],['365','Hebeeinrichtungen','P'],['366','Parkieranlagen','P'],['369','Übriges','P'],['37','Ausbau 1','G'],['370','Übergangsposition','P'],['371','Gipserarbeiten','P'],['372','Metallbauarbeiten','P'],['373','Schreinerarbeiten','P'],['374','Innere Spezialverglasungen','P'],['375','Schliessanlagen','P'],['376','Innere Abschlüsse','P'],['377','Elementwände','P'],['378','Beschriftungen, Markierungen, Signaletik','P'],['379','Übriges','P'],['38','Ausbau 2','G'],['380','Übergangsposition','P'],['381','Bodenbeläge','P'],['382','Wandbeläge, Wandbekleidungen','P'],['383','Deckenbekleidungen','P'],['384','Hafnerarbeiten','P'],['385','Innere Oberflächenbehandlungen','P'],['386','Bautrocknung','P'],['387','Baureinigung','P'],['39','Honorare','G'],['390','Übergangsposition','P'],['391','Architekt','P'],['392','Bauingenieur','P'],['393','Elektroingenieur','P'],['394','HLK-Ingenieur','P'],['395','Sanitäringenieur','P'],['396','Landschaftsarchitekt','P'],['397','Spezialisten 1','P'],['397.0','Geometer','S'],['397.1','Geologe, Geotechniker','S'],['397.2','Innenarchitekt','S'],['397.3','Bauphysiker','S'],['397.4','Akustiker','S'],['397.5','Fachkoordinator','S'],['397.6','Gebäudeautomationsingenieur','S'],['397.7','Fassadeningenieur','S'],['398','Spezialisten 2','P'],['398.2','Bauökonom','S'],['398.3','Prüfingenieur','S'],['398.4','Umweltingenieur','S'],['398.5','Brandschutzingenieur','S'],['399','Übriges','P'],['4','Umgebung','H'],['40','Terraingestaltung','G'],['400','Übergangsposition','P'],['401','Erdbewegungen','P'],['401.0','Baustelleneinrichtung','S'],['401.1','Erdarbeiten','S'],['409','Übriges','P'],['41','Rohbau- und Ausbauarbeiten','G'],['410','Übergangsposition','P'],['411','Baumeisterarbeiten','P'],['411.0','Baustelleneinrichtung','S'],['411.1','Gerüste','S'],['411.2','Böschungs- und Uferverbaungen','S'],['411.3','Baumeisteraushub','S'],['411.4','Kanalisationen ausserhalb Gebäude','S'],['411.5','Beton- und Stahlbetonarbeiten','S'],['411.6','Maurerarbeiten','S'],['411.7','Instandsetzungsarbeiten','S'],['411.8','Witterungsbedingte Massnahmen','S'],['413','Übriger Rohbau 1','P'],['413.2','Montagebau in Beton, vorgefertigtem Mauerwerk','S'],['413.3','Montagebau in Stahl','S'],['413.4','Montagebau in Holz','S'],['413.5','Montagebau als Leichtkonstruktion','S'],['413.6','Natur- und Kunststeinarbeiten','S'],['414','Rohbau 2','P'],['414.1','Fenster, Aussentüren, Tore','S'],['414.2','Spenglerarbeiten','S'],['414.3','Blitzschutzanlagen','S'],['414.4','Bedachungsarbeiten','S'],['414.5','Spezielle Dichtungen und Dämmungen','S'],['414.6','Fassadenputze','S'],['414.7','Äussere Oberflächenbehandlungen','S'],['414.8','Äussere Abschlüsse, Sonnenschutzanlagen','S'],['414.9','Arealabschlüsse','S'],['415','Ausbau 1','P'],['416','Ausbau 2','P'],['419','Übriges','P'],['42','Gartenanlagen','G'],['420','Übergangsposition','P'],['421','Gärtnerarbeiten','P'],['422','Einfriedungen','P'],['423','Ausstattungen, Geräte','P'],['424','Spiel- und Sportplätze','P'],['425','Stützmauern','P'],['429','Übriges','P'],['44','Installationen','G'],['440','Übergangsposition','P'],['442','Elektroanlagen','P'],['443','HLK-Anlagen, Gebäudeautomation','P'],['444','Sanitäranlagen','P'],['446','Transportanlagen','P'],['449','Übriges','P'],['45','Leitungen innerhalb Grundstück','G'],['450','Übergangsposition','P'],['452','Kanalisationsleitungen','P'],['453','Elektroleitungen, Gebäudeautomation','P'],['454','Leitungen für HLK-Anlagen','P'],['455','Sanitärleitungen','P'],['456','Nebenarbeiten','P'],['459','Übriges','P'],['46','Trassenbauten','G'],['460','Übergangsposition','P'],['461','Erd- und Unterbau','P'],['463','Oberbau','P'],['464','Entwässerung','P'],['465','Werkleitungen und Kanalisationen','P'],['468','Ausbau','P'],['47','Kunstbauten','G'],['470','Übergangsposition','P'],['471','Baugrube','P'],['472','Tragkonstruktionen','P'],['473','Oberbau','P'],['474','Entwässerung','P'],['475','Werkleitungen und Kanalisationen','P'],['477','Transportanlagen','P'],['478','Ausbau','P'],['48','Untertagbauten','G'],['480','Übergangsposition','P'],['481','Vortrieb','P'],['482','Auskleidungen, Gewölbe','P'],['483','Oberbau','P'],['484','Entwässerung und Wasserversorgung','P'],['485','Werkleitungen und Kanalisationen','P'],['487','Transportanlagen','P'],['488','Ausbau','P'],['49','Honorare','G'],['490','Übergangsposition','P'],['491','Architekt','P'],['492','Bauingenieur','P'],['493','Elektroingenieur','P'],['494','HLK-Ingenieur','P'],['495','Sanitäringenieur','P'],['496','Landschaftsarchitekt','P'],['497','Spezialisten 1','P'],['497.1','Geologie, Geotechniker','S'],['497.2','Innenarchitekt','S'],['497.3','Bauphysiker','S'],['497.4','Akustiker','S'],['497.5','Fachkoordinator','S'],['498','Spezialisten 2','P'],['498.2','Bauökonom','S'],['498.4','Umweltingenieur','S'],['499','Übriges','P'],['5','Baunebenkosten','H'],['50','Wettbewerbskosten','G'],['500','Übergangsposition','P'],['501','Wettbewerbe','P'],['509','Übriges','P'],['51','Bewilligungen, Gebühren','G'],['510','Übergangsposition','P'],['511','Bewilligungen, Gebühren','P'],['512','Anschlussgebühren','P'],['512.0','Kanalisation','S'],['512.1','Elektrizität','S'],['512.2','Kommunikation','S'],['512.3','Gas','S'],['512.4','Wasser','S'],['512.5','Fernheizung','S'],['512.6','Radio, Fernsehen','S'],['519','Übriges','P'],['52','Dokumentation und Präsentation','G'],['520','Übergangsposition','P'],['521','Muster, Materialprüfungen','P'],['521.0','Muster','S'],['521.1','Materialprüfungen','S'],['522','Modelle','P'],['523','Fotos','P'],['524','Vervielfältigungen, Plandokumente','P'],['525','Dokumentation','P'],['529','Übriges','P'],['53','Versicherungen','G'],['530','Übergangsposition','P'],['531','Bauzeitversicherungen','P'],['532','Spezialversicherungen','P'],['533','Selbstbehalt in Schadenfällen während der Bauzeit','P'],['539','Übriges','P'],['54','Finanzierung ab Baubeginn','G'],['540','Übergangsposition','P'],['541','Errichten von Hypotheken auf','P'],['543','Baukreditzinsen, Bankspesen','P'],['544','Baurechtszinsen','P'],['545','Eigenkapitalzinsen','P'],['546','Liegenschaftssteuer während der Bauzeit','P'],['548','Rückvergütungen','P'],['549','Übriges','P'],['55','Bauherrenleistungen','G'],['550','Übergangsposition','P'],['557','Betriebsplanung','P'],['558','Projektleitung, Projektbegleitung','P'],['559','Übriges','P'],['56','Übrige Baunebenkosten','G'],['560','Übergangsposition','P'],['561','Bewachung durch Dritte','P'],['562','Entschädigungen, Nutzerkosten, Ersatzabgaben','P'],['562.1','Nachbar- und Mieterentschädigungen','S'],['562.2','Einkauf Schutzraum','S'],['562.3','Ersatzabgabe Parkplätze','S'],['562.9','Übriges','S'],['563','Miete von fremdem Grund','P'],['564','Gutachten','P'],['565','Reisespesen','P'],['566','Grundsteinlegung, Aufrichte, Einweihung','P'],['567','Anwaltskosten, Gerichtskosten','P'],['568','Baureklame','P'],['569','Übriges','P'],['57','Mehrwertsteuer (MWST)','G'],['570','Übergangsposition (MWST)','P'],['571','Grundstück (MWST)','P'],['572','Vorbereitungsarbeiten (MWST)','P'],['573','Gebäude (MWST)','P'],['574','Betriebseinrichtungen (MWST)','P'],['575','Umgebung (MWST)','P'],['576','Baunebenkosten (MWST)','P'],['579','Ausstattung (MWST)','P'],['58','Rückstellungen und Reserven','G'],['580','Übergangsposition','P'],['581','Rückstellungen für zu erwartende Kosten','P'],['582','Rückstellungen für Teuerung','P'],['583','Reserven für Unvorhergesehenes','P'],['589','Übriges','P'],['59','Übergangskonten für Honorare','G'],['590','Übergangsposition','P'],['598','Spezialisten','P'],['598.0','Bauherrenberater','S'],['598.1','FM-Berater','S'],['598.6','Verkaufsaufwendungen','S'],['599','Übriges','P'],['6','Reserve','H'],['7','Reserve','H'],['8','Reserve','H'],['9','Ausstattung','H'],['90','Möbel','G'],['900','Übergangsposition','P'],['902','Garderobeneinrichtungen, Gestelle und dgl.','P'],['908','Sporteinrichtungen','P'],['909','Übriges','P'],['91','Beleuchtungskörper','G'],['910','Übergangsposition','P'],['919','Übriges','P'],['92','Textilien','G'],['920','Übergangsposition','P'],['921','Vorhänge und Innendekorationsarbeiten','P'],['929','Übriges','P'],['93','Geräte, Apparate','G'],['930','Übergangsposition','P'],['939','Übriges','P'],['94','Kleininventar','G'],['940','Übergangsposition','P'],['949','Übriges','P'],['96','Transportmittel','G'],['960','Übergangsposition','P'],['969','Übriges','P'],['97','Verbrauchsmaterial','G'],['970','Übergangsposition','P'],['979','Übriges','P'],['98','Kunst am Bau','G'],['980','Übergangsposition','P'],['989','Übriges','P'],['99','Honorare','G'],['990','Übergangsposition','P'],['991','Architekt','P'],['992','Bauingenieur','P'],['993','Elektroingenieur','P'],['994','HLK-Ingenieur','P'],['995','Sanitäringenieur','P'],['996','Landschaftsarchitekt','P'],['997','Spezialisten 1','P'],['997.0','Geometer','S'],['997.2','Innenarchitekt','S'],['997.3','Bauphysiker','S'],['997.4','Akustiker','S'],['998','Spezialisten 2','P'],['998.2','Bauökonom','S'],['999','Übriges','P']];
 // BKP_CRB2017: [Nummer, Bezeichnung, Ebene] – Ebene: H=Hauptgruppe, G=Gruppe, P=Position, S=Sub-Position.
@@ -6180,7 +6180,10 @@ function _tpEnsureStyles(){
 .tp-scroll{flex:1;overflow:auto;position:relative;min-height:180px;background:var(--paper);-webkit-overflow-scrolling:touch}
 .tp-grid{display:grid;position:relative;width:max-content}
 .tp-corner{position:sticky;left:0;top:0;z-index:6;background:#fbfbfc;border-bottom:1px solid #e6e8eb;border-right:1px solid #e3e5e8;display:grid;align-items:end;height:44px}
-.tp-corner>div{font-size:10.5px;font-weight:600;color:#8a8f96;text-transform:uppercase;letter-spacing:.05em;padding:0 6px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tp-corner>div{position:relative;font-size:10.5px;font-weight:600;color:#8a8f96;text-transform:uppercase;letter-spacing:.05em;padding:0 6px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;height:100%;box-sizing:border-box;display:flex;align-items:flex-end}
+.tp-rz{position:absolute;right:0;top:0;bottom:0;width:7px;cursor:col-resize;touch-action:none;z-index:2}
+.tp-rz::after{content:'';position:absolute;right:0;top:12px;bottom:6px;width:1px;background:#d5d9de}
+.tp-rz:hover::after,.tp-rz.on::after{width:3px;background:var(--ink,#14171a);top:0;bottom:0}
 .tp-thead{position:sticky;top:0;z-index:4;background:#fbfbfc;border-bottom:1px solid #e6e8eb;height:44px}
 .tp-left{position:sticky;left:0;z-index:5;background:var(--paper);border-right:1px solid #e3e5e8;box-shadow:4px 0 10px -8px rgba(16,24,40,.18)}
 .tp-row{display:grid;height:${TP_ROW_H}px;align-items:center;border-bottom:1px solid #f1f2f4;font-size:12.5px;color:#2b2f33}
@@ -6341,6 +6344,29 @@ function _tpColset(){
   if(!_tp.cols){ try{ const c=localStorage.getItem('bv_tp_cols'); if(c&&TP_COLSETS[c]&&c!=='mobil')_tp.cols=c; }catch(e){} }
   return _tp.cols||(window.innerWidth>=1900?'voll':'kompakt');
 }
+// Spaltenbreiten (per Ziehen am Spaltenkopf, je Gerät gespeichert)
+const TP_COL_MIN={nr:28,bkp:44,name:90,company:70,start:96,end:96,dur:44,deps:50,prog:40};
+function _tpColW(){
+  if(!_tp.colw){ _tp.colw={}; try{ const j=JSON.parse(localStorage.getItem('bv_tp_colw')||'{}'); if(j&&typeof j==='object')Object.keys(j).forEach(k=>{ if(TP_COL_MIN[k]&&+j[k]>0)_tp.colw[k]=Math.round(+j[k]); }); }catch(e){} }
+  return _tp.colw;
+}
+function _tpSaveColW(){ try{ const w=_tpColW(); if(Object.keys(w).length)localStorage.setItem('bv_tp_colw',JSON.stringify(w)); else localStorage.removeItem('bv_tp_colw'); }catch(e){} const b=document.getElementById('tpColReset'); if(b)b.style.display=Object.keys(_tpColW()).length?'':'none'; }
+function _tpWireCols(grid,cols,CW){
+  const corner=grid.querySelector('.tp-corner'); if(!corner)return;
+  corner.addEventListener('dblclick',e=>{ const h=e.target.closest('[data-rz]'); if(!h)return; delete _tpColW()[h.dataset.rz]; _tpSaveColW(); _tpRenderBody(); });
+  corner.addEventListener('pointerdown',e=>{
+    const h=e.target.closest('[data-rz]'); if(!h)return; e.preventDefault(); e.stopPropagation();
+    const k=h.dataset.rz, c=cols.find(x=>x.k===k); if(!c)return;
+    const x0=e.clientX, w0=c.w, min=TP_COL_MIN[k]||40; let raf=0;
+    h.classList.add('on'); document.body.style.cursor='col-resize'; document.body.style.userSelect='none';
+    const apply=()=>{ raf=0; const tmpl=cols.map(z=>z.w+'px').join(' '), LW=cols.reduce((a,z)=>a+z.w,0); grid.style.setProperty('--tp-cols',tmpl); grid.style.gridTemplateColumns=`${LW}px ${CW}px`; _tp.LW=LW; };
+    const mv=ev=>{ c.w=Math.max(min,Math.min(700,Math.round(w0+ev.clientX-x0))); if(!raf)raf=requestAnimationFrame(apply); };
+    const up=()=>{ window.removeEventListener('pointermove',mv); window.removeEventListener('pointerup',up); window.removeEventListener('pointercancel',up);
+      h.classList.remove('on'); document.body.style.cursor=''; document.body.style.userSelect='';
+      if(c.w!==w0){ _tpColW()[k]=c.w; _tpSaveColW(); } };
+    window.addEventListener('pointermove',mv); window.addEventListener('pointerup',up); window.addEventListener('pointercancel',up);
+  });
+}
 // Stufenloser Zoom: Pixel pro Tag → Darstellung der Zeitachse
 function _tpZoomOf(px){ return px>=20?'tag':px>=7?'woche':px>=2.6?'monat':'quartal'; }
 function _tpPx(){ if(!(+_tp.pxZ>0)) _tp.pxZ=TP_ZOOMS[_tp.zoom||'woche'].px; return _tp.pxZ; }
@@ -6481,7 +6507,7 @@ async function renderTerminplan(){
         <label class="tp-chk"><input type="checkbox" id="tpCrit" ${_tp.showCrit?'checked':''}> Kritischer Weg</label>${_tpInfoBtn('crit')}
         <label class="tp-chk"><input type="checkbox" id="tpLinks" ${_tp.showLinks?'checked':''}> Verknüpfungen</label>${_tpInfoBtn('links')}
         ${p.baseline?`<label class="tp-chk"><input type="checkbox" id="tpBase" ${_tp.showBase?'checked':''}> Basisplan</label>`:`<button class="btn btn-ghost btn-sm tp-edit" id="tpBaseSave" title="Aktuelle Termine als Soll-Stand einfrieren">📸 Basisplan speichern</button>`}${_tpInfoBtn('base')}
-        <div class="tp-seg hide-m" id="tpColsSeg"><button data-c="vorgang" class="${_tpColset()==='vorgang'?'on':''}" title="Tabelle einklappen – nur Nr. und Vorgang">◧ Nur Vorgang</button><button data-c="kompakt" class="${_tpColset()==='kompakt'?'on':''}">Kompakt</button><button data-c="voll" class="${_tpColset()==='voll'?'on':''}">Alle Spalten</button></div>${_tpInfoBtn('cols')}
+        <div class="tp-seg hide-m" id="tpColsSeg"><button data-c="vorgang" class="${_tpColset()==='vorgang'?'on':''}" title="Tabelle einklappen – nur Nr. und Vorgang">◧ Nur Vorgang</button><button data-c="kompakt" class="${_tpColset()==='kompakt'?'on':''}">Kompakt</button><button data-c="voll" class="${_tpColset()==='voll'?'on':''}">Alle Spalten</button></div><button type="button" class="btn btn-ghost btn-sm hide-m" id="tpColReset" title="Alle Spaltenbreiten auf Standard zurücksetzen" style="${Object.keys(_tpColW()).length?'':'display:none'}">↔ Standardbreiten</button>${_tpInfoBtn('cols')}
         <button class="btn btn-ghost btn-sm" id="tpLegend" title="Legende aller Farben und Symbole">▦ Legende</button>
       </div>
       <div class="tp-sum" id="tpSum"></div>
@@ -6509,6 +6535,7 @@ async function renderTerminplan(){
   $('tpCrit').onchange=e=>{ _tp.showCrit=e.target.checked; _tpRenderBody(); };
   $('tpLinks').onchange=e=>{ _tp.showLinks=e.target.checked; _tpRenderBody(); };
   if($('tpBase')) $('tpBase').onchange=e=>{ _tp.showBase=e.target.checked; _tpRenderBody(); };
+  $('tpColReset').onclick=()=>{ _tp.colw={}; _tpSaveColW(); _tpRenderBody(); };
   $('tpColsSeg').onclick=e=>{ const b=e.target.closest('[data-c]'); if(!b)return; _tp.cols=b.dataset.c; try{ localStorage.setItem('bv_tp_cols',_tp.cols); }catch(_){} document.querySelectorAll('#tpColsSeg button').forEach(x=>x.classList.toggle('on',x===b)); _tpRenderBody(); };
   $('tpPdfBtn').onclick=()=>_tpPdfDialog();
   $('tpMoreBtn').onclick=e=>_tpMoreMenu(e.currentTarget);
@@ -6681,6 +6708,7 @@ function _tpRenderBody(){
   const colset=TP_COLSETS[_tpColset()];
   const cols=colset.map(k=>Object.assign({},TP_COLS.find(c=>c.k===k)));
   if(_tpColset()==='mobil'){ cols.find(c=>c.k==='name').w=Math.min(170,Math.max(120,window.innerWidth*0.4)); }
+  else { const cw=_tpColW(); cols.forEach(c=>{ if(cw[c.k])c.w=cw[c.k]; }); }
   const LW=cols.reduce((s,c)=>s+c.w,0);
   const tmpl=cols.map(c=>c.w+'px').join(' ');
   const px=_tpPx(); _tp.zoom=_tpZoomOf(px);
@@ -6709,8 +6737,10 @@ function _tpRenderBody(){
     }
     return '<div></div>';
   };
-  const corner=`<div class="tp-corner" style="grid-template-columns:${tmpl}">${cols.map(c=>`<div>${c.l}</div>`).join('')}</div>`;
-  const left=`<div class="tp-left" id="tpLeft" style="height:${H}px">${rows.map(({t,i})=>`<div class="tp-row ${t.kind==='group'?'grp':''} ${_tp.sel===t.id?'sel':''}" data-row="${t.id}" style="grid-template-columns:${tmpl}${t.kind==='group'?';background:'+_tpMix(_tpColor(t,p),0.9):''}">${cols.map(c=>cell(c,t,i)).join('')}</div>`).join('')}
+  const rz=_tpColset()!=='mobil';
+  grid.style.setProperty('--tp-cols',tmpl);
+  const corner=`<div class="tp-corner" style="grid-template-columns:var(--tp-cols)">${cols.map(c=>`<div title="${esc(c.l)}">${c.l}${rz&&TP_COL_MIN[c.k]?`<span class="tp-rz" data-rz="${c.k}" title="Ziehen: Spaltenbreite ändern · Doppelklick: Standardbreite"></span>`:''}</div>`).join('')}</div>`;
+  const left=`<div class="tp-left" id="tpLeft" style="height:${H}px">${rows.map(({t,i})=>`<div class="tp-row ${t.kind==='group'?'grp':''} ${_tp.sel===t.id?'sel':''}" data-row="${t.id}" style="grid-template-columns:var(--tp-cols)${t.kind==='group'?';background:'+_tpMix(_tpColor(t,p),0.9):''}">${cols.map(c=>cell(c,t,i)).join('')}</div>`).join('')}
     ${rows.length?'':`<div style="padding:16px;color:var(--muted);font-size:13px">Noch keine Vorgänge – oben „＋ Vorgang" oder „＋ aus BKP / Unternehmern".</div>`}</div>
     <datalist id="tpCompList">${companies.map(c=>`<option value="${esc(c)}">`).join('')}</datalist>
     <datalist id="tpBkpList">${getEffectiveBKPList(state.projectId,['G','P']).map(([nr,n])=>`<option value="${esc(nr)} ${esc(n)}">`).join('')}</datalist>`;
@@ -6718,6 +6748,7 @@ function _tpRenderBody(){
   grid.classList.toggle('tp-locked',!!p.locked);
   if(p.locked) grid.querySelectorAll('#tpLeft input').forEach(i=>{ i.disabled=true; });
   _tpWireLeft(p);
+  _tpWireCols(grid,cols,CW);
   _tpWireChart(p);
   const sc=document.getElementById('tpScroll');
   if(_tp.scrollL==null){ const td=_tpD(todayISO()); const first=rows.find(r=>r.t.kind!=='group'); const target=(td>=r0&&td<=r1)?td:(first?_tpD(first.t.start):r0); sc.scrollLeft=Math.max(0,(target-r0)*px-140); _tp.scrollL=sc.scrollLeft; }
@@ -8911,11 +8942,12 @@ async function _tpExportXlsx(){
 const TP_PDF_SCALES={tag:{mm:5,l:'Tage (5 mm pro Tag)'},woche:{mm:1.6,l:'Wochen (1.6 mm pro Tag ≈ 11 mm pro KW)'},monat:{mm:0.55,l:'Monate (0.55 mm pro Tag ≈ 17 mm pro Monat)'},quartal:{mm:0.22,l:'Quartale (0.22 mm pro Tag ≈ 20 mm pro Quartal)'}};
 const TP_PDF_PAPER={a4:[297,210],a3:[420,297],a2:[594,420],a1:[841,594],a0:[1189,841]};
 const TP_PDF_COLS=[{k:'nr',l:'Nr',w:7,al:'right'},{k:'bkp',l:'BKP',w:11},{k:'name',l:'Vorgang',w:58},{k:'company',l:'Unternehmer',w:40},{k:'start',l:'Start',w:15},{k:'end',l:'Ende',w:15},{k:'dur',l:'AT',w:8,al:'right'},{k:'deps',l:'Vorgänger',w:18},{k:'prog',l:'%',w:8,al:'right'}];
-const TP_PDF_DEFAULTS={level:'fein',paper:'a3',orient:'l',layout:'rows',scale:'auto',range:'all',from:null,to:null,weeks:6,inRange:true,
+const TP_PDF_DEFAULTS={view:'list',level:'fein',paper:'a3',orient:'l',layout:'rows',scale:'auto',range:'all',from:null,to:null,weeks:6,inRange:true,
   companies:null,groups:null,kinds:{task:true,ms:true,lead:true,span:true},critOnly:false,openOnly:false,context:true,msAlways:true,collapsed:false,
   cols:['nr','bkp','name','company','start','end','dur'],links:true,crit:true,base:false,weekend:true,today:true,legend:true,label:'auto',repeatTable:true,split:'none',title:''};
 Object.assign(TP_INFO,{
   pdfLayout:['Seitenaufteilung','<b>Auf eine Seite verkleinern</b>: ganzer Plan (bzw. gewählter Zeitraum) auf ein Blatt; Schrift und Zeilen werden bei Bedarf verkleinert.<br><b>Zeitachse auf Seitenbreite</b>: der Zeitraum füllt die Blattbreite, die Zeilen laufen auf Folgeseiten weiter (Standard).<br><b>Originalmassstab, auf mehrere Seiten</b>: fester Zeitmassstab (z.B. 1.6 mm pro Tag); Zeitachse und Zeilen werden auf so viele Blätter aufgeteilt wie nötig – zum Zusammenkleben oder Durchblättern, jedes Blatt mit Blattnummer.<br><b>Plot / Originalgrösse</b>: ein einziges Blatt in der Grösse, die der Plan im gewählten Massstab braucht – für den Plotter (Rollenbreite beachten).'],
+  pdfView:['Darstellung im PDF','<b>Zeile je Vorgang</b>: wie die Liste – links die Tabelle mit den gewählten Spalten, rechts ein Balken je Vorgang.<br><b>Bahn je Gewerk</b>: wie die Ansicht „Bahn je Gewerk" – eine Zeile je BKP mit Unternehmer, alle Vorgänge dieses Gewerks in derselben Bahn (gleichzeitige gestaffelt), Meilensteine im Band oben. Kompakt für Bauherrschaft und Baustellen-Aushang.'],
   pdfScale:['Zeitmassstab','Wie viele Millimeter ein Kalendertag auf dem Papier breit ist. Gilt für „Originalmassstab" und „Plot". <b>Wie Bildschirm</b> übernimmt die aktuelle Zoomstufe der Ansicht.'],
   pdfRange:['Zeitraum','Begrenzt die Zeitachse auf einen Ausschnitt, z.B. die nächsten 6 Wochen als Wochenprogramm für die Baustelle. „Nur Vorgänge im Zeitraum" blendet Zeilen aus, die vollständig ausserhalb liegen.'],
   pdfFilter:['Filter','Steuert, welche Zeilen ausgegeben werden. <b>Unternehmer</b> und <b>Gruppen</b>: nur Häkchen-Auswahl. <b>Vor-/Nachfolger als Kontext</b>: bei Unternehmer-Auswahl erscheinen die direkt anschliessenden Vorgänge anderer Unternehmer blass – so sieht jeder, worauf er wartet und wer nach ihm kommt. Die Nummern (Nr) bleiben die des Gesamtplans.'],
@@ -9013,6 +9045,7 @@ function _tpPdfLayout(p,o,rows,top1){
 }
 // Zeichnet einen Terminplan-Abschnitt in doc (newPage: zuerst neue Seite anlegen)
 async function _tpPdfSection(doc,p,o,{newPage=false,proj,subtitle=''}={}){
+  if(o.view==='lanes') return _tpPdfLanesSection(doc,p,o,{newPage,proj,subtitle});
   const cal=_tpCal(p);
   const rows=_tpPdfRows(p,o);
   const ho=_tpD(p.handover), td=_tpD(todayISO());
@@ -9192,6 +9225,161 @@ async function _tpPdfSection(doc,p,o,{newPage=false,proj,subtitle=''}={}){
   }
   return {pages:doc.getNumberOfPages()-startPage+1,rows:rows.length};
 }
+// PDF-Darstellung „Bahn je Gewerk": eine Bahn je BKP, Vorgänge gestaffelt, Meilensteinband oben
+function _tpPdfLanesGeom(p,o,top1){
+  const [a,b]=_tpPdfRange(p,o); const days=b-a+1;
+  const rows=_tpPdfRows(p,o); const ctx=new Set(rows.filter(r=>r.ctx).map(r=>r.t.id));
+  const ML=12, MRm=12, plot=o.paper==='plot';
+  let [W,H]=plot?[0,0]:(TP_PDF_PAPER[o.paper]||TP_PDF_PAPER.a3); if(!plot&&o.orient==='p') [W,H]=[H,W];
+  let SH=o.paper==='a4'?4.4:5.0, fs=o.paper==='a4'?6.4:7.2;
+  const LW=(!plot&&W<250)?48:o.paper==='a4'?54:66;
+  const headH=10, legH=o.legend?20:0, footH=18, topN=16;
+  const gx0=ML+LW+2;
+  let mpd;
+  if(plot){ mpd=_tpPdfMpd(o); W=Math.max(297,Math.min(5000,gx0+days*mpd+MRm)); mpd=(W-MRm-gx0)/days; }
+  else mpd=(W-MRm-gx0)/days;
+  const gx1=W-MRm;
+  // Platz für Beschriftung: ~1.1 mm je Zeichen bei Schrift fs-1 → entspricht 6.4 px am Bildschirm
+  const LN=_tpLanes(Object.assign({},p,{tasks:rows.map(r=>r.t)}),Math.max(0.05,mpd*6.4/(0.19*(fs-1))));
+  LN.ms=LN.ms.filter(t=>{ const s=_tpD(t.start); return s>=a&&s<=b; });
+  LN.lanes=LN.lanes.filter(L=>L.items.some(t=>!(_tpD(t.end)<a||_tpD(t.start)>b)));
+  // Meilensteine gestaffelt, damit sich Beschriftungen nicht überdecken
+  const msLv=new Map(), ends=[]; LN.ms.forEach(t=>{ const x=gx0+(_tpD(t.start)-a)*mpd, w=(String(t.name||'').length+9)*0.19*(fs-1.2)+3;
+    let k=ends.findIndex(e=>e<x-1.5); if(k<0){ if(ends.length<5){ k=ends.length; ends.push(0); } else k=ends.indexOf(Math.min(...ends)); } ends[k]=x+w; msLv.set(t.id,k); });
+  const msN=ends.length, msW=new Map();
+  for(let k=0;k<msN;k++){ const L=LN.ms.filter(t=>msLv.get(t.id)===k); L.forEach((t,i)=>{ const n=L[i+1]; msW.set(t.id,n?(_tpD(n.start)-_tpD(t.start))*mpd-3:1e9); }); }
+  let msH=msN?(msN*0.8+0.5)*SH:0, pad=1.4;
+  const lh=L=>pad*2+L.subs*SH;
+  const pages=[];
+  if(plot){
+    H=top1+headH+msH+LN.lanes.reduce((s,L)=>s+lh(L),0)+legH+footH+6; H=Math.max(H,210);
+    if(H>5000){ const k=(5000-top1-headH-legH-footH-6)/(H-top1-headH-legH-footH-6); SH*=k; msH*=k; pad*=k; H=5000; }
+    if(o._forceWH){ W=Math.max(W,o._forceWH[0]); H=Math.max(H,o._forceWH[1]); }
+    pages.push({lanes:LN.lanes,top:top1});
+    return {W,H,ML,MR:W-MRm,LW,gx0,gx1,mpd,a,b,days,SH,fs,pad,headH,legH,footH,msH,msN,msLv,msW,LN,pages,rows,ctx,plotSize:[Math.round(W),Math.round(H)]};
+  }
+  const bottom=H-footH-4;
+  if(o.layout==='fit'){
+    const subs=LN.lanes.reduce((s,L)=>s+L.subs,0)+(msN?msN*0.8+0.5:0), avail=bottom-top1-headH-legH-2;
+    if(pad*2*LN.lanes.length+subs*SH>avail){ pad=Math.max(0.4,Math.min(pad,avail*0.12/Math.max(1,LN.lanes.length*2))); const sh=(avail-pad*2*LN.lanes.length)/Math.max(1,subs);
+      if(sh<SH){ const k=sh/SH; SH=Math.max(1,sh); fs=Math.max(3.2,fs*Math.max(0.5,Math.min(1,k*1.15))); } msH=msN?(msN*0.8+0.5)*SH:0; }
+    pages.push({lanes:LN.lanes,top:top1});
+  } else {
+    let top=top1, cur=[], used=0;
+    LN.lanes.forEach(L=>{ const h=lh(L); if(cur.length&&top+headH+msH+used+h>bottom-2){ pages.push({lanes:cur,top}); cur=[]; used=0; top=topN; } cur.push(L); used+=h; });
+    pages.push({lanes:cur,top});
+  }
+  return {W,H,ML,MR:W-MRm,LW,gx0,gx1,mpd,a,b,days,SH,fs,pad,headH,legH,footH,msH,msN,msLv,msW,LN,pages,rows,ctx,bottom};
+}
+async function _tpPdfLanesSection(doc,p,o,{newPage=false,proj,subtitle=''}={}){
+  const cal=_tpCal(p);
+  const ho=_tpD(p.handover), td=_tpD(todayISO());
+  let G=_tpPdfLanesGeom(p,o,42);
+  const fmt=[Math.min(G.W,G.H),Math.max(G.W,G.H)], orient=G.W>=G.H?'landscape':'portrait';
+  if(newPage) doc.addPage(fmt,orient);
+  const pageH=doc.internal.pageSize.getHeight();
+  PDF.ML=G.ML; PDF.MR=G.MR; PDF.FOOT_LIMIT=pageH-G.footH;
+  const lines=[{l:proj.name||'',proj:true},{l:`${p.name||'Terminplan'}${subtitle?' · '+subtitle:''} · Bahn je Gewerk · Stand ${fmtDate(todayISO())}${p.updatedBy?' · '+p.updatedBy:''}`},
+    {l:`Projektstart ${_tpFmt(_tpD(p.start))}${ho!=null?' · Soll-Übergabe '+_tpFmt(ho):''}${o.range!=='all'?` · Ausschnitt ${_tpFmt(G.a)} – ${_tpFmt(G.b)}`:''}`}];
+  const y0=pdfDocHead(doc,o.title||'Terminplan',lines,'terminplan');
+  G=_tpPdfLanesGeom(p,o,y0+1);
+  const {a,b,gx0,gx1,mpd,SH,fs,pad,headH,msH,msLv,msW,LN,ctx,LW,ML}=G; const X=n=>gx0+(n-a)*mpd;
+  const startPage=doc.getNumberOfPages();
+  const fit=(s,w)=>{ s=String(s||''); if(w<=1)return ''; if(doc.getTextWidth(s)<=w)return s; while(s.length>1&&doc.getTextWidth(s+'…')>w)s=s.slice(0,-1); return s+'…'; };
+  const opa=v=>{ try{ doc.setGState(new doc.GState({opacity:v})); }catch(e){} };
+  const rgb=h=>_hexToRgbArr(h);
+  G.pages.forEach((pg,pi)=>{
+    if(pi>0){ doc.addPage(fmt,orient); doc.setFontSize(7.5);doc.setTextColor(110); doc.text(`${proj.name||''} · ${p.name||'Terminplan'}${subtitle?' · '+subtitle:''} · Bahn je Gewerk`,ML,8); doc.text(`Seite ${pi+1}/${G.pages.length}`,G.MR,8,{align:'right'}); }
+    const yH=pg.top, top=yH+headH;
+    const yy1=top+msH+pg.lanes.reduce((s,L)=>s+pad*2+L.subs*SH,0);
+    // Kopf: Bahnbezeichnung + Zeitachse
+    doc.setFillColor(242,242,242); doc.rect(ML,yH,gx1-ML,headH,'F');
+    doc.setFontSize(fs);doc.setTextColor(60);doc.setFont(undefined,'bold'); doc.text('Gewerk (BKP) · Unternehmer',ML+1,yH+headH-2.4); doc.setFont(undefined,'normal');
+    const showKW=mpd*7>=5.5, showDay=mpd>=3.2;
+    doc.setDrawColor(200);doc.setLineWidth(0.15);
+    let n=a; while(n<=b){ const [yy2,m]=_tpYMD(n); const e=Math.min(b,Math.round(Date.UTC(yy2,m+1,1)/864e5)-1); const x0=Math.max(gx0,X(n)), x1=X(e+1); doc.line(x0,yH,x0,yH+headH);
+      const lbl=(x1-x0)>16?`${TP_MONTHS[m]} ${yy2}`:(x1-x0)>7?TP_MONTHS[m]:''; if(lbl){ doc.setFontSize(fs);doc.setTextColor(40);doc.text(lbl,(x0+x1)/2,showKW?yH+3.8:yH+headH/2+1.2,{align:'center'}); } n=e+1; }
+    if(showKW){ let w=a+((8-_tpDow(a))%7); doc.setFontSize(Math.max(3,fs-1.4));doc.setTextColor(110);
+      if(showDay){ for(let d=a;d<=b;d++){ const x=X(d); if(_tpDow(d)!==1)doc.line(x,yH+7.2,x,yH+headH); doc.setFontSize(Math.max(3,fs-2));doc.text(String(_tpYMD(d)[2]),x+mpd/2,yH+headH-0.8,{align:'center'}); } doc.setFontSize(Math.max(3,fs-1.4)); }
+      for(;w<=b;w+=7){ const x=X(w); doc.line(x,yH+5,x,yH+headH); if(X(Math.min(b+1,w+7))-x>4.5) doc.text('KW '+_tpKW(w),x+(Math.min(X(b+1),X(w+7))-x)/2,showDay?yH+6.6:yH+headH-2.2,{align:'center'}); } doc.line(gx0,yH+5,gx1,yH+5); }
+    if(o.today&&td>=a&&td<=b){ const x=X(td)+mpd/2; doc.setFillColor(192,57,43); doc.roundedRect(x-6,yH+headH-3.4,12,3.2,1.5,1.5,'F'); doc.setFontSize(Math.max(3,fs-2));doc.setTextColor(255);doc.text('Heute',x,yH+headH-1,{align:'center'}); }
+    doc.setDrawColor(150);doc.setLineWidth(0.25);doc.line(ML,top,gx1,top);
+    // Hintergrund
+    if(o.weekend){
+      if(mpd>=0.9){ for(let d=a;d<=b;d++){ if(!cal.isWork(d)){ const cl=cal.closure(d),hn=cal.holName(d); if(cl)doc.setFillColor(254,215,215); else if(hn)doc.setFillColor(250,170,170); else doc.setFillColor(227,230,234); doc.rect(X(d),top,mpd,yy1-top,'F'); } } }
+      else cal.closures.forEach(c=>{ const s=Math.max(c.a,a),e=Math.min(c.b,b); if(e>=s){ doc.setFillColor(254,215,215); doc.rect(X(s),top,(e-s+1)*mpd,yy1-top,'F'); } });
+    }
+    n=a; while(n<=b){ const [yy2,m]=_tpYMD(n); n=Math.round(Date.UTC(yy2,m+1,1)/864e5); if(n<=b){ if(m===11)doc.setDrawColor(160); else doc.setDrawColor(215); doc.setLineWidth(0.15); doc.line(X(n),top,X(n),yy1); } }
+    // Meilensteinband
+    let y=top;
+    if(msH){ doc.setFontSize(Math.max(3,fs-1)); doc.setTextColor(120); doc.setFont(undefined,'bold'); doc.text('Meilensteine',ML+1,y+msH/2+fs*0.12); doc.setFont(undefined,'normal');
+      LN.ms.forEach(t=>{ const x=X(_tpD(t.start))+(t.msEnd?mpd:0), cy=y+SH*(0.25+0.4+0.8*(msLv.get(t.id)||0)), rr=Math.min(1.3,SH*0.28);
+        doc.setFillColor(220,38,38); doc.triangle(x-rr,cy,x,cy-rr,x+rr,cy,'F'); doc.triangle(x-rr,cy,x,cy+rr,x+rr,cy,'F');
+        if(o.label!=='none'){ doc.setFontSize(Math.max(3,fs-1.2)); doc.setTextColor(30); doc.text(fit(`${t.name||''} ${_tpFmtShort(_tpD(t.start))}`,Math.max(4,Math.min(gx1-x-rr-2,msW.get(t.id)||1e9))),x+rr+0.8,cy+fs*0.11); } });
+      y+=msH; doc.setDrawColor(200); doc.setLineWidth(0.2); doc.line(ML,y,gx1,y); }
+    // Bahnen
+    pg.lanes.forEach((L,li)=>{ const h=pad*2+L.subs*SH, col=L.color, cr=rgb(col);
+      if(li%2){ doc.setFillColor(250,250,251); doc.rect(ML,y,LW,h,'F'); }
+      doc.setFillColor(cr[0],cr[1],cr[2]); doc.rect(ML,y+0.4,0.9,h-0.8,'F');
+      const ty=y+Math.min(h/2,pad+SH*0.62);
+      doc.setFontSize(fs); doc.setTextColor(25); doc.setFont(undefined,'bold'); const cw=L.code?doc.getTextWidth(L.code)+1.6:0; if(L.code) doc.text(L.code,ML+2.2,ty);
+      doc.text(fit(L.name||'',LW-4-cw),ML+2.2+cw,ty); doc.setFont(undefined,'normal');
+      if(L.co&&(h>=SH*1.5||LW>50)){ doc.setFontSize(Math.max(3,fs-1.4)); doc.setTextColor(110); if(h>=SH*1.5) doc.text(fit(L.co,LW-4),ML+2.2,ty+fs*0.42); }
+      L.items.forEach(t=>{ const s=_tpD(t.start), e=_tpD(t.end); if(e<a||s>b)return;
+        const x0=X(Math.max(s,a)), x1=X(Math.min(e,b)+1), bw=Math.max(0.6,x1-x0), by=y+pad+(L.sub.get(t.id)||0)*SH+SH*0.12, bh=SH*0.76;
+        if(ctx.has(t.id)) opa(0.42);
+        if(t.kind==='span'){ const sl=rgb(_tpMix(col,0.45)); doc.setFillColor(sl[0],sl[1],sl[2]); doc.roundedRect(x0,by+bh*0.42,bw,bh*0.18,bh*0.09,bh*0.09,'F');
+          if(o.label!=='none'&&bw>12){ const dk=rgb(_tpDark(col,0.25)); doc.setFontSize(Math.max(3,fs-1.6)); doc.setTextColor(dk[0],dk[1],dk[2]); doc.text(fit(t.name||'',bw-1),x0+0.5,by+bh*0.34); } }
+        else if(t.lead){ const cy=by+bh/2, q=Math.min(bh*0.62,2); doc.setFillColor(23,25,28); if(s>=a) doc.rect(x0-q/2,cy-q/2,q,q,'F');
+          doc.setDrawColor(23,25,28); doc.setLineWidth(0.25); doc.line(x0+q/2,cy,Math.max(x0+q/2,x1-1.4),cy); if(e<=b) doc.triangle(x1,cy,x1-1.6,cy-0.8,x1-1.6,cy+0.8,'F');
+          if(bw>12){ const tx=`${t.dur} AT`; doc.setFontSize(Math.max(3,fs-1.6)); const tw=doc.getTextWidth(tx)+1; doc.setFillColor(255,255,255); doc.rect(x0+bw/2-tw/2,cy-1.2,tw,2.4,'F'); doc.setTextColor(60); doc.text(tx,x0+bw/2,cy+0.85,{align:'center'}); } }
+        else { const rr=Math.min(bh*0.28,bw/2), lt=rgb(_tpMix(col,0.6)); doc.setFillColor(lt[0],lt[1],lt[2]); doc.roundedRect(x0,by,bw,bh,rr,rr,'F');
+          if(_tpIsDry(t)){ doc.setDrawColor(255,255,255); doc.setLineWidth(0.4); for(let hx=x0+0.9;hx<x1-0.3;hx+=1.4){ doc.line(hx,by+bh-0.2,Math.min(hx+bh-0.4,x1-0.3),by+0.2); } }
+          if(t.progress){ const dk=rgb(_tpMix(col,0.25)); doc.setFillColor(dk[0],dk[1],dk[2]); doc.roundedRect(x0,by,Math.max(Math.min(bw,rr*2),bw*t.progress/100),bh,rr,rr,'F'); }
+          if(o.crit&&t.crit){ doc.setDrawColor(217,45,32); doc.setLineWidth(0.4); doc.roundedRect(x0,by,bw,bh,rr,rr,'S'); }
+          if(t.conflict){ doc.setDrawColor(212,115,42); doc.setLineWidth(0.5); doc.roundedRect(x0,by,bw,bh,rr,rr,'S'); }
+          if(o.label!=='none'){ const lbl=o.label==='company'?_tpCoKey(t):(t.name||''); if(lbl){ const dk=rgb(_tpDark(col,0.45)); doc.setFontSize(Math.max(3,fs-1)); doc.setTextColor(dk[0],dk[1],dk[2]); doc.text(fit(lbl,Math.max(4,gx1-x0-1.5)),x0+0.8,by+bh*0.5+fs*0.12); } } }
+        if(ctx.has(t.id)) opa(1);
+      });
+      y+=h; doc.setDrawColor(228); doc.setLineWidth(0.12); doc.line(ML,y,gx1,y);
+    });
+    // Feiertage und Bauferien als Sperre über den Balken
+    if(o.weekend){ opa(0.55);
+      cal.closures.forEach(c=>{ const s0=Math.max(c.a,a),e0=Math.min(c.b,b); if(e0>=s0){ doc.setFillColor(254,202,202); doc.rect(X(s0),top,(e0-s0+1)*mpd,yy1-top,'F'); } });
+      if(cal.useHol) for(let d=a;d<=b;d++){ if(cal.holName(d)&&!cal.closure(d)&&cal.wd.has(_tpDow(d))){ doc.setFillColor(239,68,68); doc.rect(X(d),top,Math.max(mpd,0.5),yy1-top,'F'); } }
+      opa(1);
+      cal.closures.forEach(c=>{ const s0=Math.max(c.a,a),e0=Math.min(c.b,b); if(e0>=s0){ doc.setDrawColor(220,38,38); doc.setLineWidth(0.35); doc.line(X(s0),top,X(s0),yy1); doc.line(X(e0+1),top,X(e0+1),yy1); } }); }
+    if(o.today&&td>=a&&td<=b){ doc.setDrawColor(192,57,43);doc.setLineWidth(0.4);doc.line(X(td)+mpd/2,top,X(td)+mpd/2,yy1); }
+    if(ho!=null&&ho>=a&&ho<=b){ doc.setDrawColor(44,122,75);doc.setLineWidth(0.4);if(doc.setLineDashPattern)doc.setLineDashPattern([1.2,0.8],0); doc.line(X(ho+1),top,X(ho+1),yy1); if(doc.setLineDashPattern)doc.setLineDashPattern([],0); }
+    doc.setDrawColor(150);doc.setLineWidth(0.25);doc.line(gx0-1,yH,gx0-1,yy1);
+    doc.setDrawColor(200);doc.setLineWidth(0.2);doc.line(gx1,yH,gx1,yy1);
+    if(!pg.lanes.length&&!msH){ doc.setFontSize(9);doc.setTextColor(120);doc.text('Keine Vorgänge für diese Auswahl.',ML,top+8); }
+    pg._y1=yy1;
+  });
+  if(o.legend){
+    doc.setPage(doc.getNumberOfPages());
+    let ly=G.pages[G.pages.length-1]._y1+5; const lim=pageH-G.footH-4;
+    const lfs=Math.max(5.2,Math.min(7,fs-0.4));
+    if(ly>lim-8){ doc.addPage(fmt,orient); ly=16; }
+    doc.setFontSize(lfs);doc.setTextColor(90);
+    let lx=ML;
+    const leg=(draw,txt)=>{ const w=6+doc.getTextWidth(txt)+6; if(lx+w>G.MR){ lx=ML; ly+=4.2; } draw(lx,ly); doc.setTextColor(90); doc.text(txt,lx+6,ly+0.9); lx+=w; };
+    doc.setFont(undefined,'bold'); doc.text('Legende:',lx,ly+0.9); lx+=doc.getTextWidth('Legende:')+4; doc.setFont(undefined,'normal');
+    leg((x,yy)=>{doc.setFillColor(168,193,247);doc.roundedRect(x,yy-1.2,5,2.4,0.8,0.8,'F');},'Vorgang (Farbe des Gewerks)');
+    leg((x,yy)=>{doc.setFillColor(168,193,247);doc.roundedRect(x,yy-1.2,5,2.4,0.8,0.8,'F');doc.setFillColor(111,153,241);doc.roundedRect(x,yy-1.2,3,2.4,0.8,0.8,'F');},'Fortschritt');
+    leg((x,yy)=>{doc.setFillColor(168,193,247);doc.rect(x,yy-1.2,5,2.4,'F');doc.setDrawColor(255,255,255);doc.setLineWidth(0.4);for(let hx=x+0.8;hx<x+5;hx+=1.4)doc.line(hx,yy+1.1,Math.min(hx+2.2,x+5),yy-1.1);},'Austrocknung / Aufheizen');
+    leg((x,yy)=>{doc.setFillColor(23,25,28);doc.rect(x,yy-1,2,2,'F');doc.setDrawColor(23,25,28);doc.setLineWidth(0.25);doc.line(x+2,yy,x+4.6,yy);doc.triangle(x+5.6,yy,x+4.4,yy-0.7,x+4.4,yy+0.7,'F');},'Bestellung / Lieferfrist');
+    leg((x,yy)=>{doc.setFillColor(214,205,240);doc.roundedRect(x,yy-0.4,5,0.8,0.4,0.4,'F');},'Zeitspanne');
+    leg((x,yy)=>{doc.setFillColor(220,38,38);doc.triangle(x+1,yy,x+2.5,yy-1.5,x+4,yy,'F');doc.triangle(x+1,yy,x+2.5,yy+1.5,x+4,yy,'F');},'Meilenstein');
+    if(o.crit)leg((x,yy)=>{doc.setDrawColor(217,45,32);doc.setLineWidth(0.4);doc.roundedRect(x,yy-1.2,5,2.4,0.8,0.8,'S');},'Kritischer Weg');
+    if(o.today)leg((x,yy)=>{doc.setDrawColor(192,57,43);doc.setLineWidth(0.4);doc.line(x+2.5,yy-1.5,x+2.5,yy+1.5);},'Heute '+_tpFmtShort(td));
+    if(ho!=null)leg((x,yy)=>{doc.setDrawColor(44,122,75);doc.setLineWidth(0.4);if(doc.setLineDashPattern)doc.setLineDashPattern([0.8,0.6],0);doc.line(x+2.5,yy-1.5,x+2.5,yy+1.5);if(doc.setLineDashPattern)doc.setLineDashPattern([],0);},'Soll-Übergabe');
+    if(o.weekend){ leg((x,yy)=>{doc.setFillColor(227,230,234);doc.rect(x,yy-1.2,5,2.4,'F');},'Wochenende'); leg((x,yy)=>{doc.setFillColor(250,170,170);doc.rect(x,yy-1.2,5,2.4,'F');},'Feiertag Kanton '+(cal.kt||'')); leg((x,yy)=>{doc.setFillColor(254,215,215);doc.rect(x,yy-1.2,5,2.4,'F');doc.setDrawColor(220,38,38);doc.setLineWidth(0.3);doc.line(x,yy-1.2,x,yy+1.2);doc.line(x+5,yy-1.2,x+5,yy+1.2);},'Bauferien (Sperre)'); }
+    if(ctx.size) leg((x,yy)=>{opa(0.42);doc.setFillColor(91,126,166);doc.rect(x,yy-1.2,5,2.4,'F');opa(1);},'blass = Vor-/Nachfolger anderer Unternehmer');
+    ly+=4.6; doc.setFontSize(lfs-0.5); doc.setTextColor(130); doc.text('Bahn je Gewerk: eine Zeile je BKP, gleichzeitige Vorgänge gestaffelt · AT = Arbeitstage',ML,ly+0.9);
+  }
+  return {pages:doc.getNumberOfPages()-startPage+1,rows:G.rows.length};
+}
 async function exportTerminplanPDF(p,opts,{returnDoc=false}={}){
   const o=Object.assign({},TP_PDF_DEFAULTS,opts||{});
   if(opts&&opts.format&&!opts.paper) o.paper=opts.format; // ältere Aufrufe
@@ -9207,8 +9395,9 @@ async function exportTerminplanPDF(p,opts,{returnDoc=false}={}){
   const make=async(list,subtitle)=>{
     // Seitengrösse aus dem Layout der ersten Sektion bestimmen
     const o1=Object.assign({},o,list[0]?{companies:list[0]}:{});
-    const L0=_tpPdfLayout(p,o1,_tpPdfRows(p,o1),42);
-    if(o.paper==='plot'&&list.length>1){ list.forEach(l=>{ const ol=Object.assign({},o,{companies:l}); const Lx=_tpPdfLayout(p,ol,_tpPdfRows(p,ol),42); L0.W=Math.max(L0.W,Lx.W); L0.H=Math.max(L0.H,Lx.H); }); o._forceWH=[L0.W,L0.H]; }
+    const geo=(oo)=>oo.view==='lanes'?_tpPdfLanesGeom(p,oo,42):_tpPdfLayout(p,oo,_tpPdfRows(p,oo),42);
+    const L0=geo(o1);
+    if(o.paper==='plot'&&list.length>1){ list.forEach(l=>{ const ol=Object.assign({},o,{companies:l}); const Lx=geo(ol); L0.W=Math.max(L0.W,Lx.W); L0.H=Math.max(L0.H,Lx.H); }); o._forceWH=[L0.W,L0.H]; }
     const doc=new jsPDF({orientation:L0.W>=L0.H?'landscape':'portrait',format:[Math.min(L0.W,L0.H),Math.max(L0.W,L0.H)],unit:'mm'});
     registerEmbeddedFonts(doc,'terminplan');
     let first=true, info=null;
@@ -9241,7 +9430,7 @@ function _tpPdfDialog(){
   const p=_tp.plan; if(!p)return;
   _tpSchedule(p);
   let last={}; try{ last=JSON.parse(localStorage.getItem('bv_tp_pdf_'+p.id)||'{}'); }catch(e){}
-  let o=Object.assign({},TP_PDF_DEFAULTS,{base:!!(p.baseline&&_tp.showBase),crit:_tp.showCrit,links:_tp.showLinks},last);
+  let o=Object.assign({},TP_PDF_DEFAULTS,{view:_tpView(),base:!!(p.baseline&&_tp.showBase),crit:_tp.showCrit,links:_tp.showLinks},last);
   o.kinds=Object.assign({},TP_PDF_DEFAULTS.kinds,o.kinds||{});
   const comps=[...new Set(p.tasks.filter(t=>t.kind!=='group'&&t.kind!=='span').map(_tpCoKey))].sort((a,b)=>!a?1:!b?-1:a.localeCompare(b));
   const cnt=new Map(); p.tasks.forEach(t=>{ if(t.kind==='group'||t.kind==='span')return; const k=_tpCoKey(t); cnt.set(k,(cnt.get(k)||0)+1); });
@@ -9255,6 +9444,8 @@ function _tpPdfDialog(){
       <button type="button" class="btn btn-ghost btn-sm" id="pp-psave">Als Vorlage speichern …</button><button type="button" class="btn btn-ghost btn-sm" id="pp-pdel" style="display:none">Vorlage löschen</button></div>
     <div class="tp-pdf-pre">${H('Genauigkeit','level')}<div class="tp-seg" id="pp-level">${Object.entries(TP_LEVELS).map(([k,l])=>`<button type="button" data-lv="${k}" class="${(o.level||'fein')===k?'on':''}">${l}</button>`).join('')}</div>
       <span style="font-size:12px;color:var(--muted)">Grob = BKP-Hauptgruppen · Normal = BKP 3-stellig · Fein = alle Vorgänge</span></div>
+    <div class="tp-pdf-pre">${H('Darstellung','pdfView')}<div class="tp-seg" id="pp-view">${[['list','☰ Zeile je Vorgang'],['lanes','▤ Bahn je Gewerk']].map(([k,l])=>`<button type="button" data-vw="${k}" class="${(o.view||'list')===k?'on':''}">${l}</button>`).join('')}</div>
+      <span style="font-size:12px;color:var(--muted)" id="pp-viewHint"></span></div>
     <div class="tp-pdf-grid">
       <section>${H('Papier &amp; Seitenaufteilung','pdfLayout')}
         <div class="field-row"><div class="field"><label>Format</label><select id="pp-paper">${[['a4','A4'],['a3','A3'],['a2','A2'],['a1','A1'],['a0','A0'],['plot','Plot / Originalgrösse (1 Blatt)']].map(([k,l])=>`<option value="${k}" ${o.paper===k?'selected':''}>${l}</option>`).join('')}</select></div>
@@ -9298,7 +9489,7 @@ function _tpPdfDialog(){
   const read=()=>{
     const r=document.querySelector('[name=pp-range]:checked').value, coAll=[...box.querySelectorAll('[data-co]')], grAll=[...box.querySelectorAll('[data-gr]')];
     const coSel=coAll.filter(x=>x.checked).map(x=>x.dataset.co), grSel=grAll.filter(x=>x.checked).map(x=>x.dataset.gr);
-    return Object.assign({},TP_PDF_DEFAULTS,{level:(box.querySelector('#pp-level .on')||{dataset:{lv:'fein'}}).dataset.lv,paper:$('pp-paper').value,orient:$('pp-orient').value,layout:document.querySelector('[name=pp-layout]:checked').value,scale:$('pp-scale').value,repeatTable:$('pp-rep').checked,
+    return Object.assign({},TP_PDF_DEFAULTS,{view:(box.querySelector('#pp-view .on')||{dataset:{vw:'list'}}).dataset.vw,level:(box.querySelector('#pp-level .on')||{dataset:{lv:'fein'}}).dataset.lv,paper:$('pp-paper').value,orient:$('pp-orient').value,layout:document.querySelector('[name=pp-layout]:checked').value,scale:$('pp-scale').value,repeatTable:$('pp-rep').checked,
       range:r,weeks:+$('pp-weeks').value,from:_tpD($('pp-from').value),to:_tpD($('pp-to').value),inRange:$('pp-inr').checked,
       cols:TP_PDF_COLS.filter(c=>$('pp-col-'+c.k).checked).map(c=>c.k),links:$('pp-links').checked,crit:$('pp-crit').checked,base:$('pp-base')?$('pp-base').checked:false,weekend:$('pp-we').checked,today:$('pp-today').checked,legend:$('pp-leg').checked,collapsed:$('pp-coll').checked,
       label:$('pp-label').value,title:$('pp-title').value.trim(),
@@ -9309,11 +9500,17 @@ function _tpPdfDialog(){
   const est=()=>{
     const x=read(); const plot=x.paper==='plot';
     $('pp-orientF').style.display=plot?'none':''; $('pp-layoutF').style.display=plot?'none':'flex';
-    $('pp-scaleF').style.display=plot||x.layout==='tiles'?'':'none'; $('pp-repF').style.display=x.layout==='tiles'&&!plot?'':'none';
+    const lanes=x.view==='lanes';
+    box.querySelectorAll('[name=pp-layout][value=tiles]').forEach(r=>{ r.closest('label').style.display=lanes?'none':''; if(lanes&&r.checked){ box.querySelector('[name=pp-layout][value=rows]').checked=true; x.layout='rows'; } });
+    $('pp-scaleF').style.display=plot||(x.layout==='tiles'&&!lanes)?'':'none'; $('pp-repF').style.display=x.layout==='tiles'&&!plot&&!lanes?'':'none';
+    box.querySelectorAll('.tp-pdf-cols input[id^=pp-col-],#pp-links').forEach(i=>{ const l=i.closest('label'); if(l)l.style.opacity=lanes?'.45':''; i.disabled=lanes; });
+    $('pp-viewHint').textContent=lanes?'Eine Zeile je Gewerk (BKP), gleichzeitige Vorgänge gestaffelt, Meilensteine oben · Spalten und Verknüpfungen entfallen':'Tabelle mit Spalten links, ein Balken je Zeile';
     const sel=x.companies; const lists=x.split!=='none'&&sel&&sel.length?sel.map(c=>[c]):[sel];
     let pages=0, rowsN=0, txt='';
     const pa=x.level&&x.level!=='fein'?_tpAggregate(p,x.level):p; if(pa!==p){ x.groups=null; x.links=false; }
-    lists.forEach(l=>{ const xo=Object.assign({},x,{companies:l}); const rows=_tpPdfRows(pa,xo); rowsN+=rows.length; const L=_tpPdfLayout(pa,xo,rows,42); pages+=L.pages.length+(x.legend&&!plot&&L.pages.length&&(()=>{ const lp=L.pages[L.pages.length-1]; return lp.top+L.headH+lp.rows.length*L.rowH+5>L.H-L.footH-16; })()?1:0);
+    lists.forEach(l=>{ const xo=Object.assign({},x,{companies:l}); const rows=_tpPdfRows(pa,xo); rowsN+=rows.length;
+      if(lanes){ const G=_tpPdfLanesGeom(pa,xo,42); pages+=G.pages.length; txt=plot?`Plotgrösse ca. ${G.plotSize[0]} × ${G.plotSize[1]} mm · ${G.LN.lanes.length} Bahnen`:`${G.LN.lanes.length} Bahnen · Unterzeile ${G.SH.toFixed(1)} mm${G.SH<2.4?' ⚠ sehr klein – grösseres Format wählen':''}`; return; }
+      const L=_tpPdfLayout(pa,xo,rows,42); pages+=L.pages.length+(x.legend&&!plot&&L.pages.length&&(()=>{ const lp=L.pages[L.pages.length-1]; return lp.top+L.headH+lp.rows.length*L.rowH+5>L.H-L.footH-16; })()?1:0);
       if(plot) txt=`Plotgrösse ca. ${L.plotSize[0]} × ${L.plotSize[1]} mm${L.plotSize[0]>1189?' – breiter als A0-Rolle (914/1067 mm Rollenbreite: Höhe beachten)':''}`;
       else if(x.layout==='tiles') txt=`${L.tiles[0]} × ${L.tiles[1]} Blätter (Zeilen × Zeit) à ${x.paper.toUpperCase()}`;
       else if(x.layout==='fit') txt=L.rowH<2.6?`⚠ sehr klein: Zeilenhöhe ${L.rowH.toFixed(1)} mm – grösseres Format oder Filter wählen`:`Zeilenhöhe ${L.rowH.toFixed(1)} mm`; });
@@ -9323,6 +9520,7 @@ function _tpPdfDialog(){
   };
   const apply=x=>{ // Einstellungen in den Dialog übernehmen (Vorlage)
     box.querySelectorAll('#pp-level [data-lv]').forEach(b=>b.classList.toggle('on',b.dataset.lv===(x.level||'fein')));
+    box.querySelectorAll('#pp-view [data-vw]').forEach(b=>b.classList.toggle('on',b.dataset.vw===(x.view||'list')));
     $('pp-paper').value=x.paper; $('pp-orient').value=x.orient; box.querySelectorAll('[name=pp-layout]').forEach(r=>r.checked=r.value===x.layout); $('pp-scale').value=x.scale; $('pp-rep').checked=!!x.repeatTable;
     box.querySelectorAll('[name=pp-range]').forEach(r=>r.checked=r.value===x.range); $('pp-weeks').value=String(x.weeks||6); if(x.from!=null)$('pp-from').value=_tpIso(x.from); if(x.to!=null)$('pp-to').value=_tpIso(x.to); $('pp-inr').checked=!!x.inRange;
     TP_PDF_COLS.forEach(c=>$('pp-col-'+c.k).checked=(x.cols||[]).includes(c.k));
@@ -9332,6 +9530,7 @@ function _tpPdfDialog(){
     const K=Object.assign({},TP_PDF_DEFAULTS.kinds,x.kinds||{}); ['task','ms','lead','span'].forEach(k=>$('pp-k-'+k).checked=!!K[k]);
     box.querySelectorAll('[name=pp-split]').forEach(r=>r.checked=r.value===(x.split||'none')); est(); };
   box.addEventListener('change',est); box.addEventListener('input',e=>{ if(e.target.id==='pp-title')return; est(); });
+  box.querySelector('#pp-view').onclick=e=>{ const b=e.target.closest('[data-vw]'); if(!b)return; box.querySelectorAll('#pp-view [data-vw]').forEach(z=>z.classList.toggle('on',z===b)); est(); };
   box.querySelector('#pp-level').onclick=e=>{ const b=e.target.closest('[data-lv]'); if(!b)return; box.querySelectorAll('#pp-level [data-lv]').forEach(z=>z.classList.toggle('on',z===b)); est(); };
   box.addEventListener('click',e=>{ const a=e.target.closest('[data-all],[data-none]'); if(!a)return; e.preventDefault(); const k=a.dataset.all||a.dataset.none, on=!!a.dataset.all; box.querySelectorAll(k==='co'?'[data-co]':'[data-gr]').forEach(c=>c.checked=on); est(); });
   $('pp-preset').onchange=()=>{ const i=$('pp-preset').value; $('pp-pdel').style.display=i===''?'none':''; if(i!=='') apply(Object.assign({},TP_PDF_DEFAULTS,presets[+i].o)); };
