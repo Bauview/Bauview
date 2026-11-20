@@ -285,6 +285,13 @@ async function uploadPhoto(projectId, blob, tag){
     // Im Vorschau-Modus lokal als Data-URL anzeigen (keine echte Cloud-Ablage) – rein zur Ansicht.
     return await new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(blob); });
   }
+  // Speicher-Wächter (wie web/cloud.js): ab 950 MB keine Uploads mehr. Funktion fehlt/nicht
+  // erreichbar -> nicht blockieren.
+  try{
+    const {data:used,error:se}=await _sb.rpc('bauview_storage_bytes');
+    if(!se && used!==null && Number(used)+blob.size > 950*1024*1024)
+      throw new Error('Cloud-Speicher voll (950 MB) – Foto wurde nicht hochgeladen');
+  }catch(e){ if(/Cloud-Speicher voll/.test(e.message)) throw e; }
   const ext=(blob.type.split('/')[1]||'jpg').replace('jpeg','jpg');
   const path=`${projectId||'allg'}/img_${tag||''}${Date.now()}_${Math.random().toString(36).slice(2,7)}.${ext}`;
   const {error}=await _sb.storage.from('files').upload(path, blob, {upsert:true,contentType:blob.type});
