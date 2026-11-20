@@ -369,23 +369,42 @@ let _mockDefectsStore=null; // veränderbare Kopie, damit Status-Änderungen/neu
       <div><h2 style="margin-bottom:8px">Keine Verbindung</h2><p style="color:var(--muted);font-size:13.5px">Die Cloud-Verbindung konnte nicht aufgebaut werden.</p></div></div>`;
     return;
   }
-  _sb=supabase.createClient(CLOUD_CONFIG.url,CLOUD_CONFIG.anonKey);
+  _sb=supabase.createClient(CLOUD_CONFIG.url,CLOUD_CONFIG.anonKey,{auth:{persistSession:true,autoRefreshToken:true,storage:_mobAuthStorage}});
   const {data:s}=await _sb.auth.getSession();
   if(s&&s.session){ await afterLogin(s.session.user); }
   else{ renderLogin(); }
 })();
 
+// Dauerhafte Anmeldung: Sitzung in localStorage UND einer kleinen IndexedDB spiegeln, damit sie
+// bei vollem/geleertem localStorage (z.B. iOS) nicht verloren geht. E-Mail wird gemerkt,
+// das Passwort übernimmt der Passwort-Manager des Browsers.
+var _mobAuthStorage=(function(){
+  var p=null; function db(){ return p||(p=new Promise(function(res,rej){ try{ var r=indexedDB.open('bauview-auth',1);
+    r.onupgradeneeded=function(){ try{ r.result.createObjectStore('kv'); }catch(_){} }; r.onsuccess=function(){ res(r.result); }; r.onerror=function(){ rej(r.error); };
+  }catch(e){ rej(e); } })); }
+  function op(mode,fn){ return db().then(function(d){ return new Promise(function(res){ try{ var tx=d.transaction('kv',mode), rq=fn(tx.objectStore('kv'));
+    tx.oncomplete=function(){ res(rq?rq.result:undefined); }; tx.onerror=tx.onabort=function(){ res(undefined); }; }catch(_){ res(undefined); } }); }).catch(function(){ return undefined; }); }
+  return {
+    getItem: async function(k){ var v=null; try{ v=localStorage.getItem(k); }catch(_){} if(v!=null) return v;
+      var w=await op('readonly',function(st){ return st.get(k); }); if(w!=null){ try{ localStorage.setItem(k,w); }catch(_){} return w; } return null; },
+    setItem: async function(k,v){ try{ localStorage.setItem(k,v); }catch(_){} await op('readwrite',function(st){ return st.put(v,k); }); },
+    removeItem: async function(k){ try{ localStorage.removeItem(k); }catch(_){} await op('readwrite',function(st){ return st.delete(k); }); }
+  };
+})();
 function renderLogin(){
   $('mobRoot').innerHTML=`
     <div id="loginScreen">
       <h1>BauView Mobil</h1>
       <p>Pläne, Mängel und Dokumente unterwegs</p>
-      <div class="mob-field"><label>E-Mail</label><input id="mlEmail" type="email" autocomplete="username" placeholder="name@helbling-architektur.ch"></div>
-      <div class="mob-field"><label>Passwort</label><input id="mlPass" type="password" autocomplete="current-password" placeholder="••••••••"></div>
-      <button class="mob-btn-primary" id="mlBtn">Anmelden</button>
+      <form id="mlForm" autocomplete="on" onsubmit="return false">
+      <div class="mob-field"><label>E-Mail</label><input id="mlEmail" name="username" type="email" autocomplete="username" placeholder="name@helbling-architektur.ch"></div>
+      <div class="mob-field"><label>Passwort</label><input id="mlPass" name="password" type="password" autocomplete="current-password" placeholder="••••••••"></div>
+      <button type="submit" class="mob-btn-primary" id="mlBtn">Anmelden</button>
+      </form>
       <div id="loginErr"></div>
     </div>`;
   const err=$('loginErr');
+  try{ const le=localStorage.getItem('bv_lastLoginEmail'); if(le) $('mlEmail').value=le; }catch(_){}
   $('mlBtn').onclick=async()=>{
     const email=$('mlEmail').value.trim(), pass=$('mlPass').value;
     if(!email||!pass){ err.textContent='Bitte E-Mail und Passwort eingeben.'; return; }
@@ -393,6 +412,8 @@ function renderLogin(){
     try{
       const {data,error}=await _sb.auth.signInWithPassword({email:email.toLowerCase(),password:pass});
       if(error) throw error;
+      try{ localStorage.setItem('bv_lastLoginEmail',email.toLowerCase()); }catch(_){}
+      try{ if(window.PasswordCredential&&navigator.credentials&&navigator.credentials.store) await navigator.credentials.store(new PasswordCredential({id:email.toLowerCase(),password:pass,name:email.toLowerCase()})); }catch(_){}
       await afterLogin(data.user);
     }catch(e){
       $('mlBtn').disabled=false; $('mlBtn').textContent='Anmelden';
