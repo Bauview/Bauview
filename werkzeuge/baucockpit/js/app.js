@@ -33,7 +33,7 @@
     project: null, projects: [], catalog: [], settings: {}, step: 'projects', dirty: false, v3: null,
 
     async init() {
-      this.settings = Object.assign({ office: 'Helbling Architektur GmbH', officeAddr: 'Engelburg SG', author: '', projNrPrefix: '' }, await Store.getSetting('office', {}));
+      this.settings = Object.assign({ office: '', officeAddr: '', author: '', projNrPrefix: '' }, await Store.getSetting('office', {}));
       this.catalog = await Store.all('catalog');
       if (!this.catalog.length) { for (const c of Catalog.SEED) await Store.put('catalog', c); this.catalog = await Store.all('catalog'); }
       this.projects = (await Store.all('projects')).sort((a, b) => b.updated.localeCompare(a.updated));
